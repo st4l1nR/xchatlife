@@ -35,14 +35,14 @@ const ListCardCharacter: React.FC<ListCardCharacterProps> = ({
         className={clsx(
           isGrid
             ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            : "flex gap-4 overflow-x-auto pb-4",
+            : "flex gap-3 overflow-x-auto pb-4",
         )}
       >
         {items.map((item, index) => (
           <CardCharacter
             key={item.href || index}
             {...item}
-            className={clsx(!isGrid && "w-64 shrink-0")}
+            className={clsx(!isGrid && "w-40 shrink-0 md:w-44")}
           />
         ))}
       </div>
@@ -52,15 +52,15 @@ const ListCardCharacter: React.FC<ListCardCharacterProps> = ({
         className={clsx(
           isGrid
             ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            : "flex gap-4 overflow-x-auto pb-4",
+            : "flex gap-3 overflow-x-auto pb-4",
         )}
       >
-        {Array.from({ length: isGrid ? 8 : 4 }).map((_, index) => (
+        {Array.from({ length: isGrid ? 8 : 5 }).map((_, index) => (
           <div
             key={index}
             className={clsx(
               "bg-muted aspect-3/4 animate-pulse rounded-2xl",
-              isGrid ? "w-full" : "w-64 shrink-0",
+              isGrid ? "w-full" : "w-40 shrink-0 md:w-44",
             )}
           >
             <div className="flex h-full flex-col justify-end p-4">
