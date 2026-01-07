@@ -28,7 +28,7 @@ export function Avatar({
       className={clsx(
         className,
         // Basic layout
-        "inline-grid shrink-0 align-middle [--avatar-radius:20%] *:col-start-1 *:row-start-1",
+        "relative inline-grid shrink-0 align-middle [--avatar-radius:20%] *:col-start-1 *:row-start-1",
         "outline -outline-offset-1 outline-black/10 dark:outline-white/10",
         // Border radius
         square
@@ -57,11 +57,11 @@ export function Avatar({
       )}
       {src && (
         <Image
-          className="size-full"
+          className="size-full object-cover"
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="64px"
         />
       )}
     </span>

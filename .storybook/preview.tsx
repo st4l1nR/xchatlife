@@ -33,7 +33,7 @@ const preview: Preview = {
         },
         {
           name: "dark",
-          value: "oklch(0.2747 0.0139 57.6523)",
+          value: "oklch(0 0 0)",
         },
       ],
     },

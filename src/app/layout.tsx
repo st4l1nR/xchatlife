@@ -6,6 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 import ProviderTheme from "./_components/organisms/ProviderTheme";
 import SkeletonTheme from "./_components/organisms/SkeletonTheme";
+import TemplateDashboard from "./_components/templates/TemplateDashboard";
 
 export const metadata: Metadata = {
   title: "Xchatlife",
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body>
         <ProviderTheme>
           <SkeletonTheme>
-            <TRPCReactProvider>{children}</TRPCReactProvider>
+            <TRPCReactProvider>
+              <TemplateDashboard>{children}</TemplateDashboard>
+            </TRPCReactProvider>
           </SkeletonTheme>
         </ProviderTheme>
       </body>

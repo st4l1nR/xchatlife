@@ -22,7 +22,12 @@
       "Bash(npx prisma validate:*)",
       "Bash(npx prisma:*)",
       "Bash(pbcopy)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(timeout 30 pnpm run storybook:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run typecheck:*)"
     ],
     "deny": []
   }
