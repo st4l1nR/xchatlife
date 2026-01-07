@@ -1,8 +1,9 @@
 import type { Preview } from "@storybook/nextjs-vite";
 import { withThemeByClassName } from "@storybook/addon-themes";
-import React from "react";
 import "../src/styles/globals.css";
+import "react-loading-skeleton/dist/skeleton.css";
 import { TRPCReactProvider } from "../src/trpc/react";
+import SkeletonTheme from "../src/app/_components/organisms/SkeletonTheme";
 
 // Mock session for Storybook
 const mockSession = {
@@ -55,12 +56,14 @@ const preview: Preview = {
       defaultTheme: "light",
       parentSelector: "html",
     }),
-    // Providers wrapper (SessionProvider + TRPCReactProvider)
+    // Providers wrapper (SessionProvider + TRPCReactProvider + SkeletonTheme)
     (Story, context) => {
       const session = context.parameters.nextauth?.session ?? mockSession;
       return (
         <TRPCReactProvider>
-          <Story />
+          <SkeletonTheme>
+            <Story />
+          </SkeletonTheme>
         </TRPCReactProvider>
       );
     },

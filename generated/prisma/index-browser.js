@@ -133,6 +133,12 @@ exports.Prisma.UserScalarFieldEnum = {
   image: "image",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
+  avatar: "avatar",
+  nickname: "nickname",
+  gender: "gender",
+  language: "language",
+  notifications: "notifications",
+  role: "role",
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -171,6 +177,140 @@ exports.Prisma.VerificationScalarFieldEnum = {
   updatedAt: "updatedAt",
 };
 
+exports.Prisma.CharacterScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  gender: "gender",
+  style: "style",
+  ethnicity: "ethnicity",
+  age: "age",
+  hairStyle: "hairStyle",
+  hairColor: "hairColor",
+  eyeColor: "eyeColor",
+  bodyType: "bodyType",
+  breastSize: "breastSize",
+  personality: "personality",
+  relationship: "relationship",
+  occupation: "occupation",
+  voice: "voice",
+  isPublic: "isPublic",
+  isActive: "isActive",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+  createdById: "createdById",
+};
+
+exports.Prisma.CharacterKinkScalarFieldEnum = {
+  id: "id",
+  characterId: "characterId",
+  kink: "kink",
+  createdAt: "createdAt",
+};
+
+exports.Prisma.ChatScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  characterId: "characterId",
+  isArchived: "isArchived",
+  lastMessageAt: "lastMessageAt",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: "id",
+  chatId: "chatId",
+  type: "type",
+  content: "content",
+  isFromUser: "isFromUser",
+  isDeleted: "isDeleted",
+  createdAt: "createdAt",
+};
+
+exports.Prisma.CollectionScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  messageId: "messageId",
+  url: "url",
+  key: "key",
+  createdAt: "createdAt",
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  billingCycle: "billingCycle",
+  status: "status",
+  currentPeriodStart: "currentPeriodStart",
+  currentPeriodEnd: "currentPeriodEnd",
+  coinGateOrderId: "coinGateOrderId",
+  cancelledAt: "cancelledAt",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.UsageQuotaScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  periodStart: "periodStart",
+  periodEnd: "periodEnd",
+  tokensUsed: "tokensUsed",
+  tokensLimit: "tokensLimit",
+  messagesUsed: "messagesUsed",
+  imagesGenerated: "imagesGenerated",
+  videosGenerated: "videosGenerated",
+  audiosGenerated: "audiosGenerated",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.StoryScalarFieldEnum = {
+  id: "id",
+  characterId: "characterId",
+  mediaType: "mediaType",
+  mediaUrl: "mediaUrl",
+  thumbnailUrl: "thumbnailUrl",
+  expiresAt: "expiresAt",
+  isActive: "isActive",
+  createdAt: "createdAt",
+};
+
+exports.Prisma.ReelScalarFieldEnum = {
+  id: "id",
+  characterId: "characterId",
+  videoUrl: "videoUrl",
+  thumbnailUrl: "thumbnailUrl",
+  title: "title",
+  description: "description",
+  viewCount: "viewCount",
+  isActive: "isActive",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.AffiliateScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  referralCode: "referralCode",
+  commissionRate: "commissionRate",
+  totalEarned: "totalEarned",
+  isActive: "isActive",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.ReferralScalarFieldEnum = {
+  id: "id",
+  affiliateId: "affiliateId",
+  referredUserId: "referredUserId",
+  status: "status",
+  commission: "commission",
+  convertedAt: "convertedAt",
+  paidAt: "paidAt",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
 exports.Prisma.SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -185,6 +325,184 @@ exports.Prisma.NullsOrder = {
   first: "first",
   last: "last",
 };
+exports.Language = exports.$Enums.Language = {
+  english: "english",
+  german: "german",
+  french: "french",
+  spanish: "spanish",
+};
+
+exports.UserRole = exports.$Enums.UserRole = {
+  default: "default",
+  admin: "admin",
+  superadmin: "superadmin",
+};
+
+exports.CharacterGender = exports.$Enums.CharacterGender = {
+  girl: "girl",
+  men: "men",
+  trans: "trans",
+};
+
+exports.CharacterStyle = exports.$Enums.CharacterStyle = {
+  realistic: "realistic",
+  anime: "anime",
+};
+
+exports.Ethnicity = exports.$Enums.Ethnicity = {
+  caucasian: "caucasian",
+  asian: "asian",
+  black: "black",
+  latina: "latina",
+  arab: "arab",
+};
+
+exports.HairStyle = exports.$Enums.HairStyle = {
+  straight: "straight",
+  bangs: "bangs",
+  curly: "curly",
+  bun: "bun",
+  short: "short",
+  ponytail: "ponytail",
+};
+
+exports.HairColor = exports.$Enums.HairColor = {
+  brunette: "brunette",
+  blonde: "blonde",
+  black: "black",
+  redhead: "redhead",
+  pink: "pink",
+};
+
+exports.EyeColor = exports.$Enums.EyeColor = {
+  brown: "brown",
+  blue: "blue",
+  green: "green",
+};
+
+exports.BodyType = exports.$Enums.BodyType = {
+  skinny: "skinny",
+  athletic: "athletic",
+  average: "average",
+  curvy: "curvy",
+  bbw: "bbw",
+};
+
+exports.BreastSize = exports.$Enums.BreastSize = {
+  small: "small",
+  medium: "medium",
+  large: "large",
+  extra_large: "extra_large",
+};
+
+exports.Personality = exports.$Enums.Personality = {
+  nympho: "nympho",
+  lover: "lover",
+  submissive: "submissive",
+  dominant: "dominant",
+  temptress: "temptress",
+  innocent: "innocent",
+  caregiver: "caregiver",
+  experimenter: "experimenter",
+  mean: "mean",
+  confidant: "confidant",
+  shy: "shy",
+  queen: "queen",
+};
+
+exports.Relationship = exports.$Enums.Relationship = {
+  stranger: "stranger",
+  girlfriend: "girlfriend",
+  sex_friend: "sex_friend",
+  school_mate: "school_mate",
+  work_colleague: "work_colleague",
+  wife: "wife",
+  mistress: "mistress",
+  friend: "friend",
+  step_sister: "step_sister",
+  step_mom: "step_mom",
+};
+
+exports.Occupation = exports.$Enums.Occupation = {
+  student: "student",
+  dancer: "dancer",
+  model: "model",
+  stripper: "stripper",
+  maid: "maid",
+  cam_girl: "cam_girl",
+  boss: "boss",
+  babysitter: "babysitter",
+  pornstar: "pornstar",
+  streamer: "streamer",
+  bartender: "bartender",
+  tech_engineer: "tech_engineer",
+  lifeguard: "lifeguard",
+  cashier: "cashier",
+  massage_therapist: "massage_therapist",
+  teacher: "teacher",
+  nurse: "nurse",
+  secretary: "secretary",
+  yoga_instructor: "yoga_instructor",
+  fitness_coach: "fitness_coach",
+};
+
+exports.Kink = exports.$Enums.Kink = {
+  daddy_dominance: "daddy_dominance",
+  bondage: "bondage",
+  spanking: "spanking",
+  collar_leash: "collar_leash",
+  punishment: "punishment",
+  humiliation: "humiliation",
+  public_play: "public_play",
+  roleplay: "roleplay",
+  anal_play: "anal_play",
+  oral_play: "oral_play",
+  cum_play: "cum_play",
+  creampie: "creampie",
+  squirting: "squirting",
+  dirty_talk: "dirty_talk",
+  breeding: "breeding",
+  edging: "edging",
+  obedience: "obedience",
+  control: "control",
+  inexperienced: "inexperienced",
+  shy_flirting: "shy_flirting",
+  playful_teasing: "playful_teasing",
+  cuddling: "cuddling",
+  slow_sensual: "slow_sensual",
+  hair_pulling: "hair_pulling",
+};
+
+exports.MessageType = exports.$Enums.MessageType = {
+  text: "text",
+  image: "image",
+  video: "video",
+  audio: "audio",
+};
+
+exports.BillingCycle = exports.$Enums.BillingCycle = {
+  monthly: "monthly",
+  quarterly: "quarterly",
+  annually: "annually",
+};
+
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  active: "active",
+  cancelled: "cancelled",
+  expired: "expired",
+  pending: "pending",
+};
+
+exports.MediaType = exports.$Enums.MediaType = {
+  image: "image",
+  video: "video",
+};
+
+exports.ReferralStatus = exports.$Enums.ReferralStatus = {
+  pending: "pending",
+  converted: "converted",
+  paid: "paid",
+};
 
 exports.Prisma.ModelName = {
   Post: "Post",
@@ -192,6 +510,17 @@ exports.Prisma.ModelName = {
   Session: "Session",
   Account: "Account",
   Verification: "Verification",
+  Character: "Character",
+  CharacterKink: "CharacterKink",
+  Chat: "Chat",
+  Message: "Message",
+  Collection: "Collection",
+  Subscription: "Subscription",
+  UsageQuota: "UsageQuota",
+  Story: "Story",
+  Reel: "Reel",
+  Affiliate: "Affiliate",
+  Referral: "Referral",
 };
 
 /**
