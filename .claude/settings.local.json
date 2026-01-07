@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run:*)",
+      "Bash(npx cypress run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(find:*)",
+      "Bash(test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsx:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma db seed)",
+      "Bash(echo:*)",
+      "Bash(npx prisma validate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(pbcopy)",
+      "Bash(git log:*)"
+    ],
+    "deny": []
+  }
+}

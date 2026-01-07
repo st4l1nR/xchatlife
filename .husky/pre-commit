@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+echo "🗄️  Running Prisma validation..."
+if ! npx prisma validate; then
+    echo "❌ Prisma schema validation failed. Please fix your schema.prisma file."
+    exit 1
+fi
+echo "✅ Prisma schema is valid"
+
+echo "📋 Running code checks..."
+if ! npm run check; then
+    echo "❌ Code checks failed. Please fix the issues before committing."
+    exit 1
+fi
+echo "✅ Code checks passed"
+
+echo "🎨 Running format checks..."
+if ! npm run format:check; then
+    echo "❌ Format checks failed. Please run 'npm run format:write' to fix formatting issues."
+    exit 1
+fi
+echo "✅ Format checks passed"
+
+echo "🎉 All pre-commit checks passed! Ready to commit."
