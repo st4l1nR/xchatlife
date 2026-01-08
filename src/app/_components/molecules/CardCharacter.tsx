@@ -132,10 +132,10 @@ const CardCharacter: React.FC<CardCharacterProps> = ({
           <Button
             href={playWithMeHref}
             color="primary"
-            className="w-full"
+            className="w-full text-xs sm:text-sm"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
-            <Gamepad2 data-slot="icon" />
+            <Gamepad2 className="size-3.5 sm:size-4" data-slot="icon" />
             Play with me
           </Button>
         )}

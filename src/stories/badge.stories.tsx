@@ -77,7 +77,6 @@ export const Default: Story = {
 };
 
 export const AllColors: Story = {
-  name: "All Colors",
   render: () => (
     <div className="flex flex-wrap items-center justify-center gap-2 p-4">
       {[

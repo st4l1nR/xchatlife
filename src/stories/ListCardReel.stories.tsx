@@ -14,7 +14,6 @@ const mockReels: CardReelProps[] = [
     videoSrc: "/videos/girl-video.mp4",
     likeCount: 5322,
     isLiked: false,
-    isLoggedIn: true,
     chatUrl: "/chat/amelia",
   },
   {
@@ -24,7 +23,6 @@ const mockReels: CardReelProps[] = [
     videoSrc: "/videos/girl-video.mp4",
     likeCount: 12400,
     isLiked: true,
-    isLoggedIn: true,
     chatUrl: "/chat/sofia",
   },
   {
@@ -34,7 +32,6 @@ const mockReels: CardReelProps[] = [
     videoSrc: "/videos/girl-video.mp4",
     likeCount: 890,
     isLiked: false,
-    isLoggedIn: true,
     chatUrl: "/chat/luna",
   },
   {
@@ -44,7 +41,6 @@ const mockReels: CardReelProps[] = [
     videoSrc: "/videos/girl-video.mp4",
     likeCount: 45600,
     isLiked: false,
-    isLoggedIn: true,
     chatUrl: "/chat/mia",
   },
 ];
@@ -60,10 +56,6 @@ const meta = {
     loading: {
       control: "boolean",
       description: "Loading state",
-    },
-    isLoggedIn: {
-      control: "boolean",
-      description: "Whether the user is logged in",
     },
   },
   decorators: [
@@ -85,7 +77,6 @@ export const Default: Story = {
   args: {
     loading: false,
     items: mockReels,
-    isLoggedIn: true,
   },
 };
 
@@ -94,7 +85,6 @@ export const Loading: Story = {
   args: {
     loading: true,
     items: [],
-    isLoggedIn: true,
   },
 };
 
@@ -103,7 +93,6 @@ export const Empty: Story = {
   args: {
     loading: false,
     items: [],
-    isLoggedIn: true,
   },
 };
 
@@ -112,7 +101,6 @@ export const SingleItem: Story = {
   args: {
     loading: false,
     items: [mockReels[0]!],
-    isLoggedIn: true,
   },
 };
 
@@ -126,7 +114,6 @@ const NotLoggedInTemplate = () => {
       <ListCardReel
         loading={false}
         items={mockReels}
-        isLoggedIn={false}
         onAuthRequired={() => setAuthOpen(true)}
       />
       <DialogAuth
@@ -143,7 +130,6 @@ export const NotLoggedIn: Story = {
   args: {
     loading: false,
     items: mockReels,
-    isLoggedIn: false,
   },
   render: () => <NotLoggedInTemplate />,
 };
@@ -171,16 +157,13 @@ const InteractiveTemplate = () => {
     onLikeToggle: () => handleLikeToggle(reel.id!),
   }));
 
-  return (
-    <ListCardReel loading={false} items={reelsWithHandlers} isLoggedIn={true} />
-  );
+  return <ListCardReel loading={false} items={reelsWithHandlers} />;
 };
 
 export const Interactive: Story = {
   args: {
     loading: false,
     items: mockReels,
-    isLoggedIn: true,
   },
   render: () => <InteractiveTemplate />,
 };

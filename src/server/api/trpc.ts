@@ -132,3 +132,26 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+/**
+ * Admin procedure
+ *
+ * Use this for mutations that should only be accessible to admin users.
+ * Verifies the user has admin or superadmin role by fetching from database.
+ */
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  // Fetch user role from database since better-auth session doesn't include it
+  const user = await ctx.db.user.findUnique({
+    where: { id: ctx.session.user.id },
+    select: { role: true },
+  });
+
+  if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+
+  return next({ ctx });
+});

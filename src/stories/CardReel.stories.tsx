@@ -32,10 +32,6 @@ const meta = {
       control: "boolean",
       description: "Whether the current user has liked this reel",
     },
-    isLoggedIn: {
-      control: "boolean",
-      description: "Whether the user is logged in",
-    },
     chatUrl: {
       control: "text",
       description: "URL to redirect when Chat Now is clicked",
@@ -61,7 +57,6 @@ export const Default: Story = {
     videoSrc: "/videos/girl-video.mp4",
     likeCount: 5322,
     isLiked: false,
-    isLoggedIn: true,
     chatUrl: "/chat/amelia",
   },
 };
@@ -96,7 +91,6 @@ const NotLoggedInTemplate = () => {
         likeCount={likeCount}
         isLiked={isLiked}
         onLikeToggle={handleLikeToggle}
-        isLoggedIn={false}
         chatUrl="/chat/amelia"
         onAuthRequired={() => setAuthOpen(true)}
       />
@@ -113,7 +107,6 @@ const NotLoggedInTemplate = () => {
 export const NotLoggedIn: Story = {
   args: {
     ...Default.args,
-    isLoggedIn: false,
   },
   render: () => <NotLoggedInTemplate />,
 };
@@ -137,7 +130,6 @@ const InteractiveTemplate = () => {
       likeCount={likeCount}
       isLiked={isLiked}
       onLikeToggle={handleLikeToggle}
-      isLoggedIn={true}
       chatUrl="/chat/amelia"
     />
   );

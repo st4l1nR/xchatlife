@@ -28,7 +28,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     mock: defaultMockData,
-    isLoggedIn: true,
   },
 };
 
@@ -36,7 +35,6 @@ export const Default: Story = {
 export const Mobile: Story = {
   args: {
     mock: defaultMockData,
-    isLoggedIn: true,
   },
   parameters: {
     viewport: {
@@ -54,7 +52,6 @@ const NotLoggedInTemplate = () => {
     <>
       <DiscoverPage
         mock={defaultMockData}
-        isLoggedIn={false}
         onAuthRequired={() => setAuthOpen(true)}
       />
       <DialogAuth
@@ -70,7 +67,6 @@ const NotLoggedInTemplate = () => {
 export const NotLoggedIn: Story = {
   args: {
     mock: defaultMockData,
-    isLoggedIn: false,
   },
   render: () => <NotLoggedInTemplate />,
 };
@@ -79,6 +75,5 @@ export const NotLoggedIn: Story = {
 export const Empty: Story = {
   args: {
     mock: { reels: [] },
-    isLoggedIn: true,
   },
 };

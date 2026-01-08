@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Heart } from "lucide-react";
 import { Avatar } from "../atoms/avatar";
 import { Button } from "../atoms/button";
+import { useApp } from "@/app/_contexts/AppContext";
 
 // ============================================================================
 // Types
@@ -23,7 +24,6 @@ export type CardReelProps = {
   isLiked?: boolean;
   onLikeToggle?: () => void;
   // Auth & Chat
-  isLoggedIn: boolean;
   chatUrl?: string;
   onChatClick?: () => void;
   onAuthRequired?: () => void;
@@ -56,11 +56,11 @@ const CardReel: React.FC<CardReelProps> = ({
   likeCount,
   isLiked = false,
   onLikeToggle,
-  isLoggedIn,
   chatUrl,
   onChatClick,
   onAuthRequired,
 }) => {
+  const { isAuthenticated } = useApp();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -97,7 +97,7 @@ const CardReel: React.FC<CardReelProps> = ({
   const handleChatClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       onAuthRequired?.();
       return;
     }
@@ -109,7 +109,7 @@ const CardReel: React.FC<CardReelProps> = ({
     e.stopPropagation();
 
     // Require auth for liking
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       onAuthRequired?.();
       return;
     }
@@ -158,7 +158,7 @@ const CardReel: React.FC<CardReelProps> = ({
               <span className="text-lg font-bold text-white">{name}</span>
               <Button
                 color="primary"
-                href={isLoggedIn ? chatUrl : undefined}
+                href={isAuthenticated ? chatUrl : undefined}
                 onClick={handleChatClick}
               >
                 Chat Now
