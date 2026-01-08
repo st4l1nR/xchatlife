@@ -64,12 +64,18 @@ enum HairColor {
   black
   redhead
   pink
+  blue
+  purple
+  white
+  multicolor
 }
 
 enum EyeColor {
   brown
   blue
   green
+  red
+  yellow
 }
 
 enum BodyType {

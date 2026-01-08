@@ -24,28 +24,19 @@ type DialogCreateCharacterRelationshipProps = {
 // 5-column grid on desktop, 2-column on mobile: show 10 items (2 rows on desktop, 5 rows on mobile) initially
 const INITIAL_SHOW_COUNT = 10;
 
-// Map relationship values to image filenames
+// Map relationship values to image filenames (using underscore values to match Prisma enum)
 const getRelationshipImagePath = (value: string): string => {
   const labelMap: Record<string, string> = {
     stranger: "Stranger",
     girlfriend: "Girlfriend",
-    "sex-friend": "Sex Friend",
-    "school-mate": "School Mate",
-    "work-colleague": "Work Colleague",
+    sex_friend: "Sex Friend",
+    school_mate: "School Mate",
+    work_colleague: "Work Colleague",
     wife: "Wife",
     mistress: "Mistress",
     friend: "Friend",
-    "step-sister": "Step Sister",
-    "step-mom": "Step Mom",
-    "step-daughter": "Step Daughter",
-    landlord: "Landlord",
-    "sugar-baby": "Sugar Baby",
-    boss: "Boss",
-    teacher: "Teacher",
-    student: "Student",
-    neighbour: "Neighbour",
-    "mother-in-law": "Mother-In-Law",
-    "sister-in-law": "Sister-In-Law",
+    step_sister: "Step Sister",
+    step_mom: "Step Mom",
   };
   const filename = labelMap[value] ?? value;
   return `/images/create-character/girls/realistic/step-5/relationship/${filename}.png`;

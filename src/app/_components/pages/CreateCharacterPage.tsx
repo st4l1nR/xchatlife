@@ -6,19 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { Button } from "../atoms/button";
 import CreateCharacterStep1 from "../organisms/CreateCharacterStep1";
 import CreateCharacterStep2 from "../organisms/CreateCharacterStep2";
 import CreateCharacterStep3 from "../organisms/CreateCharacterStep3";
 import CreateCharacterStep4 from "../organisms/CreateCharacterStep4";
 import CreateCharacterStep5 from "../organisms/CreateCharacterStep5";
+import { api } from "@/trpc/react";
 
 // ============================================================================
 // Schemas
 // ============================================================================
 
-// Character Type (variant)
-export const characterTypeSchema = z.enum(["girls", "trans"]);
+// Character Type (variant) - matches Prisma CharacterGender enum
+export const characterTypeSchema = z.enum(["girl", "trans"]);
 
 // Step 1: Style
 export const styleSchema = z.enum(["realistic", "anime"]);
@@ -77,7 +79,7 @@ export const breastSizeSchema = z.enum([
   "small",
   "medium",
   "large",
-  "extra-large",
+  "extra_large",
 ]);
 
 // Step 5: Personality
@@ -99,14 +101,14 @@ export const personalitySchema = z.enum([
 export const relationshipSchema = z.enum([
   "stranger",
   "girlfriend",
-  "sex-friend",
-  "school-mate",
-  "work-colleague",
+  "sex_friend",
+  "school_mate",
+  "work_colleague",
   "wife",
   "mistress",
   "friend",
-  "step-sister",
-  "step-mom",
+  "step_sister",
+  "step_mom",
 ]);
 
 export const occupationSchema = z.enum([
@@ -115,21 +117,21 @@ export const occupationSchema = z.enum([
   "model",
   "stripper",
   "maid",
-  "cam-girl",
-  "boss-ceo",
+  "cam_girl",
+  "boss",
   "babysitter",
   "pornstar",
   "streamer",
   "bartender",
-  "tech-engineer",
+  "tech_engineer",
   "lifeguard",
   "cashier",
-  "massage-therapist",
+  "massage_therapist",
   "teacher",
   "nurse",
   "secretary",
-  "yoga-instructor",
-  "fitness-coach",
+  "yoga_instructor",
+  "fitness_coach",
 ]);
 
 export const voiceSchema = z.enum([
@@ -144,8 +146,36 @@ export const voiceSchema = z.enum([
   "voice-9",
 ]);
 
+// Kinks enum - matches Prisma Kink enum
+export const kinkSchema = z.enum([
+  "daddy_dominance",
+  "bondage",
+  "spanking",
+  "collar_leash",
+  "punishment",
+  "humiliation",
+  "public_play",
+  "roleplay",
+  "anal_play",
+  "oral_play",
+  "cum_play",
+  "creampie",
+  "squirting",
+  "dirty_talk",
+  "breeding",
+  "edging",
+  "obedience",
+  "control",
+  "inexperienced",
+  "shy_flirting",
+  "playful_teasing",
+  "cuddling",
+  "slow_sensual",
+  "hair_pulling",
+]);
+
 export const kinksSchema = z
-  .array(z.string())
+  .array(kinkSchema)
   .min(1, "Select at least 1 kink")
   .max(3, "Maximum 3 kinks");
 
@@ -156,6 +186,9 @@ export const characterFormSchema = z.object({
 
   // Step 1
   style: styleSchema,
+  // Media URLs from step 1 selection (R2 URLs)
+  posterUrl: z.string().optional(),
+  videoUrl: z.string().optional(),
 
   // Step 2
   ethnicity: ethnicitySchema,
@@ -219,32 +252,32 @@ export const step5Schema = z.object({
 // Option Constants
 // ============================================================================
 
-// Available kinks list
+// Available kinks list with value (Prisma enum) and label (display)
 export const KINKS_LIST = [
-  "Daddy Dominance",
-  "Bondage",
-  "Spanking",
-  "Collar & Leash",
-  "Punishment",
-  "Humiliation",
-  "Public Play",
-  "Roleplay",
-  "Anal Play",
-  "Oral Play",
-  "Cum Play",
-  "Creampie",
-  "Squirting",
-  "Dirty Talk",
-  "Breeding",
-  "Edging",
-  "Obedience",
-  "Control",
-  "Inexperienced",
-  "Shy Flirting",
-  "Playful Teasing",
-  "Cuddling",
-  "Slow & Sensual",
-  "Hair Pulling",
+  { value: "daddy_dominance" as const, label: "Daddy Dominance" },
+  { value: "bondage" as const, label: "Bondage" },
+  { value: "spanking" as const, label: "Spanking" },
+  { value: "collar_leash" as const, label: "Collar & Leash" },
+  { value: "punishment" as const, label: "Punishment" },
+  { value: "humiliation" as const, label: "Humiliation" },
+  { value: "public_play" as const, label: "Public Play" },
+  { value: "roleplay" as const, label: "Roleplay" },
+  { value: "anal_play" as const, label: "Anal Play" },
+  { value: "oral_play" as const, label: "Oral Play" },
+  { value: "cum_play" as const, label: "Cum Play" },
+  { value: "creampie" as const, label: "Creampie" },
+  { value: "squirting" as const, label: "Squirting" },
+  { value: "dirty_talk" as const, label: "Dirty Talk" },
+  { value: "breeding" as const, label: "Breeding" },
+  { value: "edging" as const, label: "Edging" },
+  { value: "obedience" as const, label: "Obedience" },
+  { value: "control" as const, label: "Control" },
+  { value: "inexperienced" as const, label: "Inexperienced" },
+  { value: "shy_flirting" as const, label: "Shy Flirting" },
+  { value: "playful_teasing" as const, label: "Playful Teasing" },
+  { value: "cuddling" as const, label: "Cuddling" },
+  { value: "slow_sensual" as const, label: "Slow & Sensual" },
+  { value: "hair_pulling" as const, label: "Hair Pulling" },
 ] as const;
 
 // Voice options with labels
@@ -280,38 +313,29 @@ export const PERSONALITY_OPTIONS = [
   { value: "queen" as const, label: "Queen", emoji: "\uD83D\uDC51" },
 ] as const;
 
-// Relationship options with emojis
+// Relationship options with emojis (only values that exist in Prisma schema)
 export const RELATIONSHIP_OPTIONS = [
   { value: "stranger" as const, label: "Stranger", emoji: "🕶️" },
   { value: "girlfriend" as const, label: "Girlfriend", emoji: "💖" },
-  { value: "sex-friend" as const, label: "Sex Friend", emoji: "♀️" },
-  { value: "school-mate" as const, label: "School Mate", emoji: "📖" },
-  { value: "work-colleague" as const, label: "Work Colleague", emoji: "💼" },
+  { value: "sex_friend" as const, label: "Sex Friend", emoji: "♀️" },
+  { value: "school_mate" as const, label: "School Mate", emoji: "📖" },
+  { value: "work_colleague" as const, label: "Work Colleague", emoji: "💼" },
   { value: "wife" as const, label: "Wife", emoji: "💍" },
   { value: "mistress" as const, label: "Mistress", emoji: "👑" },
   { value: "friend" as const, label: "Friend", emoji: "🤝" },
-  { value: "step-sister" as const, label: "Step Sister", emoji: "💛" },
-  { value: "step-mom" as const, label: "Step Mom", emoji: "💛" },
-  { value: "step-daughter" as const, label: "Step Daughter", emoji: "💛" },
-  { value: "landlord" as const, label: "Landlord", emoji: "🔑" },
-  { value: "sugar-baby" as const, label: "Sugar Baby", emoji: "💎" },
-  { value: "boss" as const, label: "Boss", emoji: "👔" },
-  { value: "teacher" as const, label: "Teacher", emoji: "📚" },
-  { value: "student" as const, label: "Student", emoji: "🎓" },
-  { value: "neighbour" as const, label: "Neighbour", emoji: "🏠" },
-  { value: "mother-in-law" as const, label: "Mother-In-Law", emoji: "👩‍👧" },
-  { value: "sister-in-law" as const, label: "Sister-In-Law", emoji: "👭" },
+  { value: "step_sister" as const, label: "Step Sister", emoji: "💛" },
+  { value: "step_mom" as const, label: "Step Mom", emoji: "💛" },
 ] as const;
 
-// Occupation options with emojis
+// Occupation options with emojis (using Prisma enum values)
 export const OCCUPATION_OPTIONS = [
   { value: "student" as const, label: "Student", emoji: "\uD83C\uDF93" },
   { value: "dancer" as const, label: "Dancer", emoji: "\uD83D\uDC83" },
   { value: "model" as const, label: "Model", emoji: "\uD83D\uDC57" },
   { value: "stripper" as const, label: "Stripper", emoji: "\uD83E\uDE72" },
   { value: "maid" as const, label: "Maid", emoji: "\uD83E\uDDF9" },
-  { value: "cam-girl" as const, label: "Cam Girl", emoji: "\uD83D\uDCF7" },
-  { value: "boss-ceo" as const, label: "Boss / CEO", emoji: "\uD83C\uDFE2" },
+  { value: "cam_girl" as const, label: "Cam Girl", emoji: "\uD83D\uDCF7" },
+  { value: "boss" as const, label: "Boss / CEO", emoji: "\uD83C\uDFE2" },
   {
     value: "babysitter" as const,
     label: "Babysitter / Au Pair",
@@ -321,7 +345,7 @@ export const OCCUPATION_OPTIONS = [
   { value: "streamer" as const, label: "Streamer", emoji: "\uD83C\uDFAE" },
   { value: "bartender" as const, label: "Bartender", emoji: "\uD83C\uDF78" },
   {
-    value: "tech-engineer" as const,
+    value: "tech_engineer" as const,
     label: "Tech Engineer",
     emoji: "\uD83D\uDCBB",
   },
@@ -332,7 +356,7 @@ export const OCCUPATION_OPTIONS = [
   },
   { value: "cashier" as const, label: "Cashier", emoji: "\uD83D\uDCB5" },
   {
-    value: "massage-therapist" as const,
+    value: "massage_therapist" as const,
     label: "Massage Therapist",
     emoji: "\uD83D\uDC86",
   },
@@ -344,12 +368,12 @@ export const OCCUPATION_OPTIONS = [
   { value: "nurse" as const, label: "Nurse", emoji: "\uD83D\uDC89" },
   { value: "secretary" as const, label: "Secretary", emoji: "\uD83D\uDCCB" },
   {
-    value: "yoga-instructor" as const,
+    value: "yoga_instructor" as const,
     label: "Yoga Instructor",
     emoji: "\uD83E\uDDD8",
   },
   {
-    value: "fitness-coach" as const,
+    value: "fitness_coach" as const,
     label: "Fitness Coach",
     emoji: "\uD83C\uDFCB\uFE0F",
   },
@@ -370,10 +394,20 @@ const stepSchemas = {
 };
 
 const CreateCharacterPage: React.FC = () => {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [step5Attempted, setStep5Attempted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const createCharacter = api.character.create.useMutation({
+    onSuccess: () => {
+      toast.success("Character created successfully!");
+      router.push("/");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Something went wrong. Please try again.");
+    },
+  });
 
   const {
     register,
@@ -385,7 +419,7 @@ const CreateCharacterPage: React.FC = () => {
   } = useForm<CharacterFormData>({
     resolver: zodResolver(characterFormSchema),
     defaultValues: {
-      characterType: "girls",
+      characterType: "girl",
       age: 21,
       kinks: [],
     },
@@ -435,18 +469,32 @@ const CreateCharacterPage: React.FC = () => {
     handleSubmit(onSubmit)();
   };
 
-  const onSubmit = async (data: CharacterFormData) => {
-    setIsSubmitting(true);
-
-    try {
-      // For now, just log the data and show success toast
-      console.log("Character Form Data:", data);
-      toast.success("Character created successfully!");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+  const onSubmit = (data: CharacterFormData) => {
+    // Ensure posterUrl and videoUrl are set
+    if (!data.posterUrl || !data.videoUrl) {
+      toast.error("Missing media URLs");
+      return;
     }
+
+    createCharacter.mutate({
+      characterType: data.characterType,
+      style: data.style,
+      ethnicity: data.ethnicity,
+      age: data.age,
+      hairStyle: data.hairStyle,
+      hairColor: data.hairColor,
+      eyeColor: data.eyeColor,
+      bodyType: data.bodyType,
+      breastSize: data.breastSize,
+      name: data.name,
+      personality: data.personality,
+      relationship: data.relationship,
+      occupation: data.occupation,
+      kinks: data.kinks,
+      voice: data.voice,
+      posterUrl: data.posterUrl,
+      videoUrl: data.videoUrl,
+    });
   };
 
   const characterType = watch("characterType");
@@ -533,7 +581,7 @@ const CreateCharacterPage: React.FC = () => {
               <Button
                 type="button"
                 onClick={handleCreateCharacter}
-                loading={isSubmitting}
+                loading={createCharacter.isPending}
                 className="min-w-48"
               >
                 Create Character

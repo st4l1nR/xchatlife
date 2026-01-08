@@ -16,14 +16,20 @@ type CreateCharacterStep1Props = {
   errors: FieldErrors<CharacterFormData>;
 };
 
-// Style options for each character type
+// R2 base URL
+const R2_BASE = "https://pub-5085e00501634df38e5783f95d3fc3a8.r2.dev";
+
+// Style options for each character type (using "girl" to match Prisma CharacterGender enum)
+// posterUrl/videoUrl are R2 URLs for database storage, imageSrc/videoSrc are local for preview
 const STYLE_OPTIONS = {
-  girls: {
+  girl: {
     realistic: {
       value: "realistic" as const,
       label: "Realistic",
       imageSrc: "/images/create-character/girls/realistic/step-1/276307461-4943cc8c-0300-4916-8c9c-5dbdeb5c8aab-webp90 (1).webp",
       videoSrc: "/images/create-character/girls/realistic/step-1/276307461-9eed0f84-9c12-4662-8ec4-6723eda29420 (1).mp4",
+      posterUrl: `${R2_BASE}/seed/characters/276307461-4943cc8c-0300-4916-8c9c-5dbdeb5c8aab-webp90%20(1).webp`,
+      videoUrl: `${R2_BASE}/seed/characters/276307461-9eed0f84-9c12-4662-8ec4-6723eda29420%20(1).mp4`,
       disabled: false,
     },
     anime: {
@@ -31,6 +37,8 @@ const STYLE_OPTIONS = {
       label: "Anime",
       imageSrc: "/images/create-character/girls/anime/step-1/249369779-ac2fc07d-9a74-4f9d-8e62-d9903128f452-webp90 (1).webp",
       videoSrc: "/images/create-character/girls/anime/step-1/249369779-944123a4-da88-42bc-8d11-fd183dbd8449 (1).mp4",
+      posterUrl: `${R2_BASE}/seed/characters/249369779-ac2fc07d-9a74-4f9d-8e62-d9903128f452-webp90%20(1).webp`,
+      videoUrl: `${R2_BASE}/seed/characters/249369779-944123a4-da88-42bc-8d11-fd183dbd8449%20(1).mp4`,
       disabled: false,
     },
   },
@@ -40,6 +48,8 @@ const STYLE_OPTIONS = {
       label: "Realistic",
       imageSrc: "/images/create-character/trans/realistic/step 1/a27b9a04-a900-46e1-a13e-bef80005294f.jpg",
       videoSrc: "/images/create-character/trans/realistic/step 1/e53ff50c-3be5-404a-8c9c-a6369e243945.mp4",
+      posterUrl: `${R2_BASE}/seed/characters/a27b9a04-a900-46e1-a13e-bef80005294f.jpg`,
+      videoUrl: `${R2_BASE}/seed/characters/e53ff50c-3be5-404a-8c9c-a6369e243945.mp4`,
       disabled: false,
     },
     anime: {
@@ -47,6 +57,8 @@ const STYLE_OPTIONS = {
       label: "Anime",
       imageSrc: "/images/create-character/trans/anime/step 1/028f58c3-0134-49e2-bf4f-ced82716a7d6.jpg",
       videoSrc: "/images/create-character/trans/anime/step 1/4fc1f5dd-8b9f-48d0-b012-b45d4e8ea46c.mp4",
+      posterUrl: `${R2_BASE}/seed/characters/028f58c3-0134-49e2-bf4f-ced82716a7d6.jpg`,
+      videoUrl: `${R2_BASE}/seed/characters/4fc1f5dd-8b9f-48d0-b012-b45d4e8ea46c.mp4`,
       disabled: true,
       comingSoon: true,
     },
@@ -54,13 +66,13 @@ const STYLE_OPTIONS = {
 } as const;
 
 const CHARACTER_TYPE_OPTIONS = [
-  { value: "girls" as const, label: "Girls" },
+  { value: "girl" as const, label: "Girls" },
   { value: "trans" as const, label: "Trans" },
 ] as const;
 
 const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setValue, errors }) => {
   const selectedStyle = watch("style");
-  const characterType = watch("characterType") ?? "girls";
+  const characterType = watch("characterType") ?? "girl";
 
   const currentStyleOptions = STYLE_OPTIONS[characterType];
 
@@ -98,6 +110,12 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
     if (newStyle === selectedStyle) return;
 
     setValue("style", newStyle, { shouldValidate: true });
+
+    // Set posterUrl and videoUrl from the selected style option (R2 URLs for database)
+    const styleOption = currentStyleOptions[newStyle];
+    setValue("posterUrl", styleOption.posterUrl);
+    setValue("videoUrl", styleOption.videoUrl);
+
     // Reset all form fields when changing style
     resetFormFields();
   };
@@ -124,7 +142,7 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
       </div>
 
       <h2 className="mb-8 text-2xl font-bold text-foreground">
-        Create my AI {characterType === "girls" ? "Girl" : "Trans"}
+        Create my AI {characterType === "girl" ? "Girl" : "Trans"}
       </h2>
 
       <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">

@@ -306,8 +306,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
       <DialogCreateCharacterKinks
         open={showKinksDialog}
         onClose={() => setShowKinksDialog(false)}
-        value={kinks}
-        onChange={(value) => setValue("kinks", value, { shouldValidate: true })}
+        value={kinks as string[]}
+        onChange={(value) => setValue("kinks", value as CharacterFormData["kinks"], { shouldValidate: true })}
         kinksList={KINKS_LIST}
         containerRef={containerRef}
       />

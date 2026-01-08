@@ -52,13 +52,13 @@ const BREAST_SIZE_OPTIONS: Record<string, { value: CharacterFormData["breastSize
     { value: "small", label: "Small", imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Small.png` },
     { value: "medium", label: "Medium", imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Medium.png` },
     { value: "large", label: "Large", imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Large.png` },
-    { value: "extra-large", label: "Extra Large", imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Extra Large.png` },
+    { value: "extra_large", label: "Extra Large", imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Extra Large.png` },
   ],
   "girls-anime": [
     { value: "small", label: "Small", imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Small.webp` },
     { value: "medium", label: "Medium", imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Medium.webp` },
     { value: "large", label: "Large", imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Large.webp` },
-    { value: "extra-large", label: "Extra Large", imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Extra Large.webp` },
+    { value: "extra_large", label: "Extra Large", imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Extra Large.webp` },
   ],
   // Trans realistic reuses girls realistic breast size
   "trans-realistic": [], // Will fallback to girls-realistic
