@@ -8,26 +8,29 @@ import {
   DialogBody,
   DialogTitle,
   DialogActions,
-} from "../../atoms/dialog";
-import { Button } from "../../atoms/button";
-import { Input, InputGroup } from "../../atoms/input";
-import { KINKS_LIST } from "./types";
+} from "../atoms/dialog";
+import { Button } from "../atoms/button";
+import { Input, InputGroup } from "../atoms/input";
 
-type DialogKinksProps = {
+type DialogCreateCharacterKinksProps = {
   open: boolean;
   onClose: () => void;
   value: string[];
   onChange: (value: string[]) => void;
+  kinksList: readonly string[];
+  containerRef?: React.RefObject<HTMLElement | null>;
 };
 
 const INITIAL_SHOW_COUNT = 15;
 const MAX_KINKS = 3;
 
-const DialogKinks: React.FC<DialogKinksProps> = ({
+const DialogCreateCharacterKinks: React.FC<DialogCreateCharacterKinksProps> = ({
   open,
   onClose,
   value,
   onChange,
+  kinksList,
+  containerRef,
 }) => {
   const [localValue, setLocalValue] = useState<string[]>(value);
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,11 +46,11 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
   }, [open, value]);
 
   const filteredKinks = useMemo(() => {
-    if (!searchQuery) return KINKS_LIST;
-    return KINKS_LIST.filter((kink) =>
+    if (!searchQuery) return kinksList;
+    return kinksList.filter((kink) =>
       kink.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [searchQuery]);
+  }, [searchQuery, kinksList]);
 
   const visibleKinks = showAll
     ? filteredKinks
@@ -81,8 +84,8 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} size="4xl">
-      <DialogTitle className="text-center text-xl">Edit Kinks</DialogTitle>
+    <Dialog open={open} onClose={handleClose} size="4xl" containerRef={containerRef}>
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">Edit Kinks</DialogTitle>
 
       <DialogBody>
         {/* Search Input */}
@@ -132,10 +135,10 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
                 onClick={() => handleToggleKink(kink)}
                 disabled={isDisabled}
                 className={clsx(
-                  "rounded-full px-4 py-2.5 text-sm font-medium transition-all",
+                  "rounded-full border px-4 py-2.5 text-sm font-medium transition-all",
                   isSelected
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-foreground hover:bg-muted/80",
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-muted text-foreground hover:border-muted-foreground",
                   isDisabled && "cursor-not-allowed opacity-50",
                 )}
               >
@@ -174,4 +177,4 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
   );
 };
 
-export default DialogKinks;
+export default DialogCreateCharacterKinks;

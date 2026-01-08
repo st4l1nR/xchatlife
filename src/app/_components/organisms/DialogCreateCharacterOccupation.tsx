@@ -8,26 +8,24 @@ import {
   DialogBody,
   DialogTitle,
   DialogActions,
-} from "../../atoms/dialog";
-import { Button } from "../../atoms/button";
-import { OCCUPATION_OPTIONS } from "./types";
-import type { CharacterFormData } from "./types";
+} from "../atoms/dialog";
+import { Button } from "../atoms/button";
+import type { CharacterFormData } from "../pages/CreateCharacterPage";
 
-type DialogOccupationProps = {
+type DialogCreateCharacterOccupationProps = {
   open: boolean;
   onClose: () => void;
   value: CharacterFormData["occupation"] | undefined;
   onChange: (value: CharacterFormData["occupation"]) => void;
+  options: readonly { value: string; label: string; emoji: string }[];
+  containerRef?: React.RefObject<HTMLElement | null>;
 };
 
 const INITIAL_SHOW_COUNT = 15;
 
-const DialogOccupation: React.FC<DialogOccupationProps> = ({
-  open,
-  onClose,
-  value,
-  onChange,
-}) => {
+const DialogCreateCharacterOccupation: React.FC<
+  DialogCreateCharacterOccupationProps
+> = ({ open, onClose, value, onChange, options, containerRef }) => {
   const [localValue, setLocalValue] = useState(value);
   const [showAll, setShowAll] = useState(false);
 
@@ -41,7 +39,7 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue);
+      onChange(localValue as CharacterFormData["occupation"]);
     }
     onClose();
   };
@@ -57,12 +55,19 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
   };
 
   const visibleOptions = showAll
-    ? OCCUPATION_OPTIONS
-    : OCCUPATION_OPTIONS.slice(0, INITIAL_SHOW_COUNT);
+    ? options
+    : options.slice(0, INITIAL_SHOW_COUNT);
 
   return (
-    <Dialog open={open} onClose={handleClose} size="4xl">
-      <DialogTitle className="text-center text-xl">Edit Occupation</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="4xl"
+      containerRef={containerRef}
+    >
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">
+        Edit Occupation
+      </DialogTitle>
 
       <DialogBody>
         <div className="flex flex-wrap justify-center gap-3">
@@ -70,22 +75,26 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
             <button
               key={option.value}
               type="button"
-              onClick={() => setLocalValue(option.value)}
+              onClick={() =>
+                setLocalValue(option.value as CharacterFormData["occupation"])
+              }
               className={clsx(
-                "relative flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all",
+                "relative flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all",
                 localValue === option.value
-                  ? "bg-foreground text-background ring-foreground ring-2"
-                  : "bg-muted text-foreground hover:bg-muted/80",
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-muted text-foreground hover:border-muted-foreground",
               )}
             >
               <span>{option.emoji}</span>
               <span>{option.label}</span>
-              {localValue === option.value && <Check className="h-4 w-4" />}
+              {localValue === option.value && (
+                <Check className="text-primary h-4 w-4" />
+              )}
             </button>
           ))}
         </div>
 
-        {OCCUPATION_OPTIONS.length > INITIAL_SHOW_COUNT && (
+        {options.length > INITIAL_SHOW_COUNT && (
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
@@ -106,4 +115,4 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
   );
 };
 
-export default DialogOccupation;
+export default DialogCreateCharacterOccupation;
