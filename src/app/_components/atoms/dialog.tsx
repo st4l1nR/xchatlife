@@ -1,6 +1,7 @@
 import * as Headless from "@headlessui/react";
 import clsx from "clsx";
 import type React from "react";
+import { useEffect, useState } from "react";
 import { Text } from "./text";
 
 const sizes = {
@@ -20,27 +21,111 @@ export function Dialog({
   size = "lg",
   className,
   children,
+  sidebarOffset = false,
+  containerRef,
   ...props
 }: {
   size?: keyof typeof sizes;
   className?: string;
   children: React.ReactNode;
+  sidebarOffset?: boolean;
+  containerRef?: React.RefObject<HTMLElement | null>;
 } & Omit<Headless.DialogProps, "as" | "className">) {
+  const [containerBounds, setContainerBounds] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile (sm breakpoint is 640px)
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Don't apply containerRef bounds on mobile
+    if (!containerRef?.current || !props.open || isMobile) {
+      setContainerBounds(null);
+      return;
+    }
+
+    const updateBounds = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        setContainerBounds({
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
+
+    updateBounds();
+
+    const resizeObserver = new ResizeObserver(updateBounds);
+    resizeObserver.observe(containerRef.current);
+
+    window.addEventListener("resize", updateBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateBounds);
+    };
+  }, [containerRef, props.open, isMobile]);
+
+  const containerStyle = containerBounds
+    ? {
+        left: `${containerBounds.left}px`,
+        top: `${containerBounds.top}px`,
+        width: `${containerBounds.width}px`,
+        height: `${containerBounds.height}px`,
+      }
+    : undefined;
+
   return (
     <Headless.Dialog {...props}>
       <Headless.DialogBackdrop
         transition
-        className="bg-foreground/25 fixed inset-0 flex w-screen justify-center overflow-y-auto px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16"
+        className="fixed inset-0 z-50 flex w-screen justify-center overflow-y-auto bg-black/60 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16"
       />
 
-      <div className="fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0">
-        <div className="grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4">
+      <div
+        className={clsx(
+          "fixed z-50 overflow-y-auto pt-6 sm:pt-0",
+          !containerBounds && "inset-0",
+          !containerBounds && sidebarOffset && "lg:left-64",
+        )}
+        style={containerBounds ? containerStyle : undefined}
+      >
+        <div
+          className={clsx(
+            "flex min-h-full justify-center sm:p-4",
+            containerBounds ? "items-start" : "items-center",
+          )}
+          style={
+            containerBounds
+              ? { paddingTop: containerBounds.height * 0.1, paddingBottom: containerBounds.height * 0.1 }
+              : undefined
+          }
+        >
           <Headless.DialogPanel
             transition
             className={clsx(
               className,
               sizes[size],
-              "bg-background text-foreground ring-border row-start-2 w-full min-w-0 rounded-t-3xl p-(--gutter) shadow-lg ring-1 [--gutter:--spacing(8)] sm:mb-auto sm:rounded-2xl forced-colors:outline",
+              "bg-background text-foreground ring-border w-full min-w-0 rounded-t-3xl p-(--gutter) shadow-lg ring-1 [--gutter:--spacing(8)] sm:rounded-2xl forced-colors:outline",
               "transition duration-100 will-change-transform data-closed:translate-y-12 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:data-closed:translate-y-0 sm:data-closed:data-enter:scale-95",
             )}
           >
