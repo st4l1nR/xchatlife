@@ -104,15 +104,17 @@ export function Dialog({
       <div
         className={clsx(
           "fixed z-50 overflow-y-auto pt-6 sm:pt-0",
-          !containerBounds && "inset-0",
+          !containerBounds && "inset-0 w-screen",
           !containerBounds && sidebarOffset && "lg:left-64",
         )}
         style={containerBounds ? containerStyle : undefined}
       >
         <div
           className={clsx(
-            "flex min-h-full justify-center sm:p-4",
-            containerBounds ? "items-start" : "items-center",
+            "min-h-full sm:p-4",
+            containerBounds
+              ? "flex justify-center items-start"
+              : "grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
           )}
           style={
             containerBounds

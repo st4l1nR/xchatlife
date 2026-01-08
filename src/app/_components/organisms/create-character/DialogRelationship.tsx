@@ -8,24 +8,26 @@ import {
   DialogBody,
   DialogTitle,
   DialogActions,
-} from "../atoms/dialog";
-import { Button } from "../atoms/button";
-import type { CharacterFormData } from "../pages/CreateCharacterPage";
+} from "../../atoms/dialog";
+import { Button } from "../../atoms/button";
+import { RELATIONSHIP_OPTIONS } from "./types";
+import type { CharacterFormData } from "./types";
 
-type DialogCreateCharacterOccupationProps = {
+type DialogRelationshipProps = {
   open: boolean;
   onClose: () => void;
-  value: CharacterFormData["occupation"] | undefined;
-  onChange: (value: CharacterFormData["occupation"]) => void;
-  options: readonly { value: string; label: string; emoji: string }[];
-  containerRef?: React.RefObject<HTMLElement | null>;
+  value: CharacterFormData["relationship"] | undefined;
+  onChange: (value: CharacterFormData["relationship"]) => void;
 };
 
-const INITIAL_SHOW_COUNT = 15;
+const INITIAL_SHOW_COUNT = 10;
 
-const DialogCreateCharacterOccupation: React.FC<
-  DialogCreateCharacterOccupationProps
-> = ({ open, onClose, value, onChange, options, containerRef }) => {
+const DialogRelationship: React.FC<DialogRelationshipProps> = ({
+  open,
+  onClose,
+  value,
+  onChange,
+}) => {
   const [localValue, setLocalValue] = useState(value);
   const [showAll, setShowAll] = useState(false);
 
@@ -39,7 +41,7 @@ const DialogCreateCharacterOccupation: React.FC<
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue as CharacterFormData["occupation"]);
+      onChange(localValue);
     }
     onClose();
   };
@@ -55,46 +57,39 @@ const DialogCreateCharacterOccupation: React.FC<
   };
 
   const visibleOptions = showAll
-    ? options
-    : options.slice(0, INITIAL_SHOW_COUNT);
+    ? RELATIONSHIP_OPTIONS
+    : RELATIONSHIP_OPTIONS.slice(0, INITIAL_SHOW_COUNT);
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      size="4xl"
-      containerRef={containerRef}
-    >
-      <DialogTitle className="text-center text-xl! sm:text-2xl!">
-        Edit Occupation
+    <Dialog open={open} onClose={handleClose} size="4xl">
+      <DialogTitle className="text-center text-xl">
+        Edit Relationship
       </DialogTitle>
 
       <DialogBody>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           {visibleOptions.map((option) => (
             <button
               key={option.value}
               type="button"
-              onClick={() =>
-                setLocalValue(option.value as CharacterFormData["occupation"])
-              }
+              onClick={() => setLocalValue(option.value)}
               className={clsx(
-                "relative flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all",
+                "relative flex flex-col items-center justify-center gap-2 rounded-xl p-4 text-sm font-medium transition-all",
                 localValue === option.value
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-muted text-foreground hover:border-muted-foreground",
+                  ? "bg-foreground text-background ring-foreground ring-2"
+                  : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >
-              <span>{option.emoji}</span>
-              <span>{option.label}</span>
+              <span className="text-3xl">{option.emoji}</span>
+              <span className="text-center">{option.label}</span>
               {localValue === option.value && (
-                <Check className="text-primary h-4 w-4" />
+                <Check className="absolute top-1 right-1 h-4 w-4" />
               )}
             </button>
           ))}
         </div>
 
-        {options.length > INITIAL_SHOW_COUNT && (
+        {RELATIONSHIP_OPTIONS.length > INITIAL_SHOW_COUNT && (
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
@@ -115,4 +110,4 @@ const DialogCreateCharacterOccupation: React.FC<
   );
 };
 
-export default DialogCreateCharacterOccupation;
+export default DialogRelationship;

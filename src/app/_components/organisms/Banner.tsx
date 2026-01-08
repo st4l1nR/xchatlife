@@ -5,13 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import clsx from "clsx";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 export type BannerSlide = {
   id: string;
@@ -24,7 +23,6 @@ export type BannerProps = {
   slides: BannerSlide[];
   autoplayDelay?: number;
   showNavigation?: boolean;
-  showPagination?: boolean;
   loop?: boolean;
   className?: string;
 };
@@ -33,7 +31,6 @@ const Banner: React.FC<BannerProps> = ({
   slides,
   autoplayDelay = 5000,
   showNavigation = true,
-  showPagination = true,
   loop = true,
   className,
 }) => {
@@ -55,13 +52,16 @@ const Banner: React.FC<BannerProps> = ({
 
   return (
     <div
-      className={clsx("relative w-full overflow-hidden rounded-lg", className)}
+      className={clsx(
+        "relative z-0 w-full overflow-hidden rounded-lg",
+        className,
+      )}
     >
       <Swiper
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
-        modules={[Navigation, Pagination, Autoplay]}
+        modules={[Navigation, Autoplay]}
         slidesPerView={1}
         loop={loop && slides.length > 1}
         autoplay={
@@ -69,16 +69,7 @@ const Banner: React.FC<BannerProps> = ({
             ? { delay: autoplayDelay, disableOnInteraction: false }
             : false
         }
-        pagination={
-          showPagination && slides.length > 1
-            ? {
-                clickable: true,
-                bulletClass: "swiper-pagination-bullet !bg-foreground/50",
-                bulletActiveClass:
-                  "swiper-pagination-bullet-active !bg-foreground",
-              }
-            : false
-        }
+        pagination={false}
         className="w-full"
       >
         {slides.map((slide, index) => (

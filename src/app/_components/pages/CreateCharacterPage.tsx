@@ -269,7 +269,11 @@ export const PERSONALITY_OPTIONS = [
   { value: "temptress" as const, label: "Temptress", emoji: "\uD83C\uDF39" },
   { value: "innocent" as const, label: "Innocent", emoji: "\uD83C\uDF1F" },
   { value: "caregiver" as const, label: "Caregiver", emoji: "\uD83D\uDC9A" },
-  { value: "experimenter" as const, label: "Experimenter", emoji: "\uD83C\uDFB0" },
+  {
+    value: "experimenter" as const,
+    label: "Experimenter",
+    emoji: "\uD83C\uDFB0",
+  },
   { value: "mean" as const, label: "Mean", emoji: "\uD83D\uDC99" },
   { value: "confidant" as const, label: "Confidant", emoji: "\uD83E\uDD1D" },
   { value: "shy" as const, label: "Shy", emoji: "\uD83E\uDD7A" },
@@ -316,19 +320,39 @@ export const OCCUPATION_OPTIONS = [
   { value: "pornstar" as const, label: "Pornstar", emoji: "\uD83C\uDFA5" },
   { value: "streamer" as const, label: "Streamer", emoji: "\uD83C\uDFAE" },
   { value: "bartender" as const, label: "Bartender", emoji: "\uD83C\uDF78" },
-  { value: "tech-engineer" as const, label: "Tech Engineer", emoji: "\uD83D\uDCBB" },
-  { value: "lifeguard" as const, label: "Lifeguard", emoji: "\uD83C\uDFD6\uFE0F" },
+  {
+    value: "tech-engineer" as const,
+    label: "Tech Engineer",
+    emoji: "\uD83D\uDCBB",
+  },
+  {
+    value: "lifeguard" as const,
+    label: "Lifeguard",
+    emoji: "\uD83C\uDFD6\uFE0F",
+  },
   { value: "cashier" as const, label: "Cashier", emoji: "\uD83D\uDCB5" },
   {
     value: "massage-therapist" as const,
     label: "Massage Therapist",
     emoji: "\uD83D\uDC86",
   },
-  { value: "teacher" as const, label: "Teacher", emoji: "\uD83D\uDC69\u200D\uD83C\uDFEB" },
+  {
+    value: "teacher" as const,
+    label: "Teacher",
+    emoji: "\uD83D\uDC69\u200D\uD83C\uDFEB",
+  },
   { value: "nurse" as const, label: "Nurse", emoji: "\uD83D\uDC89" },
   { value: "secretary" as const, label: "Secretary", emoji: "\uD83D\uDCCB" },
-  { value: "yoga-instructor" as const, label: "Yoga Instructor", emoji: "\uD83E\uDDD8" },
-  { value: "fitness-coach" as const, label: "Fitness Coach", emoji: "\uD83C\uDFCB\uFE0F" },
+  {
+    value: "yoga-instructor" as const,
+    label: "Yoga Instructor",
+    emoji: "\uD83E\uDDD8",
+  },
+  {
+    value: "fitness-coach" as const,
+    label: "Fitness Coach",
+    emoji: "\uD83C\uDFCB\uFE0F",
+  },
 ] as const;
 
 // ============================================================================
@@ -376,7 +400,7 @@ const CreateCharacterPage: React.FC = () => {
 
     // Trigger validation for current step fields
     const results = await Promise.all(
-      stepFields.map((field) => trigger(field))
+      stepFields.map((field) => trigger(field)),
     );
 
     return results.every((result) => result === true);
@@ -486,7 +510,7 @@ const CreateCharacterPage: React.FC = () => {
   const isLastStep = currentStep === 5;
 
   return (
-    <div ref={containerRef} className="flex h-full flex-col bg-background">
+    <div ref={containerRef} className="bg-background flex h-full flex-col">
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-8">
         {/* Step Content */}
         <form

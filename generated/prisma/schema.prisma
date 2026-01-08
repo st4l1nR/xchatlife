@@ -202,6 +202,33 @@ enum ReferralStatus {
 // MODELS
 // ============================================================================
 
+// Media - Centralized storage for all R2 assets (images and videos)
+model Media {
+  id        String    @id @default(cuid())
+  type      MediaType
+  key       String    @unique // R2 storage key (used for deletion)
+  url       String // Public URL
+  mimeType  String? // e.g., "image/webp", "video/mp4"
+  size      Int? // File size in bytes
+  width     Int? // For images/videos
+  height    Int? // For images/videos
+  duration  Int? // For videos (seconds)
+  createdAt DateTime  @default(now())
+
+  // Reverse relations
+  characterPosters Character[]  @relation("CharacterPoster")
+  characterVideos  Character[]  @relation("CharacterVideo")
+  storyMedia       Story[]      @relation("StoryMedia")
+  storyThumbnails  Story[]      @relation("StoryThumbnail")
+  reelVideos       Reel[]       @relation("ReelVideo")
+  reelThumbnails   Reel[]       @relation("ReelThumbnail")
+  collections      Collection[]
+
+  @@index([type])
+  @@index([createdAt])
+  @@map("media")
+}
+
 // Legacy Post model (can be removed if not needed)
 model Post {
   id        String   @id @default(cuid())
@@ -297,8 +324,12 @@ model Verification {
 
 // Character - AI characters that users can chat with
 model Character {
-  id   String @id @default(cuid())
-  name String
+  id       String  @id @default(cuid())
+  name     String
+  posterId String?
+  poster   Media?  @relation("CharacterPoster", fields: [posterId], references: [id], onDelete: SetNull)
+  videoId  String?
+  video    Media?  @relation("CharacterVideo", fields: [videoId], references: [id], onDelete: SetNull)
 
   // Physical attributes
   gender     CharacterGender
@@ -320,6 +351,7 @@ model Character {
   // Visibility
   isPublic Boolean @default(false)
   isActive Boolean @default(true)
+  isLive   Boolean @default(false)
 
   // Metadata
   createdAt   DateTime @default(now())
@@ -403,14 +435,15 @@ model Collection {
   id        String   @id @default(cuid())
   userId    String
   messageId String?  @unique
-  url       String
-  key       String
+  mediaId   String
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   message Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
 
   @@index([userId])
+  @@index([mediaId])
   @@index([createdAt])
   @@map("collection")
 }
@@ -461,18 +494,20 @@ model UsageQuota {
 
 // Story - Character stories (24-hour expiry like Instagram)
 model Story {
-  id           String    @id @default(cuid())
-  characterId  String
-  mediaType    MediaType
-  mediaUrl     String
-  thumbnailUrl String?
-  expiresAt    DateTime
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
+  id          String   @id @default(cuid())
+  characterId String
+  mediaId     String
+  media       Media    @relation("StoryMedia", fields: [mediaId], references: [id], onDelete: Cascade)
+  thumbnailId String?
+  thumbnail   Media?   @relation("StoryThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
 
   character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
   @@index([characterId])
+  @@index([mediaId])
   @@index([expiresAt])
   @@index([isActive])
   @@map("story")
@@ -480,20 +515,23 @@ model Story {
 
 // Reel - Character video reels (permanent, admin-managed content)
 model Reel {
-  id           String   @id @default(cuid())
-  characterId  String
-  videoUrl     String
-  thumbnailUrl String?
-  title        String?
-  description  String?
-  viewCount    Int      @default(0)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  characterId String
+  videoId     String
+  video       Media    @relation("ReelVideo", fields: [videoId], references: [id], onDelete: Cascade)
+  thumbnailId String?
+  thumbnail   Media?   @relation("ReelThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+  title       String?
+  description String?
+  viewCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
   @@index([characterId])
+  @@index([videoId])
   @@index([isActive])
   @@index([createdAt])
   @@map("reel")

@@ -6,12 +6,12 @@ import Banner from "../organisms/Banner";
 import ListBubbleStory from "../organisms/ListBubbleStory";
 import ListCardCharacter from "../organisms/ListCardCharacter";
 import type { BannerSlide } from "../organisms/Banner";
-import type { BubbleStoryProps } from "../molecules/BubbleStory";
+import type { StoryProfile } from "../organisms/ListCardStory";
 import type { CardCharacterProps } from "../molecules/CardCharacter";
 
 export type HomePageMockData = {
   bannerSlides: BannerSlide[];
-  stories: BubbleStoryProps[];
+  stories: StoryProfile[];
   liveCharacters: CardCharacterProps[];
   aiCharacters: CardCharacterProps[];
 };
@@ -48,17 +48,92 @@ export const defaultMockData: HomePageMockData = {
     },
   ],
   stories: [
-    { name: "Olivia", src: "/images/girl-poster.webp", href: "/story/olivia" },
     {
-      name: "Katarina",
-      src: "/images/girl-poster.webp",
-      href: "/story/katarina",
-      isRead: true,
+      id: "olivia",
+      name: "Olivia",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "2 hours ago",
+      media: [
+        {
+          id: "olivia-1",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+        { id: "olivia-2", type: "video", src: "/videos/girl-video.mp4" },
+      ],
     },
-    { name: "Luna", src: "/images/girl-poster.webp", href: "/story/luna" },
-    { name: "Luna", src: "/images/girl-poster.webp", href: "/story/luna-2" },
-    { name: "Chiara", src: "/images/girl-poster.webp", href: "/story/chiara" },
-    { name: "Hanna", src: "/images/girl-poster.webp", href: "/story/hanna" },
+    {
+      id: "katarina",
+      name: "Katarina",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "5 hours ago",
+      media: [
+        {
+          id: "katarina-1",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+      ],
+    },
+    {
+      id: "luna",
+      name: "Luna",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "8 hours ago",
+      media: [
+        { id: "luna-1", type: "video", src: "/videos/girl-video.mp4" },
+        {
+          id: "luna-2",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+      ],
+    },
+    {
+      id: "luna-2",
+      name: "Luna",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "12 hours ago",
+      media: [
+        {
+          id: "luna-2-1",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+      ],
+    },
+    {
+      id: "chiara",
+      name: "Chiara",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "1 day ago",
+      media: [{ id: "chiara-1", type: "video", src: "/videos/girl-video.mp4" }],
+    },
+    {
+      id: "hanna",
+      name: "Hanna",
+      avatarSrc: "/images/girl-poster.webp",
+      timestamp: "2 days ago",
+      media: [
+        {
+          id: "hanna-1",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+        {
+          id: "hanna-2",
+          type: "image",
+          src: "/images/girl-poster.webp",
+          duration: 3,
+        },
+        { id: "hanna-3", type: "video", src: "/videos/girl-video.mp4" },
+      ],
+    },
   ],
   liveCharacters: [
     {
@@ -263,23 +338,23 @@ const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
   const data = mock ?? defaultMockData;
 
   return (
-    <div className={clsx("space-y-8", className)}>
+    <div className={clsx("space-y-8 pb-10", className)}>
       {/* Banner Carousel - no padding, no rounded corners */}
-      <Banner slides={data.bannerSlides} className="rounded-none" />
+      <Banner slides={data.bannerSlides} className="mt-4 rounded-none" />
 
       {/* Stories Section */}
       <div className="px-4 md:px-6">
-        <ListBubbleStory items={data.stories} />
+        <ListBubbleStory profiles={data.stories} />
       </div>
 
       {/* Jump into Live Action Section */}
       <section className="px-4 md:px-6">
         <h2 className="text-foreground mb-4 flex flex-wrap items-center gap-2 text-xl font-bold md:text-2xl">
           <span className="italic">Jump into</span>
-          <span className="rounded-md border border-pink-500 px-2 py-0.5 text-sm font-semibold text-pink-500">
+          <span className="rounded-md border border-orange-500 px-2 py-0.5 text-sm font-semibold text-orange-500">
             LIVE
           </span>
-          <span className="rounded-md border border-purple-500 px-2 py-0.5 text-sm font-semibold text-purple-500">
+          <span className="rounded-md border border-amber-500 px-2 py-0.5 text-sm font-semibold text-amber-500">
             ACTION
           </span>
           <span className="text-muted-foreground ml-1 rounded-full border px-2 py-0.5 text-xs font-normal">
@@ -292,7 +367,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
       {/* AI Girlfriend Characters Section */}
       <section className="px-4 md:px-6">
         <h2 className="text-foreground mb-4 text-xl font-bold md:text-2xl">
-          <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+          <span className="from-primary bg-gradient-to-r to-orange-400 bg-clip-text text-transparent">
             AI Girlfriend
           </span>{" "}
           Characters
