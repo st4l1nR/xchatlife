@@ -62,7 +62,9 @@ const DialogRelationship: React.FC<DialogRelationshipProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose} size="4xl">
-      <DialogTitle className="text-center text-xl">Edit Relationship</DialogTitle>
+      <DialogTitle className="text-center text-xl">
+        Edit Relationship
+      </DialogTitle>
 
       <DialogBody>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
@@ -74,7 +76,7 @@ const DialogRelationship: React.FC<DialogRelationshipProps> = ({
               className={clsx(
                 "relative flex flex-col items-center justify-center gap-2 rounded-xl p-4 text-sm font-medium transition-all",
                 localValue === option.value
-                  ? "bg-foreground text-background ring-2 ring-foreground"
+                  ? "bg-foreground text-background ring-foreground ring-2"
                   : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >
@@ -91,7 +93,7 @@ const DialogRelationship: React.FC<DialogRelationshipProps> = ({
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
-            className="mt-4 w-full rounded-xl bg-muted py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+            className="bg-muted text-muted-foreground hover:bg-muted/80 mt-4 w-full rounded-xl py-3 text-sm font-medium transition-colors"
           >
             {showAll ? "Show less" : "Show all"}
           </button>

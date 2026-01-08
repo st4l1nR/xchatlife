@@ -42,7 +42,7 @@ const CardSelectable: React.FC<CardSelectableProps> = ({
   disabled = false,
   hoverDelay = 500,
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
+  const [, setIsHovering] = useState(false);
   const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -100,8 +100,8 @@ const CardSelectable: React.FC<CardSelectableProps> = ({
         "bg-muted",
         // Selected state
         selected
-          ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
-          : "ring-1 ring-transparent hover:ring-border",
+          ? "ring-primary ring-offset-background ring-2 ring-offset-2"
+          : "hover:ring-border ring-1 ring-transparent",
         // Disabled state
         disabled && "cursor-not-allowed opacity-50",
         !disabled && "cursor-pointer",
@@ -144,7 +144,7 @@ const CardSelectable: React.FC<CardSelectableProps> = ({
 
       {/* Checkmark indicator */}
       {selected && (
-        <div className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+        <div className="bg-primary text-primary-foreground absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-md">
           <Check className="h-4 w-4" />
         </div>
       )}

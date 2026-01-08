@@ -31,6 +31,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.6.0",
     "@react-email/components": "^1.0.3",
+    "@sayings/react-reels": "^1.0.2",
     "@storybook/addon-themes": "^10.1.11",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.69.0",

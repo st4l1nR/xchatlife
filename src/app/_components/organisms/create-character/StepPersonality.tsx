@@ -9,7 +9,7 @@ import type {
 } from "react-hook-form";
 import { RefreshCw, ChevronRight } from "lucide-react";
 import { Input, InputGroup } from "../../atoms/input";
-import { Field, Label, ErrorMessage } from "../../atoms/fieldset";
+import { Field, ErrorMessage } from "../../atoms/fieldset";
 import type { CharacterFormData } from "./types";
 import {
   PERSONALITY_OPTIONS,
@@ -108,7 +108,7 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
   return (
     <div className="flex flex-col items-center">
       {/* Name Section */}
-      <h2 className="mb-6 text-2xl font-bold text-foreground">Choose a name</h2>
+      <h2 className="text-foreground mb-6 text-2xl font-bold">Choose a name</h2>
 
       <div className="mb-4 w-full max-w-md">
         <Field>
@@ -123,7 +123,7 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
               <button
                 type="button"
                 data-slot="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
                 onClick={generateRandomName}
                 title="Generate random name"
               >
@@ -131,35 +131,35 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
               </button>
             </InputGroup>
           </div>
-          <div className="mt-1 text-right text-sm text-muted-foreground">
+          <div className="text-muted-foreground mt-1 text-right text-sm">
             {name.length}/20
           </div>
-          {errors.name && (
-            <ErrorMessage>{errors.name.message}</ErrorMessage>
-          )}
+          {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
         </Field>
       </div>
 
       {/* Personality Section */}
-      <h2 className="mb-2 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mb-2 text-2xl font-bold">
         Choose Personality
       </h2>
-      <p className="mb-6 text-sm text-muted-foreground">Click to change</p>
+      <p className="text-muted-foreground mb-6 text-sm">Click to change</p>
 
       <div className="mb-8 w-full max-w-2xl space-y-3">
         {/* Personality Button */}
         <button
           type="button"
           onClick={() => setShowPersonalityDialog(true)}
-          className="flex w-full items-center justify-between rounded-xl bg-muted p-4 transition-colors hover:bg-muted/80"
+          className="bg-muted hover:bg-muted/80 flex w-full items-center justify-between rounded-xl p-4 transition-colors"
         >
           <div className="text-left">
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-muted-foreground text-xs uppercase">
               Choose Personality
             </p>
-            <p className="font-semibold text-foreground">{getPersonalityLabel()}</p>
+            <p className="text-foreground font-semibold">
+              {getPersonalityLabel()}
+            </p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         </button>
 
         {errors.personality && (
@@ -170,15 +170,17 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
         <button
           type="button"
           onClick={() => setShowRelationshipDialog(true)}
-          className="flex w-full items-center justify-between rounded-xl bg-muted p-4 transition-colors hover:bg-muted/80"
+          className="bg-muted hover:bg-muted/80 flex w-full items-center justify-between rounded-xl p-4 transition-colors"
         >
           <div className="text-left">
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-muted-foreground text-xs uppercase">
               Choose Relationship
             </p>
-            <p className="font-semibold text-foreground">{getRelationshipLabel()}</p>
+            <p className="text-foreground font-semibold">
+              {getRelationshipLabel()}
+            </p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         </button>
 
         {errors.relationship && (
@@ -189,15 +191,17 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
         <button
           type="button"
           onClick={() => setShowOccupationDialog(true)}
-          className="flex w-full items-center justify-between rounded-xl bg-muted p-4 transition-colors hover:bg-muted/80"
+          className="bg-muted hover:bg-muted/80 flex w-full items-center justify-between rounded-xl p-4 transition-colors"
         >
           <div className="text-left">
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-muted-foreground text-xs uppercase">
               Choose Occupation
             </p>
-            <p className="font-semibold text-foreground">{getOccupationLabel()}</p>
+            <p className="text-foreground font-semibold">
+              {getOccupationLabel()}
+            </p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         </button>
 
         {errors.occupation && (
@@ -208,20 +212,18 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
         <button
           type="button"
           onClick={() => setShowKinksDialog(true)}
-          className="flex w-full items-center justify-between rounded-xl bg-muted p-4 transition-colors hover:bg-muted/80"
+          className="bg-muted hover:bg-muted/80 flex w-full items-center justify-between rounded-xl p-4 transition-colors"
         >
           <div className="text-left">
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-muted-foreground text-xs uppercase">
               What kinks are they into? (Max. 3)
             </p>
-            <p className="font-semibold text-foreground">{getKinksLabel()}</p>
+            <p className="text-foreground font-semibold">{getKinksLabel()}</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         </button>
 
-        {errors.kinks && (
-          <ErrorMessage>{errors.kinks.message}</ErrorMessage>
-        )}
+        {errors.kinks && <ErrorMessage>{errors.kinks.message}</ErrorMessage>}
 
         {/* Voice Button */}
         <button
@@ -230,17 +232,15 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
           className="flex w-full items-center justify-between rounded-xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-4 transition-colors hover:from-purple-900/60 hover:to-pink-900/60"
         >
           <div className="text-left">
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-muted-foreground text-xs uppercase">
               Choose Voice
             </p>
-            <p className="font-semibold text-foreground">{getVoiceLabel()}</p>
+            <p className="text-foreground font-semibold">{getVoiceLabel()}</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         </button>
 
-        {errors.voice && (
-          <ErrorMessage>{errors.voice.message}</ErrorMessage>
-        )}
+        {errors.voice && <ErrorMessage>{errors.voice.message}</ErrorMessage>}
       </div>
 
       {/* Dialogs */}
@@ -248,21 +248,27 @@ const StepPersonality: React.FC<StepPersonalityProps> = ({
         open={showPersonalityDialog}
         onClose={() => setShowPersonalityDialog(false)}
         value={personality}
-        onChange={(value) => setValue("personality", value, { shouldValidate: true })}
+        onChange={(value) =>
+          setValue("personality", value, { shouldValidate: true })
+        }
       />
 
       <DialogRelationship
         open={showRelationshipDialog}
         onClose={() => setShowRelationshipDialog(false)}
         value={relationship}
-        onChange={(value) => setValue("relationship", value, { shouldValidate: true })}
+        onChange={(value) =>
+          setValue("relationship", value, { shouldValidate: true })
+        }
       />
 
       <DialogOccupation
         open={showOccupationDialog}
         onClose={() => setShowOccupationDialog(false)}
         value={occupation}
-        onChange={(value) => setValue("occupation", value, { shouldValidate: true })}
+        onChange={(value) =>
+          setValue("occupation", value, { shouldValidate: true })
+        }
       />
 
       <DialogKinks

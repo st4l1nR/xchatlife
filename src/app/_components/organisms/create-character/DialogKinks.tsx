@@ -104,7 +104,7 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
             {localValue.map((kink) => (
               <span
                 key={kink}
-                className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-foreground"
+                className="bg-muted text-foreground inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium"
               >
                 {kink}
                 <button
@@ -150,7 +150,7 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
-            className="mt-4 w-full rounded-xl bg-muted py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+            className="bg-muted text-muted-foreground hover:bg-muted/80 mt-4 w-full rounded-xl py-3 text-sm font-medium transition-colors"
           >
             {showAll ? "Show less" : "Show all"}
           </button>
@@ -158,7 +158,7 @@ const DialogKinks: React.FC<DialogKinksProps> = ({
 
         {/* No Results */}
         {filteredKinks.length === 0 && (
-          <p className="py-8 text-center text-muted-foreground">
+          <p className="text-muted-foreground py-8 text-center">
             No kinks found matching &quot;{searchQuery}&quot;
           </p>
         )}

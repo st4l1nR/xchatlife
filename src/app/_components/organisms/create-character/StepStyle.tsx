@@ -62,7 +62,9 @@ const StepStyle: React.FC<StepStyleProps> = ({ watch, setValue, errors }) => {
       </div>
 
       {errors.style && (
-        <p className="mt-4 text-destructive text-base/6 sm:text-sm/6">{errors.style.message}</p>
+        <p className="text-destructive mt-4 text-base/6 sm:text-sm/6">
+          {errors.style.message}
+        </p>
       )}
     </div>
   );

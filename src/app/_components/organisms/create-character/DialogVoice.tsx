@@ -72,7 +72,7 @@ const DialogVoice: React.FC<DialogVoiceProps> = ({
               className={clsx(
                 "group relative flex flex-col items-center gap-2 rounded-xl p-3 transition-all",
                 localValue === option.value
-                  ? "bg-foreground text-background ring-2 ring-foreground"
+                  ? "bg-foreground text-background ring-foreground ring-2"
                   : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >

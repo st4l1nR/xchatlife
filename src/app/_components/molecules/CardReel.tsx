@@ -108,6 +108,12 @@ const CardReel: React.FC<CardReelProps> = ({
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    // Require auth for liking
+    if (!isLoggedIn) {
+      onAuthRequired?.();
+      return;
+    }
+
     // Trigger animation
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 300);
@@ -119,47 +125,51 @@ const CardReel: React.FC<CardReelProps> = ({
     <div
       ref={containerRef}
       className={clsx(
-        "bg-muted relative aspect-[9/16] w-full overflow-hidden rounded-2xl",
+        "relative flex h-full max-h-[90vh] w-full items-center justify-center",
         className,
       )}
     >
-      {/* Video */}
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        poster={posterSrc}
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+      {/* Video container */}
+      <div className="bg-muted relative aspect-[9/16] h-full max-h-full overflow-hidden rounded-2xl">
+        {/* Video */}
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          poster={posterSrc}
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+        />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-      {/* Bottom content */}
-      <div className="absolute right-0 bottom-0 left-0 flex items-end justify-between p-4">
-        {/* Left section - Avatar, Name, Chat button */}
-        <div className="flex items-center gap-3">
-          <Avatar
-            src={avatarSrc}
-            alt={name}
-            initials={name.charAt(0).toUpperCase()}
-            className="size-14 border-2 border-white/20"
-          />
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xl font-bold text-white">{name}</span>
-            <Button
-              color="primary"
-              href={isLoggedIn ? chatUrl : undefined}
-              onClick={handleChatClick}
-            >
-              Chat Now
-            </Button>
+        {/* Bottom content - Avatar, Name, Chat button */}
+        <div className="absolute right-0 bottom-0 left-0 p-4">
+          <div className="flex items-center gap-3">
+            <Avatar
+              src={avatarSrc}
+              alt={name}
+              initials={name.charAt(0).toUpperCase()}
+              className="size-12 border-2 border-white/20"
+            />
+            <div className="flex flex-col gap-1.5">
+              <span className="text-lg font-bold text-white">{name}</span>
+              <Button
+                color="primary"
+                href={isLoggedIn ? chatUrl : undefined}
+                onClick={handleChatClick}
+              >
+                Chat Now
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Right section - Like button */}
+      {/* Right sidebar - Like button at bottom */}
+      <div className="flex flex-col items-center gap-1 self-end px-2 pb-4">
         <button
           type="button"
           onClick={handleLikeClick}
@@ -167,7 +177,7 @@ const CardReel: React.FC<CardReelProps> = ({
         >
           <Heart
             className={clsx(
-              "size-7 transition-all duration-200",
+              "size-8 transition-all duration-200",
               isLiked
                 ? "fill-red-500 text-red-500"
                 : "fill-transparent text-white",

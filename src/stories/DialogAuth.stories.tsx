@@ -28,9 +28,7 @@ const meta = {
     },
   },
   args: {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onClose: () => {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onVariantChange: () => {},
   },
 } satisfies Meta<typeof DialogAuth>;

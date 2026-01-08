@@ -54,7 +54,9 @@ const DialogPersonality: React.FC<DialogPersonalityProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose} size="4xl">
-      <DialogTitle className="text-center text-xl">Edit Personality</DialogTitle>
+      <DialogTitle className="text-center text-xl">
+        Edit Personality
+      </DialogTitle>
 
       <DialogBody>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
@@ -66,7 +68,7 @@ const DialogPersonality: React.FC<DialogPersonalityProps> = ({
               className={clsx(
                 "relative flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-all",
                 localValue === option.value
-                  ? "bg-foreground text-background ring-2 ring-foreground"
+                  ? "bg-foreground text-background ring-foreground ring-2"
                   : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >

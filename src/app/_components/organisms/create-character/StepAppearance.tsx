@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import type { UseFormSetValue, UseFormWatch, FieldErrors } from "react-hook-form";
+import type {
+  UseFormSetValue,
+  UseFormWatch,
+  FieldErrors,
+} from "react-hook-form";
 import CardSelectable from "../../molecules/CardSelectable";
 import type { CharacterFormData } from "./types";
 
@@ -53,17 +57,49 @@ const hairStyleOptions = [
 ];
 
 const hairColorOptions = [
-  { value: "brunette" as const, label: "Brunette", imageSrc: `${STEP3_BASE}/hair-color/Brunette.png` },
-  { value: "blonde" as const, label: "Blonde", imageSrc: `${STEP3_BASE}/hair-color/Blonde.png` },
-  { value: "black" as const, label: "Black", imageSrc: `${STEP3_BASE}/hair-color/Black.png` },
-  { value: "redhead" as const, label: "Redhead", imageSrc: `${STEP3_BASE}/hair-color/Redhead.png` },
-  { value: "pink" as const, label: "Pink", imageSrc: `${STEP3_BASE}/hair-color/Pink.png` },
+  {
+    value: "brunette" as const,
+    label: "Brunette",
+    imageSrc: `${STEP3_BASE}/hair-color/Brunette.png`,
+  },
+  {
+    value: "blonde" as const,
+    label: "Blonde",
+    imageSrc: `${STEP3_BASE}/hair-color/Blonde.png`,
+  },
+  {
+    value: "black" as const,
+    label: "Black",
+    imageSrc: `${STEP3_BASE}/hair-color/Black.png`,
+  },
+  {
+    value: "redhead" as const,
+    label: "Redhead",
+    imageSrc: `${STEP3_BASE}/hair-color/Redhead.png`,
+  },
+  {
+    value: "pink" as const,
+    label: "Pink",
+    imageSrc: `${STEP3_BASE}/hair-color/Pink.png`,
+  },
 ];
 
 const eyeColorOptions = [
-  { value: "brown" as const, label: "Brown", imageSrc: `${STEP3_BASE}/eye-color/Brown.png` },
-  { value: "blue" as const, label: "Blue", imageSrc: `${STEP3_BASE}/eye-color/Blue.png` },
-  { value: "green" as const, label: "Green", imageSrc: `${STEP3_BASE}/eye-color/Green.png` },
+  {
+    value: "brown" as const,
+    label: "Brown",
+    imageSrc: `${STEP3_BASE}/eye-color/Brown.png`,
+  },
+  {
+    value: "blue" as const,
+    label: "Blue",
+    imageSrc: `${STEP3_BASE}/eye-color/Blue.png`,
+  },
+  {
+    value: "green" as const,
+    label: "Green",
+    imageSrc: `${STEP3_BASE}/eye-color/Green.png`,
+  },
 ];
 
 const StepAppearance: React.FC<StepAppearanceProps> = ({
@@ -78,7 +114,7 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
   return (
     <div className="flex flex-col items-center">
       {/* Hair Style Section */}
-      <h2 className="mb-6 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mb-6 text-2xl font-bold">
         Choose Hair Style
       </h2>
 
@@ -90,7 +126,9 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
             videoSrc={option.videoSrc}
             label={option.label}
             selected={selectedHairStyle === option.value}
-            onClick={() => setValue("hairStyle", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("hairStyle", option.value, { shouldValidate: true })
+            }
             aspectRatio="portrait"
             size="sm"
             className="w-24 sm:w-28"
@@ -99,11 +137,13 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
       </div>
 
       {errors.hairStyle && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.hairStyle.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.hairStyle.message}
+        </p>
       )}
 
       {/* Hair Color Section */}
-      <h2 className="mb-6 mt-4 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mt-4 mb-6 text-2xl font-bold">
         Choose Hair Color
       </h2>
 
@@ -114,7 +154,9 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
             imageSrc={option.imageSrc}
             label={option.label}
             selected={selectedHairColor === option.value}
-            onClick={() => setValue("hairColor", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("hairColor", option.value, { shouldValidate: true })
+            }
             aspectRatio="portrait"
             size="sm"
             className="w-24 sm:w-28"
@@ -123,11 +165,13 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
       </div>
 
       {errors.hairColor && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.hairColor.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.hairColor.message}
+        </p>
       )}
 
       {/* Eye Color Section */}
-      <h2 className="mb-6 mt-4 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mt-4 mb-6 text-2xl font-bold">
         Choose Eye Color
       </h2>
 
@@ -138,7 +182,9 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
             imageSrc={option.imageSrc}
             label={option.label}
             selected={selectedEyeColor === option.value}
-            onClick={() => setValue("eyeColor", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("eyeColor", option.value, { shouldValidate: true })
+            }
             aspectRatio="landscape"
             size="md"
             className="w-32 sm:w-36"
@@ -147,7 +193,9 @@ const StepAppearance: React.FC<StepAppearanceProps> = ({
       </div>
 
       {errors.eyeColor && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.eyeColor.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.eyeColor.message}
+        </p>
       )}
     </div>
   );

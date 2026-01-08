@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import ListBubbleStory from "@/app/_components/organisms/ListBubbleStory";
-import type { BubbleStoryProps } from "@/app/_components/molecules/BubbleStory";
+import type { StoryProfile } from "@/app/_components/organisms/ListCardStory";
 
 const meta = {
   title: "Organisms/ListBubbleStory",
@@ -36,43 +36,121 @@ type Story = StoryObj<typeof meta>;
 
 // Mock data
 const mockImage = "/images/girl-poster.webp";
+const mockVideo = "/videos/girl-video.mp4";
 
-const mockItems: BubbleStoryProps[] = [
-  { name: "Hanna", src: mockImage, href: "/stories/hanna", isRead: false },
-  { name: "Chérie", src: mockImage, href: "/stories/cherie", isRead: true },
-  { name: "Sophie", src: mockImage, href: "/stories/sophie", isRead: false },
-  { name: "Emma", src: mockImage, href: "/stories/emma", isRead: true },
-  { name: "Olivia", src: mockImage, href: "/stories/olivia", isRead: true },
-  { name: "Lina", src: mockImage, href: "/stories/lina", isRead: false },
+const mockProfiles: StoryProfile[] = [
+  {
+    id: "1",
+    name: "Hanna",
+    avatarSrc: mockImage,
+    timestamp: "2 hours ago",
+    media: [
+      { id: "1-1", type: "image", src: mockImage, duration: 3 },
+      { id: "1-2", type: "video", src: mockVideo },
+    ],
+  },
+  {
+    id: "2",
+    name: "Chérie",
+    avatarSrc: mockImage,
+    timestamp: "5 hours ago",
+    media: [{ id: "2-1", type: "image", src: mockImage, duration: 3 }],
+  },
+  {
+    id: "3",
+    name: "Sophie",
+    avatarSrc: mockImage,
+    timestamp: "8 hours ago",
+    media: [
+      { id: "3-1", type: "video", src: mockVideo },
+      { id: "3-2", type: "image", src: mockImage, duration: 3 },
+    ],
+  },
+  {
+    id: "4",
+    name: "Emma",
+    avatarSrc: mockImage,
+    timestamp: "12 hours ago",
+    media: [{ id: "4-1", type: "image", src: mockImage, duration: 3 }],
+  },
+  {
+    id: "5",
+    name: "Olivia",
+    avatarSrc: mockImage,
+    timestamp: "1 day ago",
+    media: [{ id: "5-1", type: "video", src: mockVideo }],
+  },
+  {
+    id: "6",
+    name: "Lina",
+    avatarSrc: mockImage,
+    timestamp: "2 days ago",
+    media: [
+      { id: "6-1", type: "image", src: mockImage, duration: 3 },
+      { id: "6-2", type: "image", src: mockImage, duration: 3 },
+      { id: "6-3", type: "video", src: mockVideo },
+    ],
+  },
 ];
 
-const manyItems: BubbleStoryProps[] = [
-  { name: "Hanna", src: mockImage, href: "/stories/1", isRead: false },
-  { name: "Chérie", src: mockImage, href: "/stories/2", isRead: true },
-  { name: "Sophie", src: mockImage, href: "/stories/3", isRead: false },
-  { name: "Emma", src: mockImage, href: "/stories/4", isRead: true },
-  { name: "Olivia", src: mockImage, href: "/stories/5", isRead: false },
-  { name: "Lina", src: mockImage, href: "/stories/6", isRead: true },
-  { name: "Mia", src: mockImage, href: "/stories/7", isRead: false },
-  { name: "Ava", src: mockImage, href: "/stories/8", isRead: true },
-  { name: "Luna", src: mockImage, href: "/stories/9", isRead: false },
-  { name: "Zoe", src: mockImage, href: "/stories/10", isRead: true },
-  { name: "Lily", src: mockImage, href: "/stories/11", isRead: false },
-  { name: "Aria", src: mockImage, href: "/stories/12", isRead: true },
+const manyProfiles: StoryProfile[] = [
+  ...mockProfiles,
+  {
+    id: "7",
+    name: "Mia",
+    avatarSrc: mockImage,
+    timestamp: "3 days ago",
+    media: [{ id: "7-1", type: "image", src: mockImage, duration: 3 }],
+  },
+  {
+    id: "8",
+    name: "Ava",
+    avatarSrc: mockImage,
+    timestamp: "4 days ago",
+    media: [{ id: "8-1", type: "video", src: mockVideo }],
+  },
+  {
+    id: "9",
+    name: "Luna",
+    avatarSrc: mockImage,
+    timestamp: "5 days ago",
+    media: [{ id: "9-1", type: "image", src: mockImage, duration: 3 }],
+  },
+  {
+    id: "10",
+    name: "Zoe",
+    avatarSrc: mockImage,
+    timestamp: "1 week ago",
+    media: [{ id: "10-1", type: "image", src: mockImage, duration: 3 }],
+  },
+  {
+    id: "11",
+    name: "Lily",
+    avatarSrc: mockImage,
+    timestamp: "1 week ago",
+    media: [{ id: "11-1", type: "video", src: mockVideo }],
+  },
+  {
+    id: "12",
+    name: "Aria",
+    avatarSrc: mockImage,
+    timestamp: "2 weeks ago",
+    media: [{ id: "12-1", type: "image", src: mockImage, duration: 3 }],
+  },
 ];
 
 // --- Stories ---
 
 export const Default: Story = {
   args: {
-    items: mockItems,
+    profiles: mockProfiles,
   },
 };
 
 export const Loading: Story = {
   name: "Loading State",
   args: {
-    items: [],
+    profiles: [],
     loading: true,
   },
 };
@@ -80,7 +158,7 @@ export const Loading: Story = {
 export const Empty: Story = {
   name: "Empty State",
   args: {
-    items: [],
+    profiles: [],
     loading: false,
   },
 };
@@ -88,7 +166,7 @@ export const Empty: Story = {
 export const EmptyCustomMessage: Story = {
   name: "Empty with Custom Message",
   args: {
-    items: [],
+    profiles: [],
     loading: false,
     emptyStateTitle: "No new stories",
     emptyStateDescription:
@@ -96,24 +174,10 @@ export const EmptyCustomMessage: Story = {
   },
 };
 
-export const AllUnread: Story = {
-  name: "All Unread",
-  args: {
-    items: mockItems.map((item) => ({ ...item, isRead: false })),
-  },
-};
-
-export const AllRead: Story = {
-  name: "All Read",
-  args: {
-    items: mockItems.map((item) => ({ ...item, isRead: true })),
-  },
-};
-
 export const SmallSize: Story = {
   name: "Small Size",
   args: {
-    items: mockItems,
+    profiles: mockProfiles,
     size: "sm",
   },
 };
@@ -121,7 +185,7 @@ export const SmallSize: Story = {
 export const MediumSize: Story = {
   name: "Medium Size (Default)",
   args: {
-    items: mockItems,
+    profiles: mockProfiles,
     size: "md",
   },
 };
@@ -129,7 +193,7 @@ export const MediumSize: Story = {
 export const LargeSize: Story = {
   name: "Large Size",
   args: {
-    items: mockItems,
+    profiles: mockProfiles,
     size: "lg",
   },
 };
@@ -137,14 +201,14 @@ export const LargeSize: Story = {
 export const ManyItems: Story = {
   name: "Many Items (Scrollable)",
   args: {
-    items: manyItems,
+    profiles: manyProfiles,
   },
 };
 
 export const AllSizes: Story = {
   name: "All Sizes Comparison",
   args: {
-    items: mockItems,
+    profiles: mockProfiles,
   },
   render: () => (
     <div className="flex flex-col gap-8">
@@ -152,19 +216,19 @@ export const AllSizes: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Small
         </h3>
-        <ListBubbleStory items={mockItems} size="sm" />
+        <ListBubbleStory profiles={mockProfiles} size="sm" />
       </div>
       <div>
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Medium (Default)
         </h3>
-        <ListBubbleStory items={mockItems} size="md" />
+        <ListBubbleStory profiles={mockProfiles} size="md" />
       </div>
       <div>
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Large
         </h3>
-        <ListBubbleStory items={mockItems} size="lg" />
+        <ListBubbleStory profiles={mockProfiles} size="lg" />
       </div>
     </div>
   ),
@@ -173,7 +237,7 @@ export const AllSizes: Story = {
 export const LoadingSizes: Story = {
   name: "Loading Skeletons (All Sizes)",
   args: {
-    items: [],
+    profiles: [],
     loading: true,
   },
   render: () => (
@@ -182,20 +246,60 @@ export const LoadingSizes: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Small
         </h3>
-        <ListBubbleStory items={[]} loading={true} size="sm" />
+        <ListBubbleStory profiles={[]} loading={true} size="sm" />
       </div>
       <div>
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Medium
         </h3>
-        <ListBubbleStory items={[]} loading={true} size="md" />
+        <ListBubbleStory profiles={[]} loading={true} size="md" />
       </div>
       <div>
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Large
         </h3>
-        <ListBubbleStory items={[]} loading={true} size="lg" />
+        <ListBubbleStory profiles={[]} loading={true} size="lg" />
       </div>
     </div>
   ),
+};
+
+export const SingleProfile: Story = {
+  name: "Single Profile",
+  args: {
+    profiles: [
+      {
+        id: "1",
+        name: "Hanna",
+        avatarSrc: mockImage,
+        timestamp: "just now",
+        media: [
+          { id: "1-1", type: "image", src: mockImage, duration: 3 },
+          { id: "1-2", type: "video", src: mockVideo },
+        ],
+      },
+    ],
+  },
+};
+
+export const VideoOnlyProfiles: Story = {
+  name: "Video Only Profiles",
+  args: {
+    profiles: [
+      {
+        id: "1",
+        name: "Hanna",
+        avatarSrc: mockImage,
+        timestamp: "1 hour ago",
+        media: [{ id: "1-1", type: "video", src: mockVideo }],
+      },
+      {
+        id: "2",
+        name: "Sophie",
+        avatarSrc: mockImage,
+        timestamp: "3 hours ago",
+        media: [{ id: "2-1", type: "video", src: mockVideo }],
+      },
+    ],
+  },
 };

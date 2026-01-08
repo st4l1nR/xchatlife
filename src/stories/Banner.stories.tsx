@@ -62,10 +62,6 @@ const meta = {
       control: "boolean",
       description: "Show prev/next navigation arrows",
     },
-    showPagination: {
-      control: "boolean",
-      description: "Show pagination dots",
-    },
     loop: {
       control: "boolean",
       description: "Enable infinite loop",
@@ -86,7 +82,6 @@ export const Default: Story = {
     slides: defaultSlides,
     autoplayDelay: 5000,
     showNavigation: true,
-    showPagination: true,
     loop: true,
   },
 };
@@ -97,7 +92,6 @@ export const WithoutLinks: Story = {
     slides: slidesWithoutLinks,
     autoplayDelay: 5000,
     showNavigation: true,
-    showPagination: true,
     loop: true,
   },
 };
@@ -108,7 +102,6 @@ export const WithoutAutoplay: Story = {
     slides: defaultSlides,
     autoplayDelay: 0,
     showNavigation: true,
-    showPagination: true,
     loop: true,
   },
 };
@@ -119,7 +112,6 @@ export const SlowAutoplay: Story = {
     slides: defaultSlides,
     autoplayDelay: 10000,
     showNavigation: true,
-    showPagination: true,
     loop: true,
   },
 };
@@ -130,7 +122,6 @@ export const FastAutoplay: Story = {
     slides: defaultSlides,
     autoplayDelay: 3000,
     showNavigation: true,
-    showPagination: true,
     loop: true,
   },
 };
@@ -141,7 +132,6 @@ export const SingleSlide: Story = {
     slides: [defaultSlides[0]!],
     autoplayDelay: 0,
     showNavigation: true,
-    showPagination: true,
     loop: false,
   },
 };
@@ -152,18 +142,16 @@ export const WithoutNavigation: Story = {
     slides: defaultSlides,
     autoplayDelay: 5000,
     showNavigation: false,
-    showPagination: true,
     loop: true,
   },
 };
 
-// 8. WithoutPagination - Hides dots, navigation arrows only
-export const WithoutPagination: Story = {
+// 8. NavigationOnly - Navigation arrows only (no pagination)
+export const NavigationOnly: Story = {
   args: {
     slides: defaultSlides,
     autoplayDelay: 5000,
     showNavigation: true,
-    showPagination: false,
     loop: true,
   },
 };
@@ -174,7 +162,6 @@ export const FullScreen: Story = {
     slides: defaultSlides,
     autoplayDelay: 5000,
     showNavigation: true,
-    showPagination: true,
     loop: true,
     className: "rounded-none",
   },

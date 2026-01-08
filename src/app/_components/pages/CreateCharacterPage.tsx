@@ -53,7 +53,6 @@ const CreateCharacterPage: React.FC = () => {
 
   const validateCurrentStep = async (): Promise<boolean> => {
     const schema = stepSchemas[currentStep];
-    const currentValues = watch();
 
     // Get only the fields for the current step
     const stepFields = Object.keys(schema.shape) as (keyof CharacterFormData)[];
@@ -101,9 +100,7 @@ const CreateCharacterPage: React.FC = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <StepStyle watch={watch} setValue={setValue} errors={errors} />
-        );
+        return <StepStyle watch={watch} setValue={setValue} errors={errors} />;
       case 2:
         return (
           <StepEthnicityAge watch={watch} setValue={setValue} errors={errors} />
@@ -113,9 +110,7 @@ const CreateCharacterPage: React.FC = () => {
           <StepAppearance watch={watch} setValue={setValue} errors={errors} />
         );
       case 4:
-        return (
-          <StepBody watch={watch} setValue={setValue} errors={errors} />
-        );
+        return <StepBody watch={watch} setValue={setValue} errors={errors} />;
       case 5:
         return (
           <StepPersonality
@@ -133,7 +128,7 @@ const CreateCharacterPage: React.FC = () => {
   const isLastStep = currentStep === 5;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Step Content */}
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -148,20 +143,12 @@ const CreateCharacterPage: React.FC = () => {
             )}
 
             {isLastStep ? (
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                className="min-w-48"
-              >
+              <Button type="submit" loading={isSubmitting} className="min-w-48">
                 Create Character
                 <ArrowRight data-slot="icon" className="ml-2" />
               </Button>
             ) : (
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="min-w-48"
-              >
+              <Button type="button" onClick={handleNext} className="min-w-48">
                 NEXT
                 <ArrowRight data-slot="icon" className="ml-2" />
               </Button>

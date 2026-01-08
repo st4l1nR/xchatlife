@@ -74,15 +74,13 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
               className={clsx(
                 "relative flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all",
                 localValue === option.value
-                  ? "bg-foreground text-background ring-2 ring-foreground"
+                  ? "bg-foreground text-background ring-foreground ring-2"
                   : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >
               <span>{option.emoji}</span>
               <span>{option.label}</span>
-              {localValue === option.value && (
-                <Check className="h-4 w-4" />
-              )}
+              {localValue === option.value && <Check className="h-4 w-4" />}
             </button>
           ))}
         </div>
@@ -91,7 +89,7 @@ const DialogOccupation: React.FC<DialogOccupationProps> = ({
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
-            className="mt-4 w-full rounded-xl bg-muted py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+            className="bg-muted text-muted-foreground hover:bg-muted/80 mt-4 w-full rounded-xl py-3 text-sm font-medium transition-colors"
           >
             {showAll ? "Show less" : "Show all"}
           </button>
