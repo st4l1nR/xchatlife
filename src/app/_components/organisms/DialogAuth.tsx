@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { X, Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Dialog } from "@/app/_components/atoms/dialog";
@@ -13,6 +14,7 @@ import { Button } from "@/app/_components/atoms/button";
 import { Input, InputGroup } from "@/app/_components/atoms/input";
 import { Field, Label, ErrorMessage } from "@/app/_components/atoms/fieldset";
 import { authClient } from "@/server/better-auth/client";
+import { useApp } from "@/app/_contexts/AppContext";
 
 // ============================================================================
 // Types
@@ -103,8 +105,6 @@ const SignInForm: React.FC<SignInFormProps> = ({
   onForgotPassword,
   isLoading,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -134,19 +134,11 @@ const SignInForm: React.FC<SignInFormProps> = ({
         <InputGroup>
           <Lock data-slot="icon" />
           <Input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Password"
             {...register("password")}
             data-invalid={errors.password ? true : undefined}
           />
-          <button
-            type="button"
-            data-slot="icon"
-            className="cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </button>
         </InputGroup>
         {errors.password && (
           <ErrorMessage>{errors.password.message}</ErrorMessage>
@@ -174,8 +166,6 @@ type SignUpFormProps = {
 };
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -205,19 +195,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
         <InputGroup>
           <Lock data-slot="icon" />
           <Input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Password"
             {...register("password")}
             data-invalid={errors.password ? true : undefined}
           />
-          <button
-            type="button"
-            data-slot="icon"
-            className="cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </button>
         </InputGroup>
         <p className="text-muted-foreground mt-1 text-sm">
           Minimum 6 characters
@@ -347,6 +329,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
   backgroundImage = "/images/girl-poster.webp",
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { refetchSession } = useApp();
 
   const handleSignIn = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -358,6 +341,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       if (result.error) {
         toast.error(result.error.message ?? "Sign in failed");
       } else {
+        await refetchSession();
         toast.success("Signed in successfully!");
         onClose();
       }
@@ -379,6 +363,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       if (result.error) {
         toast.error(result.error.message ?? "Sign up failed");
       } else {
+        await refetchSession();
         toast.success("Account created successfully!");
         onClose();
       }
@@ -489,9 +474,9 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
                 </div>
                 <p className="text-muted-foreground mt-4 text-center text-xs">
                   By signing up, you agree to{" "}
-                  <a href="/terms" className="text-primary hover:underline">
+                  <Link href="/terms" className="text-primary hover:underline">
                     Terms of Service
-                  </a>
+                  </Link>
                 </p>
               </>
             )}

@@ -23,12 +23,21 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+<<<<<<< HEAD
     // Cloudflare R2
     R2_ACCOUNT_ID: z.string().optional(),
     R2_ACCESS_KEY_ID: z.string().optional(),
     R2_SECRET_ACCESS_KEY: z.string().optional(),
     R2_BUCKET_NAME: z.string().optional(),
     R2_PUBLIC_URL: z.string().optional(),
+=======
+    // Cloudflare R2 (S3-compatible storage)
+    R2_ACCOUNT_ID: z.string(),
+    R2_ACCESS_KEY_ID: z.string(),
+    R2_SECRET_ACCESS_KEY: z.string(),
+    R2_BUCKET_NAME: z.string(),
+    R2_PUBLIC_URL: z.string().url(),
+>>>>>>> ee56494223502dbfa0140ea26cee4d77e7561310
   },
 
   /**
@@ -60,7 +69,10 @@ export const env = createEnv({
       process.env.BETTER_AUTH_TWITTER_CLIENT_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+<<<<<<< HEAD
     // Cloudflare R2
+=======
+>>>>>>> ee56494223502dbfa0140ea26cee4d77e7561310
     R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,

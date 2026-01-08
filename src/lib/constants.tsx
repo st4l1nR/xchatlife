@@ -8,6 +8,8 @@ import {
   Heart,
   Crown,
   Sparkles,
+  Gift,
+  Coins,
 } from "lucide-react";
 
 export type NavigationItem = {
@@ -89,5 +91,33 @@ export const mobileNavigation: NavigationItem[] = [
     name: "Premium",
     href: "/premium",
     icon: Crown,
+  },
+];
+
+// Token Economics
+export type TokenPricingItem = {
+  label: string;
+  cost: string | number;
+  color: "green" | "blue" | "purple" | "orange" | "red" | "yellow";
+};
+
+export const tokenPricing: TokenPricingItem[] = [
+  { label: "Voice cost", cost: "0.2", color: "green" },
+  { label: "Image cost V1", cost: 2, color: "blue" },
+  { label: "Image cost V2", cost: 4, color: "purple" },
+  { label: "Call cost", cost: "3/min", color: "orange" },
+];
+
+// Token navigation (shown when user has active subscription)
+export const tokenNavigation: NavigationItem[] = [
+  {
+    name: "Earn 200 tokens",
+    href: "/earn-tokens",
+    icon: Gift,
+  },
+  {
+    name: "Buy Tokens",
+    href: "/buy-tokens",
+    icon: Coins,
   },
 ];

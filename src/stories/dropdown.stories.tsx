@@ -35,7 +35,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicExample: Story = {
-  name: "Basic Example",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -52,7 +51,6 @@ export const BasicExample: Story = {
 };
 
 export const ButtonStyle: Story = {
-  name: "Button Style",
   render: () => (
     <Dropdown>
       <DropdownButton>
@@ -69,7 +67,6 @@ export const ButtonStyle: Story = {
 };
 
 export const WithDisabledItems: Story = {
-  name: "With Disabled Items",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -88,7 +85,6 @@ export const WithDisabledItems: Story = {
 };
 
 export const WithSections: Story = {
-  name: "With Sections",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -113,7 +109,6 @@ export const WithSections: Story = {
 };
 
 export const WithDescriptions: Story = {
-  name: "With Descriptions",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -135,7 +130,6 @@ export const WithDescriptions: Story = {
 };
 
 export const WithIcons: Story = {
-  name: "With Icons",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -162,7 +156,6 @@ export const WithIcons: Story = {
 };
 
 export const WithKeyboardShortcuts: Story = {
-  name: "With Keyboard Shortcuts",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -189,7 +182,6 @@ export const WithKeyboardShortcuts: Story = {
 };
 
 export const WithHeader: Story = {
-  name: "With Header",
   render: () => (
     <Dropdown>
       <DropdownButton outline>
@@ -219,7 +211,6 @@ export const WithHeader: Story = {
 };
 
 export const WithDisabledButton: Story = {
-  name: "With Disabled Button",
   render: () => (
     <Dropdown>
       <DropdownButton outline disabled>
@@ -236,7 +227,6 @@ export const WithDisabledButton: Story = {
 };
 
 export const WithIconTrigger: Story = {
-  name: "With Icon Trigger",
   render: () => (
     <Dropdown>
       <DropdownButton plain aria-label="More options">
@@ -257,7 +247,6 @@ export const WithIconTrigger: Story = {
 };
 
 export const WithAvatarTrigger: Story = {
-  name: "With Avatar Trigger",
   render: () => (
     <Dropdown>
       <DropdownButton
@@ -276,7 +265,6 @@ export const WithAvatarTrigger: Story = {
 };
 
 export const WithCustomMenuWidth: Story = {
-  name: "With Custom Menu Width",
   render: () => (
     <Dropdown>
       <DropdownButton outline>

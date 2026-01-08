@@ -27,6 +27,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const WithActiveSubscription: Story = {
+  args: {
+    hasActiveSubscription: true,
+  },
+};
+
 export const ChatsActive: Story = {
   parameters: {
     nextjs: {
@@ -62,6 +68,32 @@ export const SettingsActive: Story = {
     nextjs: {
       navigation: {
         pathname: "/settings",
+      },
+    },
+  },
+};
+
+export const EarnTokensActive: Story = {
+  args: {
+    hasActiveSubscription: true,
+  },
+  parameters: {
+    nextjs: {
+      navigation: {
+        pathname: "/earn-tokens",
+      },
+    },
+  },
+};
+
+export const BuyTokensActive: Story = {
+  args: {
+    hasActiveSubscription: true,
+  },
+  parameters: {
+    nextjs: {
+      navigation: {
+        pathname: "/buy-tokens",
       },
     },
   },

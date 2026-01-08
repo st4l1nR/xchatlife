@@ -1,6 +1,10 @@
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
 import { postRouter } from "@/server/api/routers/post";
+import { characterRouter } from "@/server/api/routers/character";
+import { storyRouter } from "@/server/api/routers/story";
+import { reelRouter } from "@/server/api/routers/reel";
+import { userRouter } from "@/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -12,6 +16,10 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   character: characterRouter,
   post: postRouter,
+  character: characterRouter,
+  story: storyRouter,
+  reel: reelRouter,
+  user: userRouter,
 });
 
 // export type definition of API

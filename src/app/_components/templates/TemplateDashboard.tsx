@@ -45,8 +45,8 @@ export const TemplateDashboard = ({
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Navbar - Desktop only */}
-        {!isMobile && <NavbarHome />}
+        {/* Top Navbar */}
+        <NavbarHome />
 
         {/* Page Content with bottom padding on mobile to prevent navbar overlap */}
         <main

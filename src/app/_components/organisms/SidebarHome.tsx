@@ -15,7 +15,15 @@ import {
   SidebarLabel,
   SidebarSpacer,
 } from "../atoms/sidebar";
-import { mainNavigation, accountNavigation } from "@/lib/constants";
+import {
+  mainNavigation,
+  accountNavigation,
+  tokenNavigation,
+} from "@/lib/constants";
+
+export type SidebarHomeProps = {
+  hasActiveSubscription?: boolean;
+};
 
 /**
  * SidebarHome - Main navigation sidebar component
@@ -24,12 +32,15 @@ import { mainNavigation, accountNavigation } from "@/lib/constants";
  * - Logo header with collapse/expand toggle
  * - Main navigation items (Home, Chats, Matches)
  * - Account section (Profile, Settings)
+ * - Token section (Earn tokens, Buy tokens) - only shown with active subscription
  * - Smooth animations using framer-motion
  * - Automatic current path detection using usePathname
  *
  * Uses semantic sidebar colors that automatically adapt to light/dark themes.
  */
-export const SidebarHome = () => {
+export const SidebarHome: React.FC<SidebarHomeProps> = ({
+  hasActiveSubscription = false,
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
@@ -111,6 +122,33 @@ export const SidebarHome = () => {
           </SidebarSection>
 
           <SidebarSpacer />
+
+          {/* Token Section - only shown with active subscription */}
+          {hasActiveSubscription && (
+            <SidebarSection>
+              {tokenNavigation.map((item) => (
+                <SidebarItem
+                  key={item.name}
+                  href={item.href}
+                  current={pathname === item.href}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "auto" }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <SidebarLabel>{item.name}</SidebarLabel>
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </SidebarItem>
+              ))}
+            </SidebarSection>
+          )}
 
           <SidebarSection>
             {accountNavigation.map((item) => (

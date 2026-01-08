@@ -4,6 +4,7 @@ import "../src/styles/globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { TRPCReactProvider } from "../src/trpc/react";
 import SkeletonTheme from "../src/app/_components/organisms/SkeletonTheme";
+import { AppContextProvider } from "../src/app/_contexts/AppContext";
 
 // Mock session for Storybook
 const mockSession = {
@@ -56,14 +57,15 @@ const preview: Preview = {
       defaultTheme: "light",
       parentSelector: "html",
     }),
-    // Providers wrapper (SessionProvider + TRPCReactProvider + SkeletonTheme)
-    (Story, context) => {
-      const session = context.parameters.nextauth?.session ?? mockSession;
+    // Providers wrapper (TRPCReactProvider + AppContextProvider + SkeletonTheme)
+    (Story) => {
       return (
         <TRPCReactProvider>
-          <SkeletonTheme>
-            <Story />
-          </SkeletonTheme>
+          <AppContextProvider>
+            <SkeletonTheme>
+              <Story />
+            </SkeletonTheme>
+          </AppContextProvider>
         </TRPCReactProvider>
       );
     },

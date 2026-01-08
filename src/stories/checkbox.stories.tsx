@@ -206,7 +206,6 @@ export const Indeterminate: Story = {
 };
 
 export const InteractiveStates: Story = {
-  name: "Interactive States",
   render: () => (
     <div className="">
       <h3 className="text-primary mb-6 text-xl font-semibold">
