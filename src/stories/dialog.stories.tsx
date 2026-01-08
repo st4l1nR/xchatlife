@@ -38,7 +38,6 @@ export default meta;
 type Story = StoryObj<typeof Dialog>;
 
 export const BasicExample: Story = {
-  name: "Basic Example",
   render: function Render(args) {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -71,7 +70,6 @@ export const BasicExample: Story = {
 };
 
 export const DialogWidth: Story = {
-  name: "Dialog Width",
   render: function Render(args) {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -107,7 +105,6 @@ export const DialogWidth: Story = {
 };
 
 export const OpeningFromDropdown: Story = {
-  name: "Opening From Dropdown",
   render: function Render() {
     let [isOpen, setIsOpen] = useState(false);
 
@@ -184,7 +181,6 @@ export const AutoFocusingElements: Story = {
 };
 
 export const WithScrollingContent: Story = {
-  name: "With Scrolling Content",
   render: function Render(args) {
     const [isOpen, setIsOpen] = useState(false);
     return (

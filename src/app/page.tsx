@@ -1,5 +1,5 @@
-import HomePage from "@/app/_components/pages/HomePage";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <HomePage />;
+  redirect("/realistic-girl");
 }

@@ -8,6 +8,7 @@ import ListCardCharacter from "../organisms/ListCardCharacter";
 import type { BannerSlide } from "../organisms/Banner";
 import type { StoryProfile } from "../organisms/ListCardStory";
 import type { CardCharacterProps } from "../molecules/CardCharacter";
+import { api } from "@/trpc/react";
 
 export type HomePageMockData = {
   bannerSlides: BannerSlide[];
@@ -19,13 +20,21 @@ export type HomePageMockData = {
 export type HomePageProps = {
   className?: string;
   /**
+   * Character style filter
+   */
+  style?: "realistic" | "anime";
+  /**
+   * Character gender filter
+   */
+  gender?: "girl" | "men";
+  /**
    * Optional mock data for Storybook and development
    * When provided, uses mock data instead of fetching from API
    */
   mock?: HomePageMockData;
 };
 
-// Default mock data for development
+// Default mock data for development and Storybook
 export const defaultMockData: HomePageMockData = {
   bannerSlides: [
     {
@@ -333,9 +342,54 @@ export const defaultMockData: HomePageMockData = {
   ],
 };
 
-const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
-  // Use mock data if provided, otherwise use default mock (for now)
-  const data = mock ?? defaultMockData;
+const HomePage: React.FC<HomePageProps> = ({
+  className,
+  style,
+  gender,
+  mock,
+}) => {
+  // Fetch AI characters with infinite scroll pagination
+  const {
+    data: aiCharactersData,
+    isLoading: isLoadingAi,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = api.character.getInfinite.useInfiniteQuery(
+    { limit: 16, style, gender },
+    {
+      enabled: !mock,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
+
+  const { data: liveCharacters, isLoading: isLoadingLive } =
+    api.character.getLive.useQuery(
+      { style, gender },
+      {
+        enabled: !mock,
+      },
+    );
+
+  const { data: stories, isLoading: isLoadingStories } =
+    api.story.getAll.useQuery(
+      { style, gender },
+      {
+        enabled: !mock,
+      },
+    );
+
+  // Flatten paginated AI characters into single array
+  const aiCharacters =
+    aiCharactersData?.pages.flatMap((page) => page.items) ?? [];
+
+  // Use mock data if provided, otherwise use API data with fallback to empty arrays
+  const data: HomePageMockData = mock ?? {
+    bannerSlides: defaultMockData.bannerSlides, // Banner slides are static for now
+    stories: stories ?? [],
+    liveCharacters: liveCharacters ?? [],
+    aiCharacters: aiCharacters,
+  };
 
   return (
     <div className={clsx("space-y-8 pb-10", className)}>
@@ -344,7 +398,11 @@ const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
 
       {/* Stories Section */}
       <div className="px-4 md:px-6">
-        <ListBubbleStory profiles={data.stories} />
+        <ListBubbleStory
+          layout="swiper"
+          profiles={data.stories}
+          loading={isLoadingStories && !mock}
+        />
       </div>
 
       {/* Jump into Live Action Section */}
@@ -361,7 +419,11 @@ const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
             BETA
           </span>
         </h2>
-        <ListCardCharacter items={data.liveCharacters} layout="row" />
+        <ListCardCharacter
+          items={data.liveCharacters}
+          layout="swiper"
+          loading={isLoadingLive && !mock}
+        />
       </section>
 
       {/* AI Girlfriend Characters Section */}
@@ -372,7 +434,14 @@ const HomePage: React.FC<HomePageProps> = ({ className, mock }) => {
           </span>{" "}
           Characters
         </h2>
-        <ListCardCharacter items={data.aiCharacters} layout="grid" />
+        <ListCardCharacter
+          items={data.aiCharacters}
+          layout="grid"
+          loading={isLoadingAi && !mock}
+          hasNextPage={!mock && hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          onLoadMore={() => fetchNextPage()}
+        />
       </section>
     </div>
   );

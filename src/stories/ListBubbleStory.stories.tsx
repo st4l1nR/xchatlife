@@ -1,7 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import ListBubbleStory from "@/app/_components/organisms/ListBubbleStory";
-import type { StoryProfile } from "@/app/_components/organisms/ListCardStory";
+
+type StoryMedia = {
+  id: string;
+  type: "image" | "video";
+  src: string;
+  duration?: number;
+};
+
+type StoryProfile = {
+  id: string;
+  name: string;
+  avatarSrc?: string;
+  timestamp?: string;
+  media: StoryMedia[];
+};
 
 const meta = {
   title: "Organisms/ListBubbleStory",
@@ -11,6 +25,11 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
+    layout: {
+      control: "radio",
+      options: ["row", "swiper"],
+      description: "Layout variant",
+    },
     loading: {
       control: "boolean",
       description: "Shows loading skeleton when true",
@@ -142,14 +161,33 @@ const manyProfiles: StoryProfile[] = [
 // --- Stories ---
 
 export const Default: Story = {
+  name: "Row Layout (Default)",
   args: {
+    layout: "row",
+    profiles: mockProfiles,
+  },
+};
+
+export const SwiperLayout: Story = {
+  args: {
+    layout: "swiper",
     profiles: mockProfiles,
   },
 };
 
 export const Loading: Story = {
-  name: "Loading State",
+  name: "Loading State (Row)",
   args: {
+    layout: "row",
+    profiles: [],
+    loading: true,
+  },
+};
+
+export const LoadingSwiper: Story = {
+  name: "Loading State (Swiper)",
+  args: {
+    layout: "swiper",
     profiles: [],
     loading: true,
   },
@@ -175,7 +213,6 @@ export const EmptyCustomMessage: Story = {
 };
 
 export const SmallSize: Story = {
-  name: "Small Size",
   args: {
     profiles: mockProfiles,
     size: "sm",
@@ -191,7 +228,6 @@ export const MediumSize: Story = {
 };
 
 export const LargeSize: Story = {
-  name: "Large Size",
   args: {
     profiles: mockProfiles,
     size: "lg",
@@ -265,7 +301,6 @@ export const LoadingSizes: Story = {
 };
 
 export const SingleProfile: Story = {
-  name: "Single Profile",
   args: {
     profiles: [
       {
@@ -283,7 +318,6 @@ export const SingleProfile: Story = {
 };
 
 export const VideoOnlyProfiles: Story = {
-  name: "Video Only Profiles",
   args: {
     profiles: [
       {

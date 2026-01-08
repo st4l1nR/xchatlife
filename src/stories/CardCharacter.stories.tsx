@@ -86,7 +86,6 @@ export const WithVideo: Story = {
 };
 
 export const WithNewBadge: Story = {
-  name: "With New Badge",
   args: {
     name: "Lina",
     age: 22,
@@ -97,7 +96,6 @@ export const WithNewBadge: Story = {
 };
 
 export const WithLiveIndicator: Story = {
-  name: "With Live Indicator",
   args: {
     name: "Olivia",
     age: 28,
@@ -108,7 +106,6 @@ export const WithLiveIndicator: Story = {
 };
 
 export const WithPlayButton: Story = {
-  name: "With Play Button",
   args: {
     name: "Olivia",
     age: 28,
@@ -120,7 +117,6 @@ export const WithPlayButton: Story = {
 };
 
 export const WithDescription: Story = {
-  name: "With Description",
   args: {
     name: "Lina",
     age: 22,
@@ -133,7 +129,6 @@ export const WithDescription: Story = {
 };
 
 export const FullFeatured: Story = {
-  name: "Full Featured",
   args: {
     name: "Lina",
     age: 22,

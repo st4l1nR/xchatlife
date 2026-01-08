@@ -6,7 +6,7 @@ import ListCardReel from "../organisms/ListCardReel";
 import DialogAuth from "../organisms/DialogAuth";
 import type { DialogAuthVariant } from "../organisms/DialogAuth";
 import type { CardReelProps } from "../molecules/CardReel";
-import { authClient } from "@/server/better-auth/client";
+import { api } from "@/trpc/react";
 
 // ============================================================================
 // Types
@@ -23,10 +23,6 @@ export type DiscoverPageProps = {
    * When provided, uses mock data instead of fetching from API
    */
   mock?: DiscoverPageMockData;
-  /**
-   * Whether the user is logged in (override for Storybook)
-   */
-  isLoggedIn?: boolean;
   /**
    * Callback when auth is required (override for Storybook)
    */
@@ -47,7 +43,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 5322,
       isLiked: false,
-      isLoggedIn: false,
       chatUrl: "/chat/amelia",
     },
     {
@@ -58,7 +53,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 12400,
       isLiked: true,
-      isLoggedIn: false,
       chatUrl: "/chat/sofia",
     },
     {
@@ -69,7 +63,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 890,
       isLiked: false,
-      isLoggedIn: false,
       chatUrl: "/chat/luna",
     },
     {
@@ -80,7 +73,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 45600,
       isLiked: false,
-      isLoggedIn: false,
       chatUrl: "/chat/mia",
     },
     {
@@ -91,7 +83,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 8900,
       isLiked: true,
-      isLoggedIn: false,
       chatUrl: "/chat/isabella",
     },
     {
@@ -102,7 +93,6 @@ export const defaultMockData: DiscoverPageMockData = {
       posterSrc: "/images/girl-poster.webp",
       likeCount: 3200,
       isLiked: false,
-      isLoggedIn: false,
       chatUrl: "/chat/emma",
     },
   ],
@@ -115,35 +105,60 @@ export const defaultMockData: DiscoverPageMockData = {
 const DiscoverPage: React.FC<DiscoverPageProps> = ({
   className,
   mock,
-  isLoggedIn: isLoggedInProp,
   onAuthRequired: onAuthRequiredProp,
 }) => {
-  // Auth state from better-auth
-  const { data: session } = authClient.useSession();
-  const isLoggedIn = isLoggedInProp ?? !!session?.user;
-
   // Auth dialog state
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-in");
 
-  // Use mock data if provided, otherwise use default mock (for now)
-  const data = mock ?? defaultMockData;
+  // Fetch reels from API with infinite scroll
+  const {
+    data: reelsData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = api.reel.getInfinite.useInfiniteQuery(
+    { limit: 20 },
+    {
+      enabled: !mock,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
 
-  // Local state for like toggles
-  const [reels, setReels] = useState<CardReelProps[]>(data.reels);
+  // Track like states separately to preserve them across fetches
+  // Value is the delta: 1 if liked (adds 1 to count), 0 if not liked
+  const [likeDeltas, setLikeDeltas] = useState<Map<string, number>>(new Map());
+
+  // Flatten pages into single array and map to CardReelProps format
+  const apiReels: CardReelProps[] =
+    reelsData?.pages.flatMap((page) =>
+      page.items.map((item) => {
+        const delta = likeDeltas.get(item.id) ?? 0;
+        return {
+          id: item.id,
+          name: item.name,
+          avatarSrc: item.avatarSrc,
+          videoSrc: item.videoSrc,
+          posterSrc: item.posterSrc,
+          likeCount: item.likeCount + delta,
+          isLiked: delta > 0,
+          chatUrl: item.chatUrl,
+        };
+      }),
+    ) ?? [];
+
+  // Use mock data if provided, otherwise use API data
+  const reels = mock ? mock.reels : apiReels;
 
   const handleLikeToggle = (id: string) => {
-    setReels((prev) =>
-      prev.map((reel) =>
-        reel.id === id
-          ? {
-              ...reel,
-              isLiked: !reel.isLiked,
-              likeCount: reel.isLiked ? reel.likeCount - 1 : reel.likeCount + 1,
-            }
-          : reel,
-      ),
-    );
+    setLikeDeltas((prev) => {
+      const newMap = new Map(prev);
+      const currentDelta = newMap.get(id) ?? 0;
+      // Toggle: 0 -> 1 (like), 1 -> 0 (unlike)
+      newMap.set(id, currentDelta === 0 ? 1 : 0);
+      return newMap;
+    });
   };
 
   const handleAuthRequired = () => {
@@ -163,10 +178,12 @@ const DiscoverPage: React.FC<DiscoverPageProps> = ({
   return (
     <div className={clsx("h-screen w-full", className)}>
       <ListCardReel
-        loading={false}
+        loading={isLoading && !mock}
         items={reelsWithHandlers}
-        isLoggedIn={isLoggedIn}
         onAuthRequired={handleAuthRequired}
+        hasNextPage={!mock && hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onLoadMore={() => fetchNextPage()}
       />
 
       {/* Auth dialog for non-logged-in users */}

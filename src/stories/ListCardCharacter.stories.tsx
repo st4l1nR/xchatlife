@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     layout: {
       control: "radio",
-      options: ["grid", "row"],
+      options: ["grid", "row", "swiper"],
       description: "Layout variant",
     },
     loading: {
@@ -122,6 +122,13 @@ export const RowLayout: Story = {
   },
 };
 
+export const SwiperLayout: Story = {
+  args: {
+    layout: "swiper",
+    items: mockItems,
+  },
+};
+
 export const Loading: Story = {
   name: "Loading State",
   args: {
@@ -135,6 +142,15 @@ export const LoadingRow: Story = {
   name: "Loading State (Row)",
   args: {
     layout: "row",
+    loading: true,
+    items: [],
+  },
+};
+
+export const LoadingSwiper: Story = {
+  name: "Loading State (Swiper)",
+  args: {
+    layout: "swiper",
     loading: true,
     items: [],
   },
@@ -167,7 +183,6 @@ export const FewItemsRow: Story = {
 };
 
 export const ManyItems: Story = {
-  name: "Many Items",
   args: {
     layout: "grid",
     items: [...mockItems, ...mockItems],
