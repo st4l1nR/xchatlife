@@ -109,6 +109,15 @@ export const relationshipSchema = z.enum([
   "friend",
   "step_sister",
   "step_mom",
+  "step_daughter",
+  "landlord",
+  "sugar_baby",
+  "boss",
+  "teacher",
+  "student",
+  "neighbour",
+  "mother_in_law",
+  "sister_in_law",
 ]);
 
 export const occupationSchema = z.enum([
@@ -325,6 +334,15 @@ export const RELATIONSHIP_OPTIONS = [
   { value: "friend" as const, label: "Friend", emoji: "🤝" },
   { value: "step_sister" as const, label: "Step Sister", emoji: "💛" },
   { value: "step_mom" as const, label: "Step Mom", emoji: "💛" },
+  { value: "step_daughter" as const, label: "Step Daughter", emoji: "💛" },
+  { value: "landlord" as const, label: "Landlord", emoji: "🏠" },
+  { value: "sugar_baby" as const, label: "Sugar Baby", emoji: "🍬" },
+  { value: "boss" as const, label: "Boss", emoji: "💼" },
+  { value: "teacher" as const, label: "Teacher", emoji: "📚" },
+  { value: "student" as const, label: "Student", emoji: "🎓" },
+  { value: "neighbour" as const, label: "Neighbour", emoji: "🏡" },
+  { value: "mother_in_law" as const, label: "Mother-In-Law", emoji: "👩‍👧" },
+  { value: "sister_in_law" as const, label: "Sister-In-Law", emoji: "👭" },
 ] as const;
 
 // Occupation options with emojis (using Prisma enum values)

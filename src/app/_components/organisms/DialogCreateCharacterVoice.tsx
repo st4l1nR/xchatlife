@@ -22,8 +22,10 @@ type DialogCreateCharacterVoiceProps = {
   containerRef?: React.RefObject<HTMLElement | null>;
 };
 
-const VOICE_IMAGE_PATH = "/images/create-character/girls/realistic/step-5/voice/waveform-0a113678139bf59ba2eb1a743cf0f23b485eb2849d710171778b8225b0c7701e.png";
-const VOICE_VIDEO_PATH = "/images/create-character/girls/realistic/step-5/voice/waveform-62d9d48b2ebc188830c3ffdaa8952afb53fa4c7a340cf0a05f063efe591c86f7.webm";
+const VOICE_IMAGE_PATH =
+  "/images/create-character/girls/realistic/step-5/voice/waveform-0a113678139bf59ba2eb1a743cf0f23b485eb2849d710171778b8225b0c7701e.png";
+const VOICE_VIDEO_PATH =
+  "/images/create-character/girls/realistic/step-5/voice/waveform-62d9d48b2ebc188830c3ffdaa8952afb53fa4c7a340cf0a05f063efe591c86f7.webm";
 
 const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
   open,
@@ -56,7 +58,7 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue as CharacterFormData["voice"]);
+      onChange(localValue);
     }
     onClose();
   };
@@ -108,8 +110,15 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} size="5xl" containerRef={containerRef}>
-      <DialogTitle className="text-center text-xl! sm:text-2xl!">Edit Voice</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="5xl"
+      containerRef={containerRef}
+    >
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">
+        Edit Voice
+      </DialogTitle>
 
       <DialogBody>
         <div className="mx-auto flex max-w-xl flex-wrap justify-center gap-4 sm:max-w-2xl">
@@ -127,9 +136,19 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
             >
               {/* Checkmark */}
               {localValue === option.value && (
-                <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                  <svg className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <div className="bg-primary absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
+                  <svg
+                    className="text-primary-foreground h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               )}
@@ -162,7 +181,7 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
                     "absolute inset-0 flex items-center justify-center rounded-full bg-black/30 transition-opacity",
                     playingVoice === option.value
                       ? "opacity-100"
-                      : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100"
+                      : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100",
                   )}
                 >
                   {playingVoice === option.value ? (
@@ -174,11 +193,17 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
               </div>
 
               {/* Voice Label */}
-              <span className={clsx(
-                "text-center text-sm font-medium",
-                localValue === option.value ? "text-primary" : "text-foreground"
-              )}>{option.label}</span>
-              <span className="text-center text-xs text-muted-foreground">
+              <span
+                className={clsx(
+                  "text-center text-sm font-medium",
+                  localValue === option.value
+                    ? "text-primary"
+                    : "text-foreground",
+                )}
+              >
+                {option.label}
+              </span>
+              <span className="text-muted-foreground text-center text-xs">
                 {option.description}
               </span>
             </button>

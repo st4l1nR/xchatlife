@@ -39,7 +39,7 @@ const DialogCreateCharacterOccupation: React.FC<
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue as CharacterFormData["occupation"]);
+      onChange(localValue);
     }
     onClose();
   };
