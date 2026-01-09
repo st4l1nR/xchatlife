@@ -31,7 +31,12 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm list:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm db:seed:*)"
+      "Bash(pnpm db:seed:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run storybook:*)",
+      "Bash(npx storybook:*)",
+      "Bash(pnpm storybook:*)",
+      "Bash(pnpm db:generate:*)"
     ],
     "deny": []
   }

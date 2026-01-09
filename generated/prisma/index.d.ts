@@ -90,6 +90,18 @@ export type Story = $Result.DefaultSelection<Prisma.$StoryPayload>;
  */
 export type Reel = $Result.DefaultSelection<Prisma.$ReelPayload>;
 /**
+ * Model PrivateContent
+ *
+ */
+export type PrivateContent =
+  $Result.DefaultSelection<Prisma.$PrivateContentPayload>;
+/**
+ * Model PrivateContentMedia
+ *
+ */
+export type PrivateContentMedia =
+  $Result.DefaultSelection<Prisma.$PrivateContentMediaPayload>;
+/**
  * Model Affiliate
  *
  */
@@ -718,6 +730,29 @@ export class PrismaClient<
   get reel(): Prisma.ReelDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.privateContent`: Exposes CRUD operations for the **PrivateContent** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more PrivateContents
+   * const privateContents = await prisma.privateContent.findMany()
+   * ```
+   */
+  get privateContent(): Prisma.PrivateContentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.privateContentMedia`: Exposes CRUD operations for the **PrivateContentMedia** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more PrivateContentMedias
+   * const privateContentMedias = await prisma.privateContentMedia.findMany()
+   * ```
+   */
+  get privateContentMedia(): Prisma.PrivateContentMediaDelegate<
+    ExtArgs,
+    ClientOptions
+  >;
+
+  /**
    * `prisma.affiliate`: Exposes CRUD operations for the **Affiliate** model.
    * Example usage:
    * ```ts
@@ -1210,6 +1245,8 @@ export namespace Prisma {
     UsageQuota: "UsageQuota";
     Story: "Story";
     Reel: "Reel";
+    PrivateContent: "PrivateContent";
+    PrivateContentMedia: "PrivateContentMedia";
     Affiliate: "Affiliate";
     Referral: "Referral";
   };
@@ -1254,6 +1291,8 @@ export namespace Prisma {
         | "usageQuota"
         | "story"
         | "reel"
+        | "privateContent"
+        | "privateContentMedia"
         | "affiliate"
         | "referral";
       txIsolationLevel: Prisma.TransactionIsolationLevel;
@@ -2379,6 +2418,158 @@ export namespace Prisma {
           };
         };
       };
+      PrivateContent: {
+        payload: Prisma.$PrivateContentPayload<ExtArgs>;
+        fields: Prisma.PrivateContentFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.PrivateContentFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.PrivateContentFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          findFirst: {
+            args: Prisma.PrivateContentFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.PrivateContentFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          findMany: {
+            args: Prisma.PrivateContentFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>[];
+          };
+          create: {
+            args: Prisma.PrivateContentCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          createMany: {
+            args: Prisma.PrivateContentCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.PrivateContentCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>[];
+          };
+          delete: {
+            args: Prisma.PrivateContentDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          update: {
+            args: Prisma.PrivateContentUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          deleteMany: {
+            args: Prisma.PrivateContentDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.PrivateContentUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.PrivateContentUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>[];
+          };
+          upsert: {
+            args: Prisma.PrivateContentUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentPayload>;
+          };
+          aggregate: {
+            args: Prisma.PrivateContentAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregatePrivateContent>;
+          };
+          groupBy: {
+            args: Prisma.PrivateContentGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<PrivateContentGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.PrivateContentCountArgs<ExtArgs>;
+            result:
+              | $Utils.Optional<PrivateContentCountAggregateOutputType>
+              | number;
+          };
+        };
+      };
+      PrivateContentMedia: {
+        payload: Prisma.$PrivateContentMediaPayload<ExtArgs>;
+        fields: Prisma.PrivateContentMediaFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.PrivateContentMediaFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.PrivateContentMediaFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          findFirst: {
+            args: Prisma.PrivateContentMediaFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.PrivateContentMediaFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          findMany: {
+            args: Prisma.PrivateContentMediaFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>[];
+          };
+          create: {
+            args: Prisma.PrivateContentMediaCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          createMany: {
+            args: Prisma.PrivateContentMediaCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.PrivateContentMediaCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>[];
+          };
+          delete: {
+            args: Prisma.PrivateContentMediaDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          update: {
+            args: Prisma.PrivateContentMediaUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          deleteMany: {
+            args: Prisma.PrivateContentMediaDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.PrivateContentMediaUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.PrivateContentMediaUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>[];
+          };
+          upsert: {
+            args: Prisma.PrivateContentMediaUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PrivateContentMediaPayload>;
+          };
+          aggregate: {
+            args: Prisma.PrivateContentMediaAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregatePrivateContentMedia>;
+          };
+          groupBy: {
+            args: Prisma.PrivateContentMediaGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<PrivateContentMediaGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.PrivateContentMediaCountArgs<ExtArgs>;
+            result:
+              | $Utils.Optional<PrivateContentMediaCountAggregateOutputType>
+              | number;
+          };
+        };
+      };
       Affiliate: {
         payload: Prisma.$AffiliatePayload<ExtArgs>;
         fields: Prisma.AffiliateFieldRefs;
@@ -2642,6 +2833,8 @@ export namespace Prisma {
     usageQuota?: UsageQuotaOmit;
     story?: StoryOmit;
     reel?: ReelOmit;
+    privateContent?: PrivateContentOmit;
+    privateContentMedia?: PrivateContentMediaOmit;
     affiliate?: AffiliateOmit;
     referral?: ReferralOmit;
   };
@@ -2733,6 +2926,7 @@ export namespace Prisma {
     reelVideos: number;
     reelThumbnails: number;
     collections: number;
+    privateContentMedia: number;
   };
 
   export type MediaCountOutputTypeSelect<
@@ -2745,6 +2939,9 @@ export namespace Prisma {
     reelVideos?: boolean | MediaCountOutputTypeCountReelVideosArgs;
     reelThumbnails?: boolean | MediaCountOutputTypeCountReelThumbnailsArgs;
     collections?: boolean | MediaCountOutputTypeCountCollectionsArgs;
+    privateContentMedia?:
+      | boolean
+      | MediaCountOutputTypeCountPrivateContentMediaArgs;
   };
 
   // Custom InputTypes
@@ -2821,6 +3018,15 @@ export namespace Prisma {
     ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: CollectionWhereInput;
+  };
+
+  /**
+   * MediaCountOutputType without action
+   */
+  export type MediaCountOutputTypeCountPrivateContentMediaArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    where?: PrivateContentMediaWhereInput;
   };
 
   /**
@@ -2934,6 +3140,7 @@ export namespace Prisma {
     chats: number;
     stories: number;
     reels: number;
+    privateContents: number;
   };
 
   export type CharacterCountOutputTypeSelect<
@@ -2943,6 +3150,9 @@ export namespace Prisma {
     chats?: boolean | CharacterCountOutputTypeCountChatsArgs;
     stories?: boolean | CharacterCountOutputTypeCountStoriesArgs;
     reels?: boolean | CharacterCountOutputTypeCountReelsArgs;
+    privateContents?:
+      | boolean
+      | CharacterCountOutputTypeCountPrivateContentsArgs;
   };
 
   // Custom InputTypes
@@ -2995,6 +3205,15 @@ export namespace Prisma {
   };
 
   /**
+   * CharacterCountOutputType without action
+   */
+  export type CharacterCountOutputTypeCountPrivateContentsArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    where?: PrivateContentWhereInput;
+  };
+
+  /**
    * Count Type ChatCountOutputType
    */
 
@@ -3028,6 +3247,42 @@ export namespace Prisma {
     ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: MessageWhereInput;
+  };
+
+  /**
+   * Count Type PrivateContentCountOutputType
+   */
+
+  export type PrivateContentCountOutputType = {
+    media: number;
+  };
+
+  export type PrivateContentCountOutputTypeSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    media?: boolean | PrivateContentCountOutputTypeCountMediaArgs;
+  };
+
+  // Custom InputTypes
+  /**
+   * PrivateContentCountOutputType without action
+   */
+  export type PrivateContentCountOutputTypeDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentCountOutputType
+     */
+    select?: PrivateContentCountOutputTypeSelect<ExtArgs> | null;
+  };
+
+  /**
+   * PrivateContentCountOutputType without action
+   */
+  export type PrivateContentCountOutputTypeCountMediaArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    where?: PrivateContentMediaWhereInput;
   };
 
   /**
@@ -3331,6 +3586,7 @@ export namespace Prisma {
       reelVideos?: boolean | Media$reelVideosArgs<ExtArgs>;
       reelThumbnails?: boolean | Media$reelThumbnailsArgs<ExtArgs>;
       collections?: boolean | Media$collectionsArgs<ExtArgs>;
+      privateContentMedia?: boolean | Media$privateContentMediaArgs<ExtArgs>;
       _count?: boolean | MediaCountOutputTypeDefaultArgs<ExtArgs>;
     },
     ExtArgs["result"]["media"]
@@ -3410,6 +3666,7 @@ export namespace Prisma {
     reelVideos?: boolean | Media$reelVideosArgs<ExtArgs>;
     reelThumbnails?: boolean | Media$reelThumbnailsArgs<ExtArgs>;
     collections?: boolean | Media$collectionsArgs<ExtArgs>;
+    privateContentMedia?: boolean | Media$privateContentMediaArgs<ExtArgs>;
     _count?: boolean | MediaCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type MediaIncludeCreateManyAndReturn<
@@ -3431,6 +3688,7 @@ export namespace Prisma {
       reelVideos: Prisma.$ReelPayload<ExtArgs>[];
       reelThumbnails: Prisma.$ReelPayload<ExtArgs>[];
       collections: Prisma.$CollectionPayload<ExtArgs>[];
+      privateContentMedia: Prisma.$PrivateContentMediaPayload<ExtArgs>[];
     };
     scalars: $Extensions.GetPayloadResult<
       {
@@ -4061,6 +4319,17 @@ export namespace Prisma {
     ): Prisma.PrismaPromise<
       | $Result.GetResult<
           Prisma.$CollectionPayload<ExtArgs>,
+          T,
+          "findMany",
+          GlobalOmitOptions
+        >
+      | Null
+    >;
+    privateContentMedia<T extends Media$privateContentMediaArgs<ExtArgs> = {}>(
+      args?: Subset<T, Media$privateContentMediaArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      | $Result.GetResult<
+          Prisma.$PrivateContentMediaPayload<ExtArgs>,
           T,
           "findMany",
           GlobalOmitOptions
@@ -4717,6 +4986,36 @@ export namespace Prisma {
     take?: number;
     skip?: number;
     distinct?: CollectionScalarFieldEnum | CollectionScalarFieldEnum[];
+  };
+
+  /**
+   * Media.privateContentMedia
+   */
+  export type Media$privateContentMediaArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    where?: PrivateContentMediaWhereInput;
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?:
+      | PrivateContentMediaScalarFieldEnum
+      | PrivateContentMediaScalarFieldEnum[];
   };
 
   /**
@@ -12168,6 +12467,7 @@ export namespace Prisma {
       chats?: boolean | Character$chatsArgs<ExtArgs>;
       stories?: boolean | Character$storiesArgs<ExtArgs>;
       reels?: boolean | Character$reelsArgs<ExtArgs>;
+      privateContents?: boolean | Character$privateContentsArgs<ExtArgs>;
       _count?: boolean | CharacterCountOutputTypeDefaultArgs<ExtArgs>;
     },
     ExtArgs["result"]["character"]
@@ -12305,6 +12605,7 @@ export namespace Prisma {
     chats?: boolean | Character$chatsArgs<ExtArgs>;
     stories?: boolean | Character$storiesArgs<ExtArgs>;
     reels?: boolean | Character$reelsArgs<ExtArgs>;
+    privateContents?: boolean | Character$privateContentsArgs<ExtArgs>;
     _count?: boolean | CharacterCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type CharacterIncludeCreateManyAndReturn<
@@ -12334,6 +12635,7 @@ export namespace Prisma {
       chats: Prisma.$ChatPayload<ExtArgs>[];
       stories: Prisma.$StoryPayload<ExtArgs>[];
       reels: Prisma.$ReelPayload<ExtArgs>[];
+      privateContents: Prisma.$PrivateContentPayload<ExtArgs>[];
     };
     scalars: $Extensions.GetPayloadResult<
       {
@@ -12994,6 +13296,17 @@ export namespace Prisma {
         >
       | Null
     >;
+    privateContents<T extends Character$privateContentsArgs<ExtArgs> = {}>(
+      args?: Subset<T, Character$privateContentsArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      | $Result.GetResult<
+          Prisma.$PrivateContentPayload<ExtArgs>,
+          T,
+          "findMany",
+          GlobalOmitOptions
+        >
+      | Null
+    >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13637,6 +13950,34 @@ export namespace Prisma {
     take?: number;
     skip?: number;
     distinct?: ReelScalarFieldEnum | ReelScalarFieldEnum[];
+  };
+
+  /**
+   * Character.privateContents
+   */
+  export type Character$privateContentsArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    where?: PrivateContentWhereInput;
+    orderBy?:
+      | PrivateContentOrderByWithRelationInput
+      | PrivateContentOrderByWithRelationInput[];
+    cursor?: PrivateContentWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: PrivateContentScalarFieldEnum | PrivateContentScalarFieldEnum[];
   };
 
   /**
@@ -24787,6 +25128,2853 @@ export namespace Prisma {
   };
 
   /**
+   * Model PrivateContent
+   */
+
+  export type AggregatePrivateContent = {
+    _count: PrivateContentCountAggregateOutputType | null;
+    _avg: PrivateContentAvgAggregateOutputType | null;
+    _sum: PrivateContentSumAggregateOutputType | null;
+    _min: PrivateContentMinAggregateOutputType | null;
+    _max: PrivateContentMaxAggregateOutputType | null;
+  };
+
+  export type PrivateContentAvgAggregateOutputType = {
+    tokenCost: number | null;
+    likeCount: number | null;
+  };
+
+  export type PrivateContentSumAggregateOutputType = {
+    tokenCost: number | null;
+    likeCount: number | null;
+  };
+
+  export type PrivateContentMinAggregateOutputType = {
+    id: string | null;
+    characterId: string | null;
+    description: string | null;
+    tokenCost: number | null;
+    likeCount: number | null;
+    isActive: boolean | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type PrivateContentMaxAggregateOutputType = {
+    id: string | null;
+    characterId: string | null;
+    description: string | null;
+    tokenCost: number | null;
+    likeCount: number | null;
+    isActive: boolean | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type PrivateContentCountAggregateOutputType = {
+    id: number;
+    characterId: number;
+    description: number;
+    tokenCost: number;
+    likeCount: number;
+    isActive: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type PrivateContentAvgAggregateInputType = {
+    tokenCost?: true;
+    likeCount?: true;
+  };
+
+  export type PrivateContentSumAggregateInputType = {
+    tokenCost?: true;
+    likeCount?: true;
+  };
+
+  export type PrivateContentMinAggregateInputType = {
+    id?: true;
+    characterId?: true;
+    description?: true;
+    tokenCost?: true;
+    likeCount?: true;
+    isActive?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type PrivateContentMaxAggregateInputType = {
+    id?: true;
+    characterId?: true;
+    description?: true;
+    tokenCost?: true;
+    likeCount?: true;
+    isActive?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type PrivateContentCountAggregateInputType = {
+    id?: true;
+    characterId?: true;
+    description?: true;
+    tokenCost?: true;
+    likeCount?: true;
+    isActive?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type PrivateContentAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Filter which PrivateContent to aggregate.
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContents to fetch.
+     */
+    orderBy?:
+      | PrivateContentOrderByWithRelationInput
+      | PrivateContentOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: PrivateContentWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContents from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContents.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned PrivateContents
+     **/
+    _count?: true | PrivateContentCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: PrivateContentAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: PrivateContentSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: PrivateContentMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: PrivateContentMaxAggregateInputType;
+  };
+
+  export type GetPrivateContentAggregateType<
+    T extends PrivateContentAggregateArgs,
+  > = {
+    [P in keyof T & keyof AggregatePrivateContent]: P extends "_count" | "count"
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePrivateContent[P]>
+      : GetScalarType<T[P], AggregatePrivateContent[P]>;
+  };
+
+  export type PrivateContentGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    where?: PrivateContentWhereInput;
+    orderBy?:
+      | PrivateContentOrderByWithAggregationInput
+      | PrivateContentOrderByWithAggregationInput[];
+    by: PrivateContentScalarFieldEnum[] | PrivateContentScalarFieldEnum;
+    having?: PrivateContentScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: PrivateContentCountAggregateInputType | true;
+    _avg?: PrivateContentAvgAggregateInputType;
+    _sum?: PrivateContentSumAggregateInputType;
+    _min?: PrivateContentMinAggregateInputType;
+    _max?: PrivateContentMaxAggregateInputType;
+  };
+
+  export type PrivateContentGroupByOutputType = {
+    id: string;
+    characterId: string;
+    description: string | null;
+    tokenCost: number;
+    likeCount: number;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: PrivateContentCountAggregateOutputType | null;
+    _avg: PrivateContentAvgAggregateOutputType | null;
+    _sum: PrivateContentSumAggregateOutputType | null;
+    _min: PrivateContentMinAggregateOutputType | null;
+    _max: PrivateContentMaxAggregateOutputType | null;
+  };
+
+  type GetPrivateContentGroupByPayload<T extends PrivateContentGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<PrivateContentGroupByOutputType, T["by"]> & {
+          [P in keyof T &
+            keyof PrivateContentGroupByOutputType]: P extends "_count"
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PrivateContentGroupByOutputType[P]>
+            : GetScalarType<T[P], PrivateContentGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type PrivateContentSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      characterId?: boolean;
+      description?: boolean;
+      tokenCost?: boolean;
+      likeCount?: boolean;
+      isActive?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+      character?: boolean | CharacterDefaultArgs<ExtArgs>;
+      media?: boolean | PrivateContent$mediaArgs<ExtArgs>;
+      _count?: boolean | PrivateContentCountOutputTypeDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContent"]
+  >;
+
+  export type PrivateContentSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      characterId?: boolean;
+      description?: boolean;
+      tokenCost?: boolean;
+      likeCount?: boolean;
+      isActive?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+      character?: boolean | CharacterDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContent"]
+  >;
+
+  export type PrivateContentSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      characterId?: boolean;
+      description?: boolean;
+      tokenCost?: boolean;
+      likeCount?: boolean;
+      isActive?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+      character?: boolean | CharacterDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContent"]
+  >;
+
+  export type PrivateContentSelectScalar = {
+    id?: boolean;
+    characterId?: boolean;
+    description?: boolean;
+    tokenCost?: boolean;
+    likeCount?: boolean;
+    isActive?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type PrivateContentOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    | "id"
+    | "characterId"
+    | "description"
+    | "tokenCost"
+    | "likeCount"
+    | "isActive"
+    | "createdAt"
+    | "updatedAt",
+    ExtArgs["result"]["privateContent"]
+  >;
+  export type PrivateContentInclude<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    character?: boolean | CharacterDefaultArgs<ExtArgs>;
+    media?: boolean | PrivateContent$mediaArgs<ExtArgs>;
+    _count?: boolean | PrivateContentCountOutputTypeDefaultArgs<ExtArgs>;
+  };
+  export type PrivateContentIncludeCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    character?: boolean | CharacterDefaultArgs<ExtArgs>;
+  };
+  export type PrivateContentIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    character?: boolean | CharacterDefaultArgs<ExtArgs>;
+  };
+
+  export type $PrivateContentPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    name: "PrivateContent";
+    objects: {
+      character: Prisma.$CharacterPayload<ExtArgs>;
+      media: Prisma.$PrivateContentMediaPayload<ExtArgs>[];
+    };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        characterId: string;
+        description: string | null;
+        tokenCost: number;
+        likeCount: number;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs["result"]["privateContent"]
+    >;
+    composites: {};
+  };
+
+  type PrivateContentGetPayload<
+    S extends boolean | null | undefined | PrivateContentDefaultArgs,
+  > = $Result.GetResult<Prisma.$PrivateContentPayload, S>;
+
+  type PrivateContentCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<
+    PrivateContentFindManyArgs,
+    "select" | "include" | "distinct" | "omit"
+  > & {
+    select?: PrivateContentCountAggregateInputType | true;
+  };
+
+  export interface PrivateContentDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>["model"]["PrivateContent"];
+      meta: { name: "PrivateContent" };
+    };
+    /**
+     * Find zero or one PrivateContent that matches the filter.
+     * @param {PrivateContentFindUniqueArgs} args - Arguments to find a PrivateContent
+     * @example
+     * // Get one PrivateContent
+     * const privateContent = await prisma.privateContent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PrivateContentFindUniqueArgs>(
+      args: SelectSubset<T, PrivateContentFindUniqueArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "findUnique",
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one PrivateContent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PrivateContentFindUniqueOrThrowArgs} args - Arguments to find a PrivateContent
+     * @example
+     * // Get one PrivateContent
+     * const privateContent = await prisma.privateContent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PrivateContentFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, PrivateContentFindUniqueOrThrowArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "findUniqueOrThrow",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first PrivateContent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentFindFirstArgs} args - Arguments to find a PrivateContent
+     * @example
+     * // Get one PrivateContent
+     * const privateContent = await prisma.privateContent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PrivateContentFindFirstArgs>(
+      args?: SelectSubset<T, PrivateContentFindFirstArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "findFirst",
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first PrivateContent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentFindFirstOrThrowArgs} args - Arguments to find a PrivateContent
+     * @example
+     * // Get one PrivateContent
+     * const privateContent = await prisma.privateContent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PrivateContentFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, PrivateContentFindFirstOrThrowArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more PrivateContents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PrivateContents
+     * const privateContents = await prisma.privateContent.findMany()
+     *
+     * // Get first 10 PrivateContents
+     * const privateContents = await prisma.privateContent.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const privateContentWithIdOnly = await prisma.privateContent.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends PrivateContentFindManyArgs>(
+      args?: SelectSubset<T, PrivateContentFindManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "findMany",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a PrivateContent.
+     * @param {PrivateContentCreateArgs} args - Arguments to create a PrivateContent.
+     * @example
+     * // Create one PrivateContent
+     * const PrivateContent = await prisma.privateContent.create({
+     *   data: {
+     *     // ... data to create a PrivateContent
+     *   }
+     * })
+     *
+     */
+    create<T extends PrivateContentCreateArgs>(
+      args: SelectSubset<T, PrivateContentCreateArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "create",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many PrivateContents.
+     * @param {PrivateContentCreateManyArgs} args - Arguments to create many PrivateContents.
+     * @example
+     * // Create many PrivateContents
+     * const privateContent = await prisma.privateContent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends PrivateContentCreateManyArgs>(
+      args?: SelectSubset<T, PrivateContentCreateManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many PrivateContents and returns the data saved in the database.
+     * @param {PrivateContentCreateManyAndReturnArgs} args - Arguments to create many PrivateContents.
+     * @example
+     * // Create many PrivateContents
+     * const privateContent = await prisma.privateContent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many PrivateContents and only return the `id`
+     * const privateContentWithIdOnly = await prisma.privateContent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends PrivateContentCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, PrivateContentCreateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "createManyAndReturn",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a PrivateContent.
+     * @param {PrivateContentDeleteArgs} args - Arguments to delete one PrivateContent.
+     * @example
+     * // Delete one PrivateContent
+     * const PrivateContent = await prisma.privateContent.delete({
+     *   where: {
+     *     // ... filter to delete one PrivateContent
+     *   }
+     * })
+     *
+     */
+    delete<T extends PrivateContentDeleteArgs>(
+      args: SelectSubset<T, PrivateContentDeleteArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "delete",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one PrivateContent.
+     * @param {PrivateContentUpdateArgs} args - Arguments to update one PrivateContent.
+     * @example
+     * // Update one PrivateContent
+     * const privateContent = await prisma.privateContent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends PrivateContentUpdateArgs>(
+      args: SelectSubset<T, PrivateContentUpdateArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "update",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more PrivateContents.
+     * @param {PrivateContentDeleteManyArgs} args - Arguments to filter PrivateContents to delete.
+     * @example
+     * // Delete a few PrivateContents
+     * const { count } = await prisma.privateContent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends PrivateContentDeleteManyArgs>(
+      args?: SelectSubset<T, PrivateContentDeleteManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more PrivateContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PrivateContents
+     * const privateContent = await prisma.privateContent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends PrivateContentUpdateManyArgs>(
+      args: SelectSubset<T, PrivateContentUpdateManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more PrivateContents and returns the data updated in the database.
+     * @param {PrivateContentUpdateManyAndReturnArgs} args - Arguments to update many PrivateContents.
+     * @example
+     * // Update many PrivateContents
+     * const privateContent = await prisma.privateContent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more PrivateContents and only return the `id`
+     * const privateContentWithIdOnly = await prisma.privateContent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends PrivateContentUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, PrivateContentUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one PrivateContent.
+     * @param {PrivateContentUpsertArgs} args - Arguments to update or create a PrivateContent.
+     * @example
+     * // Update or create a PrivateContent
+     * const privateContent = await prisma.privateContent.upsert({
+     *   create: {
+     *     // ... data to create a PrivateContent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PrivateContent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PrivateContentUpsertArgs>(
+      args: SelectSubset<T, PrivateContentUpsertArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentPayload<ExtArgs>,
+        T,
+        "upsert",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of PrivateContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentCountArgs} args - Arguments to filter PrivateContents to count.
+     * @example
+     * // Count the number of PrivateContents
+     * const count = await prisma.privateContent.count({
+     *   where: {
+     *     // ... the filter for the PrivateContents we want to count
+     *   }
+     * })
+     **/
+    count<T extends PrivateContentCountArgs>(
+      args?: Subset<T, PrivateContentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<"select", any>
+        ? T["select"] extends true
+          ? number
+          : GetScalarType<T["select"], PrivateContentCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a PrivateContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends PrivateContentAggregateArgs>(
+      args: Subset<T, PrivateContentAggregateArgs>,
+    ): Prisma.PrismaPromise<GetPrivateContentAggregateType<T>>;
+
+    /**
+     * Group by PrivateContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends PrivateContentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<"skip", Keys<T>>,
+        Extends<"take", Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PrivateContentGroupByArgs["orderBy"] }
+        : { orderBy?: PrivateContentGroupByArgs["orderBy"] },
+      OrderFields extends ExcludeUnderscoreKeys<
+        Keys<MaybeTupleToUnion<T["orderBy"]>>
+      >,
+      ByFields extends MaybeTupleToUnion<T["by"]>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T["having"]>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T["by"] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
+    >(
+      args: SubsetIntersection<T, PrivateContentGroupByArgs, OrderByArg> &
+        InputErrors,
+    ): {} extends InputErrors
+      ? GetPrivateContentGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the PrivateContent model
+     */
+    readonly fields: PrivateContentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PrivateContent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PrivateContentClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    character<T extends CharacterDefaultArgs<ExtArgs> = {}>(
+      args?: Subset<T, CharacterDefaultArgs<ExtArgs>>,
+    ): Prisma__CharacterClient<
+      | $Result.GetResult<
+          Prisma.$CharacterPayload<ExtArgs>,
+          T,
+          "findUniqueOrThrow",
+          GlobalOmitOptions
+        >
+      | Null,
+      Null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+    media<T extends PrivateContent$mediaArgs<ExtArgs> = {}>(
+      args?: Subset<T, PrivateContent$mediaArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      | $Result.GetResult<
+          Prisma.$PrivateContentMediaPayload<ExtArgs>,
+          T,
+          "findMany",
+          GlobalOmitOptions
+        >
+      | Null
+    >;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?:
+        | ((value: T) => TResult1 | PromiseLike<TResult1>)
+        | undefined
+        | null,
+      onrejected?:
+        | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+        | undefined
+        | null,
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?:
+        | ((reason: any) => TResult | PromiseLike<TResult>)
+        | undefined
+        | null,
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the PrivateContent model
+   */
+  interface PrivateContentFieldRefs {
+    readonly id: FieldRef<"PrivateContent", "String">;
+    readonly characterId: FieldRef<"PrivateContent", "String">;
+    readonly description: FieldRef<"PrivateContent", "String">;
+    readonly tokenCost: FieldRef<"PrivateContent", "Int">;
+    readonly likeCount: FieldRef<"PrivateContent", "Int">;
+    readonly isActive: FieldRef<"PrivateContent", "Boolean">;
+    readonly createdAt: FieldRef<"PrivateContent", "DateTime">;
+    readonly updatedAt: FieldRef<"PrivateContent", "DateTime">;
+  }
+
+  // Custom InputTypes
+  /**
+   * PrivateContent findUnique
+   */
+  export type PrivateContentFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContent to fetch.
+     */
+    where: PrivateContentWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContent findUniqueOrThrow
+   */
+  export type PrivateContentFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContent to fetch.
+     */
+    where: PrivateContentWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContent findFirst
+   */
+  export type PrivateContentFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContent to fetch.
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContents to fetch.
+     */
+    orderBy?:
+      | PrivateContentOrderByWithRelationInput
+      | PrivateContentOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PrivateContents.
+     */
+    cursor?: PrivateContentWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContents from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContents.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PrivateContents.
+     */
+    distinct?: PrivateContentScalarFieldEnum | PrivateContentScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContent findFirstOrThrow
+   */
+  export type PrivateContentFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContent to fetch.
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContents to fetch.
+     */
+    orderBy?:
+      | PrivateContentOrderByWithRelationInput
+      | PrivateContentOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PrivateContents.
+     */
+    cursor?: PrivateContentWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContents from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContents.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PrivateContents.
+     */
+    distinct?: PrivateContentScalarFieldEnum | PrivateContentScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContent findMany
+   */
+  export type PrivateContentFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContents to fetch.
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContents to fetch.
+     */
+    orderBy?:
+      | PrivateContentOrderByWithRelationInput
+      | PrivateContentOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing PrivateContents.
+     */
+    cursor?: PrivateContentWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContents from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContents.
+     */
+    skip?: number;
+    distinct?: PrivateContentScalarFieldEnum | PrivateContentScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContent create
+   */
+  export type PrivateContentCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a PrivateContent.
+     */
+    data: XOR<PrivateContentCreateInput, PrivateContentUncheckedCreateInput>;
+  };
+
+  /**
+   * PrivateContent createMany
+   */
+  export type PrivateContentCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * The data used to create many PrivateContents.
+     */
+    data: PrivateContentCreateManyInput | PrivateContentCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * PrivateContent createManyAndReturn
+   */
+  export type PrivateContentCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * The data used to create many PrivateContents.
+     */
+    data: PrivateContentCreateManyInput | PrivateContentCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentIncludeCreateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * PrivateContent update
+   */
+  export type PrivateContentUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a PrivateContent.
+     */
+    data: XOR<PrivateContentUpdateInput, PrivateContentUncheckedUpdateInput>;
+    /**
+     * Choose, which PrivateContent to update.
+     */
+    where: PrivateContentWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContent updateMany
+   */
+  export type PrivateContentUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * The data used to update PrivateContents.
+     */
+    data: XOR<
+      PrivateContentUpdateManyMutationInput,
+      PrivateContentUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which PrivateContents to update
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * Limit how many PrivateContents to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * PrivateContent updateManyAndReturn
+   */
+  export type PrivateContentUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * The data used to update PrivateContents.
+     */
+    data: XOR<
+      PrivateContentUpdateManyMutationInput,
+      PrivateContentUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which PrivateContents to update
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * Limit how many PrivateContents to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentIncludeUpdateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * PrivateContent upsert
+   */
+  export type PrivateContentUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the PrivateContent to update in case it exists.
+     */
+    where: PrivateContentWhereUniqueInput;
+    /**
+     * In case the PrivateContent found by the `where` argument doesn't exist, create a new PrivateContent with this data.
+     */
+    create: XOR<PrivateContentCreateInput, PrivateContentUncheckedCreateInput>;
+    /**
+     * In case the PrivateContent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PrivateContentUpdateInput, PrivateContentUncheckedUpdateInput>;
+  };
+
+  /**
+   * PrivateContent delete
+   */
+  export type PrivateContentDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+    /**
+     * Filter which PrivateContent to delete.
+     */
+    where: PrivateContentWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContent deleteMany
+   */
+  export type PrivateContentDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Filter which PrivateContents to delete
+     */
+    where?: PrivateContentWhereInput;
+    /**
+     * Limit how many PrivateContents to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * PrivateContent.media
+   */
+  export type PrivateContent$mediaArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    where?: PrivateContentMediaWhereInput;
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?:
+      | PrivateContentMediaScalarFieldEnum
+      | PrivateContentMediaScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContent without action
+   */
+  export type PrivateContentDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContent
+     */
+    select?: PrivateContentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContent
+     */
+    omit?: PrivateContentOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentInclude<ExtArgs> | null;
+  };
+
+  /**
+   * Model PrivateContentMedia
+   */
+
+  export type AggregatePrivateContentMedia = {
+    _count: PrivateContentMediaCountAggregateOutputType | null;
+    _avg: PrivateContentMediaAvgAggregateOutputType | null;
+    _sum: PrivateContentMediaSumAggregateOutputType | null;
+    _min: PrivateContentMediaMinAggregateOutputType | null;
+    _max: PrivateContentMediaMaxAggregateOutputType | null;
+  };
+
+  export type PrivateContentMediaAvgAggregateOutputType = {
+    order: number | null;
+  };
+
+  export type PrivateContentMediaSumAggregateOutputType = {
+    order: number | null;
+  };
+
+  export type PrivateContentMediaMinAggregateOutputType = {
+    id: string | null;
+    privateContentId: string | null;
+    mediaId: string | null;
+    order: number | null;
+    createdAt: Date | null;
+  };
+
+  export type PrivateContentMediaMaxAggregateOutputType = {
+    id: string | null;
+    privateContentId: string | null;
+    mediaId: string | null;
+    order: number | null;
+    createdAt: Date | null;
+  };
+
+  export type PrivateContentMediaCountAggregateOutputType = {
+    id: number;
+    privateContentId: number;
+    mediaId: number;
+    order: number;
+    createdAt: number;
+    _all: number;
+  };
+
+  export type PrivateContentMediaAvgAggregateInputType = {
+    order?: true;
+  };
+
+  export type PrivateContentMediaSumAggregateInputType = {
+    order?: true;
+  };
+
+  export type PrivateContentMediaMinAggregateInputType = {
+    id?: true;
+    privateContentId?: true;
+    mediaId?: true;
+    order?: true;
+    createdAt?: true;
+  };
+
+  export type PrivateContentMediaMaxAggregateInputType = {
+    id?: true;
+    privateContentId?: true;
+    mediaId?: true;
+    order?: true;
+    createdAt?: true;
+  };
+
+  export type PrivateContentMediaCountAggregateInputType = {
+    id?: true;
+    privateContentId?: true;
+    mediaId?: true;
+    order?: true;
+    createdAt?: true;
+    _all?: true;
+  };
+
+  export type PrivateContentMediaAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Filter which PrivateContentMedia to aggregate.
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContentMedias to fetch.
+     */
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContentMedias from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContentMedias.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned PrivateContentMedias
+     **/
+    _count?: true | PrivateContentMediaCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: PrivateContentMediaAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: PrivateContentMediaSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: PrivateContentMediaMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: PrivateContentMediaMaxAggregateInputType;
+  };
+
+  export type GetPrivateContentMediaAggregateType<
+    T extends PrivateContentMediaAggregateArgs,
+  > = {
+    [P in keyof T & keyof AggregatePrivateContentMedia]: P extends
+      | "_count"
+      | "count"
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePrivateContentMedia[P]>
+      : GetScalarType<T[P], AggregatePrivateContentMedia[P]>;
+  };
+
+  export type PrivateContentMediaGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    where?: PrivateContentMediaWhereInput;
+    orderBy?:
+      | PrivateContentMediaOrderByWithAggregationInput
+      | PrivateContentMediaOrderByWithAggregationInput[];
+    by:
+      | PrivateContentMediaScalarFieldEnum[]
+      | PrivateContentMediaScalarFieldEnum;
+    having?: PrivateContentMediaScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: PrivateContentMediaCountAggregateInputType | true;
+    _avg?: PrivateContentMediaAvgAggregateInputType;
+    _sum?: PrivateContentMediaSumAggregateInputType;
+    _min?: PrivateContentMediaMinAggregateInputType;
+    _max?: PrivateContentMediaMaxAggregateInputType;
+  };
+
+  export type PrivateContentMediaGroupByOutputType = {
+    id: string;
+    privateContentId: string;
+    mediaId: string;
+    order: number;
+    createdAt: Date;
+    _count: PrivateContentMediaCountAggregateOutputType | null;
+    _avg: PrivateContentMediaAvgAggregateOutputType | null;
+    _sum: PrivateContentMediaSumAggregateOutputType | null;
+    _min: PrivateContentMediaMinAggregateOutputType | null;
+    _max: PrivateContentMediaMaxAggregateOutputType | null;
+  };
+
+  type GetPrivateContentMediaGroupByPayload<
+    T extends PrivateContentMediaGroupByArgs,
+  > = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PrivateContentMediaGroupByOutputType, T["by"]> & {
+        [P in keyof T &
+          keyof PrivateContentMediaGroupByOutputType]: P extends "_count"
+          ? T[P] extends boolean
+            ? number
+            : GetScalarType<T[P], PrivateContentMediaGroupByOutputType[P]>
+          : GetScalarType<T[P], PrivateContentMediaGroupByOutputType[P]>;
+      }
+    >
+  >;
+
+  export type PrivateContentMediaSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      privateContentId?: boolean;
+      mediaId?: boolean;
+      order?: boolean;
+      createdAt?: boolean;
+      privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+      media?: boolean | MediaDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContentMedia"]
+  >;
+
+  export type PrivateContentMediaSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      privateContentId?: boolean;
+      mediaId?: boolean;
+      order?: boolean;
+      createdAt?: boolean;
+      privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+      media?: boolean | MediaDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContentMedia"]
+  >;
+
+  export type PrivateContentMediaSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      privateContentId?: boolean;
+      mediaId?: boolean;
+      order?: boolean;
+      createdAt?: boolean;
+      privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+      media?: boolean | MediaDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["privateContentMedia"]
+  >;
+
+  export type PrivateContentMediaSelectScalar = {
+    id?: boolean;
+    privateContentId?: boolean;
+    mediaId?: boolean;
+    order?: boolean;
+    createdAt?: boolean;
+  };
+
+  export type PrivateContentMediaOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    "id" | "privateContentId" | "mediaId" | "order" | "createdAt",
+    ExtArgs["result"]["privateContentMedia"]
+  >;
+  export type PrivateContentMediaInclude<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+    media?: boolean | MediaDefaultArgs<ExtArgs>;
+  };
+  export type PrivateContentMediaIncludeCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+    media?: boolean | MediaDefaultArgs<ExtArgs>;
+  };
+  export type PrivateContentMediaIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    privateContent?: boolean | PrivateContentDefaultArgs<ExtArgs>;
+    media?: boolean | MediaDefaultArgs<ExtArgs>;
+  };
+
+  export type $PrivateContentMediaPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    name: "PrivateContentMedia";
+    objects: {
+      privateContent: Prisma.$PrivateContentPayload<ExtArgs>;
+      media: Prisma.$MediaPayload<ExtArgs>;
+    };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        privateContentId: string;
+        mediaId: string;
+        order: number;
+        createdAt: Date;
+      },
+      ExtArgs["result"]["privateContentMedia"]
+    >;
+    composites: {};
+  };
+
+  type PrivateContentMediaGetPayload<
+    S extends boolean | null | undefined | PrivateContentMediaDefaultArgs,
+  > = $Result.GetResult<Prisma.$PrivateContentMediaPayload, S>;
+
+  type PrivateContentMediaCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<
+    PrivateContentMediaFindManyArgs,
+    "select" | "include" | "distinct" | "omit"
+  > & {
+    select?: PrivateContentMediaCountAggregateInputType | true;
+  };
+
+  export interface PrivateContentMediaDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>["model"]["PrivateContentMedia"];
+      meta: { name: "PrivateContentMedia" };
+    };
+    /**
+     * Find zero or one PrivateContentMedia that matches the filter.
+     * @param {PrivateContentMediaFindUniqueArgs} args - Arguments to find a PrivateContentMedia
+     * @example
+     * // Get one PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PrivateContentMediaFindUniqueArgs>(
+      args: SelectSubset<T, PrivateContentMediaFindUniqueArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "findUnique",
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one PrivateContentMedia that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PrivateContentMediaFindUniqueOrThrowArgs} args - Arguments to find a PrivateContentMedia
+     * @example
+     * // Get one PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PrivateContentMediaFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, PrivateContentMediaFindUniqueOrThrowArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "findUniqueOrThrow",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first PrivateContentMedia that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaFindFirstArgs} args - Arguments to find a PrivateContentMedia
+     * @example
+     * // Get one PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PrivateContentMediaFindFirstArgs>(
+      args?: SelectSubset<T, PrivateContentMediaFindFirstArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "findFirst",
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first PrivateContentMedia that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaFindFirstOrThrowArgs} args - Arguments to find a PrivateContentMedia
+     * @example
+     * // Get one PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PrivateContentMediaFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, PrivateContentMediaFindFirstOrThrowArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more PrivateContentMedias that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PrivateContentMedias
+     * const privateContentMedias = await prisma.privateContentMedia.findMany()
+     *
+     * // Get first 10 PrivateContentMedias
+     * const privateContentMedias = await prisma.privateContentMedia.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const privateContentMediaWithIdOnly = await prisma.privateContentMedia.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends PrivateContentMediaFindManyArgs>(
+      args?: SelectSubset<T, PrivateContentMediaFindManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "findMany",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a PrivateContentMedia.
+     * @param {PrivateContentMediaCreateArgs} args - Arguments to create a PrivateContentMedia.
+     * @example
+     * // Create one PrivateContentMedia
+     * const PrivateContentMedia = await prisma.privateContentMedia.create({
+     *   data: {
+     *     // ... data to create a PrivateContentMedia
+     *   }
+     * })
+     *
+     */
+    create<T extends PrivateContentMediaCreateArgs>(
+      args: SelectSubset<T, PrivateContentMediaCreateArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "create",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many PrivateContentMedias.
+     * @param {PrivateContentMediaCreateManyArgs} args - Arguments to create many PrivateContentMedias.
+     * @example
+     * // Create many PrivateContentMedias
+     * const privateContentMedia = await prisma.privateContentMedia.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends PrivateContentMediaCreateManyArgs>(
+      args?: SelectSubset<T, PrivateContentMediaCreateManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many PrivateContentMedias and returns the data saved in the database.
+     * @param {PrivateContentMediaCreateManyAndReturnArgs} args - Arguments to create many PrivateContentMedias.
+     * @example
+     * // Create many PrivateContentMedias
+     * const privateContentMedia = await prisma.privateContentMedia.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many PrivateContentMedias and only return the `id`
+     * const privateContentMediaWithIdOnly = await prisma.privateContentMedia.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends PrivateContentMediaCreateManyAndReturnArgs>(
+      args?: SelectSubset<
+        T,
+        PrivateContentMediaCreateManyAndReturnArgs<ExtArgs>
+      >,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "createManyAndReturn",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a PrivateContentMedia.
+     * @param {PrivateContentMediaDeleteArgs} args - Arguments to delete one PrivateContentMedia.
+     * @example
+     * // Delete one PrivateContentMedia
+     * const PrivateContentMedia = await prisma.privateContentMedia.delete({
+     *   where: {
+     *     // ... filter to delete one PrivateContentMedia
+     *   }
+     * })
+     *
+     */
+    delete<T extends PrivateContentMediaDeleteArgs>(
+      args: SelectSubset<T, PrivateContentMediaDeleteArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "delete",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one PrivateContentMedia.
+     * @param {PrivateContentMediaUpdateArgs} args - Arguments to update one PrivateContentMedia.
+     * @example
+     * // Update one PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends PrivateContentMediaUpdateArgs>(
+      args: SelectSubset<T, PrivateContentMediaUpdateArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "update",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more PrivateContentMedias.
+     * @param {PrivateContentMediaDeleteManyArgs} args - Arguments to filter PrivateContentMedias to delete.
+     * @example
+     * // Delete a few PrivateContentMedias
+     * const { count } = await prisma.privateContentMedia.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends PrivateContentMediaDeleteManyArgs>(
+      args?: SelectSubset<T, PrivateContentMediaDeleteManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more PrivateContentMedias.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PrivateContentMedias
+     * const privateContentMedia = await prisma.privateContentMedia.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends PrivateContentMediaUpdateManyArgs>(
+      args: SelectSubset<T, PrivateContentMediaUpdateManyArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more PrivateContentMedias and returns the data updated in the database.
+     * @param {PrivateContentMediaUpdateManyAndReturnArgs} args - Arguments to update many PrivateContentMedias.
+     * @example
+     * // Update many PrivateContentMedias
+     * const privateContentMedia = await prisma.privateContentMedia.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more PrivateContentMedias and only return the `id`
+     * const privateContentMediaWithIdOnly = await prisma.privateContentMedia.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends PrivateContentMediaUpdateManyAndReturnArgs>(
+      args: SelectSubset<
+        T,
+        PrivateContentMediaUpdateManyAndReturnArgs<ExtArgs>
+      >,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one PrivateContentMedia.
+     * @param {PrivateContentMediaUpsertArgs} args - Arguments to update or create a PrivateContentMedia.
+     * @example
+     * // Update or create a PrivateContentMedia
+     * const privateContentMedia = await prisma.privateContentMedia.upsert({
+     *   create: {
+     *     // ... data to create a PrivateContentMedia
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PrivateContentMedia we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PrivateContentMediaUpsertArgs>(
+      args: SelectSubset<T, PrivateContentMediaUpsertArgs<ExtArgs>>,
+    ): Prisma__PrivateContentMediaClient<
+      $Result.GetResult<
+        Prisma.$PrivateContentMediaPayload<ExtArgs>,
+        T,
+        "upsert",
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of PrivateContentMedias.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaCountArgs} args - Arguments to filter PrivateContentMedias to count.
+     * @example
+     * // Count the number of PrivateContentMedias
+     * const count = await prisma.privateContentMedia.count({
+     *   where: {
+     *     // ... the filter for the PrivateContentMedias we want to count
+     *   }
+     * })
+     **/
+    count<T extends PrivateContentMediaCountArgs>(
+      args?: Subset<T, PrivateContentMediaCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<"select", any>
+        ? T["select"] extends true
+          ? number
+          : GetScalarType<
+              T["select"],
+              PrivateContentMediaCountAggregateOutputType
+            >
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a PrivateContentMedia.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends PrivateContentMediaAggregateArgs>(
+      args: Subset<T, PrivateContentMediaAggregateArgs>,
+    ): Prisma.PrismaPromise<GetPrivateContentMediaAggregateType<T>>;
+
+    /**
+     * Group by PrivateContentMedia.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PrivateContentMediaGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends PrivateContentMediaGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<"skip", Keys<T>>,
+        Extends<"take", Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PrivateContentMediaGroupByArgs["orderBy"] }
+        : { orderBy?: PrivateContentMediaGroupByArgs["orderBy"] },
+      OrderFields extends ExcludeUnderscoreKeys<
+        Keys<MaybeTupleToUnion<T["orderBy"]>>
+      >,
+      ByFields extends MaybeTupleToUnion<T["by"]>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T["having"]>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T["by"] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
+    >(
+      args: SubsetIntersection<T, PrivateContentMediaGroupByArgs, OrderByArg> &
+        InputErrors,
+    ): {} extends InputErrors
+      ? GetPrivateContentMediaGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the PrivateContentMedia model
+     */
+    readonly fields: PrivateContentMediaFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PrivateContentMedia.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PrivateContentMediaClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    privateContent<T extends PrivateContentDefaultArgs<ExtArgs> = {}>(
+      args?: Subset<T, PrivateContentDefaultArgs<ExtArgs>>,
+    ): Prisma__PrivateContentClient<
+      | $Result.GetResult<
+          Prisma.$PrivateContentPayload<ExtArgs>,
+          T,
+          "findUniqueOrThrow",
+          GlobalOmitOptions
+        >
+      | Null,
+      Null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+    media<T extends MediaDefaultArgs<ExtArgs> = {}>(
+      args?: Subset<T, MediaDefaultArgs<ExtArgs>>,
+    ): Prisma__MediaClient<
+      | $Result.GetResult<
+          Prisma.$MediaPayload<ExtArgs>,
+          T,
+          "findUniqueOrThrow",
+          GlobalOmitOptions
+        >
+      | Null,
+      Null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?:
+        | ((value: T) => TResult1 | PromiseLike<TResult1>)
+        | undefined
+        | null,
+      onrejected?:
+        | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+        | undefined
+        | null,
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?:
+        | ((reason: any) => TResult | PromiseLike<TResult>)
+        | undefined
+        | null,
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the PrivateContentMedia model
+   */
+  interface PrivateContentMediaFieldRefs {
+    readonly id: FieldRef<"PrivateContentMedia", "String">;
+    readonly privateContentId: FieldRef<"PrivateContentMedia", "String">;
+    readonly mediaId: FieldRef<"PrivateContentMedia", "String">;
+    readonly order: FieldRef<"PrivateContentMedia", "Int">;
+    readonly createdAt: FieldRef<"PrivateContentMedia", "DateTime">;
+  }
+
+  // Custom InputTypes
+  /**
+   * PrivateContentMedia findUnique
+   */
+  export type PrivateContentMediaFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContentMedia to fetch.
+     */
+    where: PrivateContentMediaWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContentMedia findUniqueOrThrow
+   */
+  export type PrivateContentMediaFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContentMedia to fetch.
+     */
+    where: PrivateContentMediaWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContentMedia findFirst
+   */
+  export type PrivateContentMediaFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContentMedia to fetch.
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContentMedias to fetch.
+     */
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PrivateContentMedias.
+     */
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContentMedias from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContentMedias.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PrivateContentMedias.
+     */
+    distinct?:
+      | PrivateContentMediaScalarFieldEnum
+      | PrivateContentMediaScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContentMedia findFirstOrThrow
+   */
+  export type PrivateContentMediaFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContentMedia to fetch.
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContentMedias to fetch.
+     */
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PrivateContentMedias.
+     */
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContentMedias from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContentMedias.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PrivateContentMedias.
+     */
+    distinct?:
+      | PrivateContentMediaScalarFieldEnum
+      | PrivateContentMediaScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContentMedia findMany
+   */
+  export type PrivateContentMediaFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter, which PrivateContentMedias to fetch.
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PrivateContentMedias to fetch.
+     */
+    orderBy?:
+      | PrivateContentMediaOrderByWithRelationInput
+      | PrivateContentMediaOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing PrivateContentMedias.
+     */
+    cursor?: PrivateContentMediaWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PrivateContentMedias from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PrivateContentMedias.
+     */
+    skip?: number;
+    distinct?:
+      | PrivateContentMediaScalarFieldEnum
+      | PrivateContentMediaScalarFieldEnum[];
+  };
+
+  /**
+   * PrivateContentMedia create
+   */
+  export type PrivateContentMediaCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a PrivateContentMedia.
+     */
+    data: XOR<
+      PrivateContentMediaCreateInput,
+      PrivateContentMediaUncheckedCreateInput
+    >;
+  };
+
+  /**
+   * PrivateContentMedia createMany
+   */
+  export type PrivateContentMediaCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * The data used to create many PrivateContentMedias.
+     */
+    data:
+      | PrivateContentMediaCreateManyInput
+      | PrivateContentMediaCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * PrivateContentMedia createManyAndReturn
+   */
+  export type PrivateContentMediaCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * The data used to create many PrivateContentMedias.
+     */
+    data:
+      | PrivateContentMediaCreateManyInput
+      | PrivateContentMediaCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaIncludeCreateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * PrivateContentMedia update
+   */
+  export type PrivateContentMediaUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a PrivateContentMedia.
+     */
+    data: XOR<
+      PrivateContentMediaUpdateInput,
+      PrivateContentMediaUncheckedUpdateInput
+    >;
+    /**
+     * Choose, which PrivateContentMedia to update.
+     */
+    where: PrivateContentMediaWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContentMedia updateMany
+   */
+  export type PrivateContentMediaUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * The data used to update PrivateContentMedias.
+     */
+    data: XOR<
+      PrivateContentMediaUpdateManyMutationInput,
+      PrivateContentMediaUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which PrivateContentMedias to update
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * Limit how many PrivateContentMedias to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * PrivateContentMedia updateManyAndReturn
+   */
+  export type PrivateContentMediaUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * The data used to update PrivateContentMedias.
+     */
+    data: XOR<
+      PrivateContentMediaUpdateManyMutationInput,
+      PrivateContentMediaUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which PrivateContentMedias to update
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * Limit how many PrivateContentMedias to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaIncludeUpdateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * PrivateContentMedia upsert
+   */
+  export type PrivateContentMediaUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the PrivateContentMedia to update in case it exists.
+     */
+    where: PrivateContentMediaWhereUniqueInput;
+    /**
+     * In case the PrivateContentMedia found by the `where` argument doesn't exist, create a new PrivateContentMedia with this data.
+     */
+    create: XOR<
+      PrivateContentMediaCreateInput,
+      PrivateContentMediaUncheckedCreateInput
+    >;
+    /**
+     * In case the PrivateContentMedia was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<
+      PrivateContentMediaUpdateInput,
+      PrivateContentMediaUncheckedUpdateInput
+    >;
+  };
+
+  /**
+   * PrivateContentMedia delete
+   */
+  export type PrivateContentMediaDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+    /**
+     * Filter which PrivateContentMedia to delete.
+     */
+    where: PrivateContentMediaWhereUniqueInput;
+  };
+
+  /**
+   * PrivateContentMedia deleteMany
+   */
+  export type PrivateContentMediaDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Filter which PrivateContentMedias to delete
+     */
+    where?: PrivateContentMediaWhereInput;
+    /**
+     * Limit how many PrivateContentMedias to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * PrivateContentMedia without action
+   */
+  export type PrivateContentMediaDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the PrivateContentMedia
+     */
+    select?: PrivateContentMediaSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PrivateContentMedia
+     */
+    omit?: PrivateContentMediaOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PrivateContentMediaInclude<ExtArgs> | null;
+  };
+
+  /**
    * Model Affiliate
    */
 
@@ -27890,6 +31078,31 @@ export namespace Prisma {
   export type ReelScalarFieldEnum =
     (typeof ReelScalarFieldEnum)[keyof typeof ReelScalarFieldEnum];
 
+  export const PrivateContentScalarFieldEnum: {
+    id: "id";
+    characterId: "characterId";
+    description: "description";
+    tokenCost: "tokenCost";
+    likeCount: "likeCount";
+    isActive: "isActive";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
+  };
+
+  export type PrivateContentScalarFieldEnum =
+    (typeof PrivateContentScalarFieldEnum)[keyof typeof PrivateContentScalarFieldEnum];
+
+  export const PrivateContentMediaScalarFieldEnum: {
+    id: "id";
+    privateContentId: "privateContentId";
+    mediaId: "mediaId";
+    order: "order";
+    createdAt: "createdAt";
+  };
+
+  export type PrivateContentMediaScalarFieldEnum =
+    (typeof PrivateContentMediaScalarFieldEnum)[keyof typeof PrivateContentMediaScalarFieldEnum];
+
   export const AffiliateScalarFieldEnum: {
     id: "id";
     userId: "userId";
@@ -28341,6 +31554,7 @@ export namespace Prisma {
     reelVideos?: ReelListRelationFilter;
     reelThumbnails?: ReelListRelationFilter;
     collections?: CollectionListRelationFilter;
+    privateContentMedia?: PrivateContentMediaListRelationFilter;
   };
 
   export type MediaOrderByWithRelationInput = {
@@ -28361,6 +31575,7 @@ export namespace Prisma {
     reelVideos?: ReelOrderByRelationAggregateInput;
     reelThumbnails?: ReelOrderByRelationAggregateInput;
     collections?: CollectionOrderByRelationAggregateInput;
+    privateContentMedia?: PrivateContentMediaOrderByRelationAggregateInput;
   };
 
   export type MediaWhereUniqueInput = Prisma.AtLeast<
@@ -28385,6 +31600,7 @@ export namespace Prisma {
       reelVideos?: ReelListRelationFilter;
       reelThumbnails?: ReelListRelationFilter;
       collections?: CollectionListRelationFilter;
+      privateContentMedia?: PrivateContentMediaListRelationFilter;
     },
     "id" | "key"
   >;
@@ -28940,6 +32156,7 @@ export namespace Prisma {
     chats?: ChatListRelationFilter;
     stories?: StoryListRelationFilter;
     reels?: ReelListRelationFilter;
+    privateContents?: PrivateContentListRelationFilter;
   };
 
   export type CharacterOrderByWithRelationInput = {
@@ -28973,6 +32190,7 @@ export namespace Prisma {
     chats?: ChatOrderByRelationAggregateInput;
     stories?: StoryOrderByRelationAggregateInput;
     reels?: ReelOrderByRelationAggregateInput;
+    privateContents?: PrivateContentOrderByRelationAggregateInput;
   };
 
   export type CharacterWhereUniqueInput = Prisma.AtLeast<
@@ -29010,6 +32228,7 @@ export namespace Prisma {
       chats?: ChatListRelationFilter;
       stories?: StoryListRelationFilter;
       reels?: ReelListRelationFilter;
+      privateContents?: PrivateContentListRelationFilter;
     },
     "id"
   >;
@@ -29788,6 +33007,170 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Reel"> | Date | string;
   };
 
+  export type PrivateContentWhereInput = {
+    AND?: PrivateContentWhereInput | PrivateContentWhereInput[];
+    OR?: PrivateContentWhereInput[];
+    NOT?: PrivateContentWhereInput | PrivateContentWhereInput[];
+    id?: StringFilter<"PrivateContent"> | string;
+    characterId?: StringFilter<"PrivateContent"> | string;
+    description?: StringNullableFilter<"PrivateContent"> | string | null;
+    tokenCost?: IntFilter<"PrivateContent"> | number;
+    likeCount?: IntFilter<"PrivateContent"> | number;
+    isActive?: BoolFilter<"PrivateContent"> | boolean;
+    createdAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+    updatedAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+    character?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>;
+    media?: PrivateContentMediaListRelationFilter;
+  };
+
+  export type PrivateContentOrderByWithRelationInput = {
+    id?: SortOrder;
+    characterId?: SortOrder;
+    description?: SortOrderInput | SortOrder;
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+    isActive?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    character?: CharacterOrderByWithRelationInput;
+    media?: PrivateContentMediaOrderByRelationAggregateInput;
+  };
+
+  export type PrivateContentWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: PrivateContentWhereInput | PrivateContentWhereInput[];
+      OR?: PrivateContentWhereInput[];
+      NOT?: PrivateContentWhereInput | PrivateContentWhereInput[];
+      characterId?: StringFilter<"PrivateContent"> | string;
+      description?: StringNullableFilter<"PrivateContent"> | string | null;
+      tokenCost?: IntFilter<"PrivateContent"> | number;
+      likeCount?: IntFilter<"PrivateContent"> | number;
+      isActive?: BoolFilter<"PrivateContent"> | boolean;
+      createdAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+      updatedAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+      character?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>;
+      media?: PrivateContentMediaListRelationFilter;
+    },
+    "id"
+  >;
+
+  export type PrivateContentOrderByWithAggregationInput = {
+    id?: SortOrder;
+    characterId?: SortOrder;
+    description?: SortOrderInput | SortOrder;
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+    isActive?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: PrivateContentCountOrderByAggregateInput;
+    _avg?: PrivateContentAvgOrderByAggregateInput;
+    _max?: PrivateContentMaxOrderByAggregateInput;
+    _min?: PrivateContentMinOrderByAggregateInput;
+    _sum?: PrivateContentSumOrderByAggregateInput;
+  };
+
+  export type PrivateContentScalarWhereWithAggregatesInput = {
+    AND?:
+      | PrivateContentScalarWhereWithAggregatesInput
+      | PrivateContentScalarWhereWithAggregatesInput[];
+    OR?: PrivateContentScalarWhereWithAggregatesInput[];
+    NOT?:
+      | PrivateContentScalarWhereWithAggregatesInput
+      | PrivateContentScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<"PrivateContent"> | string;
+    characterId?: StringWithAggregatesFilter<"PrivateContent"> | string;
+    description?:
+      | StringNullableWithAggregatesFilter<"PrivateContent">
+      | string
+      | null;
+    tokenCost?: IntWithAggregatesFilter<"PrivateContent"> | number;
+    likeCount?: IntWithAggregatesFilter<"PrivateContent"> | number;
+    isActive?: BoolWithAggregatesFilter<"PrivateContent"> | boolean;
+    createdAt?: DateTimeWithAggregatesFilter<"PrivateContent"> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<"PrivateContent"> | Date | string;
+  };
+
+  export type PrivateContentMediaWhereInput = {
+    AND?: PrivateContentMediaWhereInput | PrivateContentMediaWhereInput[];
+    OR?: PrivateContentMediaWhereInput[];
+    NOT?: PrivateContentMediaWhereInput | PrivateContentMediaWhereInput[];
+    id?: StringFilter<"PrivateContentMedia"> | string;
+    privateContentId?: StringFilter<"PrivateContentMedia"> | string;
+    mediaId?: StringFilter<"PrivateContentMedia"> | string;
+    order?: IntFilter<"PrivateContentMedia"> | number;
+    createdAt?: DateTimeFilter<"PrivateContentMedia"> | Date | string;
+    privateContent?: XOR<
+      PrivateContentScalarRelationFilter,
+      PrivateContentWhereInput
+    >;
+    media?: XOR<MediaScalarRelationFilter, MediaWhereInput>;
+  };
+
+  export type PrivateContentMediaOrderByWithRelationInput = {
+    id?: SortOrder;
+    privateContentId?: SortOrder;
+    mediaId?: SortOrder;
+    order?: SortOrder;
+    createdAt?: SortOrder;
+    privateContent?: PrivateContentOrderByWithRelationInput;
+    media?: MediaOrderByWithRelationInput;
+  };
+
+  export type PrivateContentMediaWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      privateContentId_mediaId?: PrivateContentMediaPrivateContentIdMediaIdCompoundUniqueInput;
+      AND?: PrivateContentMediaWhereInput | PrivateContentMediaWhereInput[];
+      OR?: PrivateContentMediaWhereInput[];
+      NOT?: PrivateContentMediaWhereInput | PrivateContentMediaWhereInput[];
+      privateContentId?: StringFilter<"PrivateContentMedia"> | string;
+      mediaId?: StringFilter<"PrivateContentMedia"> | string;
+      order?: IntFilter<"PrivateContentMedia"> | number;
+      createdAt?: DateTimeFilter<"PrivateContentMedia"> | Date | string;
+      privateContent?: XOR<
+        PrivateContentScalarRelationFilter,
+        PrivateContentWhereInput
+      >;
+      media?: XOR<MediaScalarRelationFilter, MediaWhereInput>;
+    },
+    "id" | "privateContentId_mediaId"
+  >;
+
+  export type PrivateContentMediaOrderByWithAggregationInput = {
+    id?: SortOrder;
+    privateContentId?: SortOrder;
+    mediaId?: SortOrder;
+    order?: SortOrder;
+    createdAt?: SortOrder;
+    _count?: PrivateContentMediaCountOrderByAggregateInput;
+    _avg?: PrivateContentMediaAvgOrderByAggregateInput;
+    _max?: PrivateContentMediaMaxOrderByAggregateInput;
+    _min?: PrivateContentMediaMinOrderByAggregateInput;
+    _sum?: PrivateContentMediaSumOrderByAggregateInput;
+  };
+
+  export type PrivateContentMediaScalarWhereWithAggregatesInput = {
+    AND?:
+      | PrivateContentMediaScalarWhereWithAggregatesInput
+      | PrivateContentMediaScalarWhereWithAggregatesInput[];
+    OR?: PrivateContentMediaScalarWhereWithAggregatesInput[];
+    NOT?:
+      | PrivateContentMediaScalarWhereWithAggregatesInput
+      | PrivateContentMediaScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<"PrivateContentMedia"> | string;
+    privateContentId?:
+      | StringWithAggregatesFilter<"PrivateContentMedia">
+      | string;
+    mediaId?: StringWithAggregatesFilter<"PrivateContentMedia"> | string;
+    order?: IntWithAggregatesFilter<"PrivateContentMedia"> | number;
+    createdAt?:
+      | DateTimeWithAggregatesFilter<"PrivateContentMedia">
+      | Date
+      | string;
+  };
+
   export type AffiliateWhereInput = {
     AND?: AffiliateWhereInput | AffiliateWhereInput[];
     OR?: AffiliateWhereInput[];
@@ -30030,6 +33413,7 @@ export namespace Prisma {
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateInput = {
@@ -30050,6 +33434,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUpdateInput = {
@@ -30070,6 +33455,7 @@ export namespace Prisma {
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateInput = {
@@ -30090,6 +33476,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaCreateManyInput = {
@@ -30648,6 +34035,7 @@ export namespace Prisma {
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateInput = {
@@ -30678,6 +34066,7 @@ export namespace Prisma {
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUpdateInput = {
@@ -30716,6 +34105,7 @@ export namespace Prisma {
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateInput = {
@@ -30754,6 +34144,7 @@ export namespace Prisma {
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterCreateManyInput = {
@@ -31490,6 +34881,140 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
+  export type PrivateContentCreateInput = {
+    id?: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    character: CharacterCreateNestedOneWithoutPrivateContentsInput;
+    media?: PrivateContentMediaCreateNestedManyWithoutPrivateContentInput;
+  };
+
+  export type PrivateContentUncheckedCreateInput = {
+    id?: string;
+    characterId: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    media?: PrivateContentMediaUncheckedCreateNestedManyWithoutPrivateContentInput;
+  };
+
+  export type PrivateContentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    character?: CharacterUpdateOneRequiredWithoutPrivateContentsNestedInput;
+    media?: PrivateContentMediaUpdateManyWithoutPrivateContentNestedInput;
+  };
+
+  export type PrivateContentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    characterId?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    media?: PrivateContentMediaUncheckedUpdateManyWithoutPrivateContentNestedInput;
+  };
+
+  export type PrivateContentCreateManyInput = {
+    id?: string;
+    characterId: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type PrivateContentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    characterId?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaCreateInput = {
+    id?: string;
+    order?: number;
+    createdAt?: Date | string;
+    privateContent: PrivateContentCreateNestedOneWithoutMediaInput;
+    media: MediaCreateNestedOneWithoutPrivateContentMediaInput;
+  };
+
+  export type PrivateContentMediaUncheckedCreateInput = {
+    id?: string;
+    privateContentId: string;
+    mediaId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
+  export type PrivateContentMediaUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    privateContent?: PrivateContentUpdateOneRequiredWithoutMediaNestedInput;
+    media?: MediaUpdateOneRequiredWithoutPrivateContentMediaNestedInput;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    privateContentId?: StringFieldUpdateOperationsInput | string;
+    mediaId?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaCreateManyInput = {
+    id?: string;
+    privateContentId: string;
+    mediaId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
+  export type PrivateContentMediaUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    privateContentId?: StringFieldUpdateOperationsInput | string;
+    mediaId?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
   export type AffiliateCreateInput = {
     id?: string;
     referralCode: string;
@@ -31819,6 +35344,12 @@ export namespace Prisma {
     none?: CollectionWhereInput;
   };
 
+  export type PrivateContentMediaListRelationFilter = {
+    every?: PrivateContentMediaWhereInput;
+    some?: PrivateContentMediaWhereInput;
+    none?: PrivateContentMediaWhereInput;
+  };
+
   export type SortOrderInput = {
     sort: SortOrder;
     nulls?: NullsOrder;
@@ -31837,6 +35368,10 @@ export namespace Prisma {
   };
 
   export type CollectionOrderByRelationAggregateInput = {
+    _count?: SortOrder;
+  };
+
+  export type PrivateContentMediaOrderByRelationAggregateInput = {
     _count?: SortOrder;
   };
 
@@ -32423,7 +35958,17 @@ export namespace Prisma {
     none?: CharacterKinkWhereInput;
   };
 
+  export type PrivateContentListRelationFilter = {
+    every?: PrivateContentWhereInput;
+    some?: PrivateContentWhereInput;
+    none?: PrivateContentWhereInput;
+  };
+
   export type CharacterKinkOrderByRelationAggregateInput = {
+    _count?: SortOrder;
+  };
+
+  export type PrivateContentOrderByRelationAggregateInput = {
     _count?: SortOrder;
   };
 
@@ -33115,6 +36660,91 @@ export namespace Prisma {
     viewCount?: SortOrder;
   };
 
+  export type PrivateContentCountOrderByAggregateInput = {
+    id?: SortOrder;
+    characterId?: SortOrder;
+    description?: SortOrder;
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+    isActive?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type PrivateContentAvgOrderByAggregateInput = {
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+  };
+
+  export type PrivateContentMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    characterId?: SortOrder;
+    description?: SortOrder;
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+    isActive?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type PrivateContentMinOrderByAggregateInput = {
+    id?: SortOrder;
+    characterId?: SortOrder;
+    description?: SortOrder;
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+    isActive?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type PrivateContentSumOrderByAggregateInput = {
+    tokenCost?: SortOrder;
+    likeCount?: SortOrder;
+  };
+
+  export type PrivateContentScalarRelationFilter = {
+    is?: PrivateContentWhereInput;
+    isNot?: PrivateContentWhereInput;
+  };
+
+  export type PrivateContentMediaPrivateContentIdMediaIdCompoundUniqueInput = {
+    privateContentId: string;
+    mediaId: string;
+  };
+
+  export type PrivateContentMediaCountOrderByAggregateInput = {
+    id?: SortOrder;
+    privateContentId?: SortOrder;
+    mediaId?: SortOrder;
+    order?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type PrivateContentMediaAvgOrderByAggregateInput = {
+    order?: SortOrder;
+  };
+
+  export type PrivateContentMediaMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    privateContentId?: SortOrder;
+    mediaId?: SortOrder;
+    order?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type PrivateContentMediaMinOrderByAggregateInput = {
+    id?: SortOrder;
+    privateContentId?: SortOrder;
+    mediaId?: SortOrder;
+    order?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type PrivateContentMediaSumOrderByAggregateInput = {
+    order?: SortOrder;
+  };
+
   export type DecimalFilter<$PrismaModel = never> = {
     equals?:
       | Decimal
@@ -33454,6 +37084,23 @@ export namespace Prisma {
     connect?: CollectionWhereUniqueInput | CollectionWhereUniqueInput[];
   };
 
+  export type PrivateContentMediaCreateNestedManyWithoutMediaInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutMediaInput,
+          PrivateContentMediaUncheckedCreateWithoutMediaInput
+        >
+      | PrivateContentMediaCreateWithoutMediaInput[]
+      | PrivateContentMediaUncheckedCreateWithoutMediaInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput[];
+    createMany?: PrivateContentMediaCreateManyMediaInputEnvelope;
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+  };
+
   export type CharacterUncheckedCreateNestedManyWithoutPosterInput = {
     create?:
       | XOR<
@@ -33551,6 +37198,23 @@ export namespace Prisma {
       | CollectionCreateOrConnectWithoutMediaInput[];
     createMany?: CollectionCreateManyMediaInputEnvelope;
     connect?: CollectionWhereUniqueInput | CollectionWhereUniqueInput[];
+  };
+
+  export type PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutMediaInput,
+          PrivateContentMediaUncheckedCreateWithoutMediaInput
+        >
+      | PrivateContentMediaCreateWithoutMediaInput[]
+      | PrivateContentMediaUncheckedCreateWithoutMediaInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput[];
+    createMany?: PrivateContentMediaCreateManyMediaInputEnvelope;
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
   };
 
   export type StringFieldUpdateOperationsInput = {
@@ -33767,6 +37431,44 @@ export namespace Prisma {
     deleteMany?: CollectionScalarWhereInput | CollectionScalarWhereInput[];
   };
 
+  export type PrivateContentMediaUpdateManyWithoutMediaNestedInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutMediaInput,
+          PrivateContentMediaUncheckedCreateWithoutMediaInput
+        >
+      | PrivateContentMediaCreateWithoutMediaInput[]
+      | PrivateContentMediaUncheckedCreateWithoutMediaInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput[];
+    upsert?:
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutMediaInput
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutMediaInput[];
+    createMany?: PrivateContentMediaCreateManyMediaInputEnvelope;
+    set?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    disconnect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    delete?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    update?:
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutMediaInput
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutMediaInput[];
+    updateMany?:
+      | PrivateContentMediaUpdateManyWithWhereWithoutMediaInput
+      | PrivateContentMediaUpdateManyWithWhereWithoutMediaInput[];
+    deleteMany?:
+      | PrivateContentMediaScalarWhereInput
+      | PrivateContentMediaScalarWhereInput[];
+  };
+
   export type CharacterUncheckedUpdateManyWithoutPosterNestedInput = {
     create?:
       | XOR<
@@ -33955,6 +37657,44 @@ export namespace Prisma {
       | CollectionUpdateManyWithWhereWithoutMediaInput
       | CollectionUpdateManyWithWhereWithoutMediaInput[];
     deleteMany?: CollectionScalarWhereInput | CollectionScalarWhereInput[];
+  };
+
+  export type PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutMediaInput,
+          PrivateContentMediaUncheckedCreateWithoutMediaInput
+        >
+      | PrivateContentMediaCreateWithoutMediaInput[]
+      | PrivateContentMediaUncheckedCreateWithoutMediaInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput
+      | PrivateContentMediaCreateOrConnectWithoutMediaInput[];
+    upsert?:
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutMediaInput
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutMediaInput[];
+    createMany?: PrivateContentMediaCreateManyMediaInputEnvelope;
+    set?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    disconnect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    delete?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    update?:
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutMediaInput
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutMediaInput[];
+    updateMany?:
+      | PrivateContentMediaUpdateManyWithWhereWithoutMediaInput
+      | PrivateContentMediaUpdateManyWithWhereWithoutMediaInput[];
+    deleteMany?:
+      | PrivateContentMediaScalarWhereInput
+      | PrivateContentMediaScalarWhereInput[];
   };
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -34896,6 +38636,21 @@ export namespace Prisma {
     connect?: ReelWhereUniqueInput | ReelWhereUniqueInput[];
   };
 
+  export type PrivateContentCreateNestedManyWithoutCharacterInput = {
+    create?:
+      | XOR<
+          PrivateContentCreateWithoutCharacterInput,
+          PrivateContentUncheckedCreateWithoutCharacterInput
+        >
+      | PrivateContentCreateWithoutCharacterInput[]
+      | PrivateContentUncheckedCreateWithoutCharacterInput[];
+    connectOrCreate?:
+      | PrivateContentCreateOrConnectWithoutCharacterInput
+      | PrivateContentCreateOrConnectWithoutCharacterInput[];
+    createMany?: PrivateContentCreateManyCharacterInputEnvelope;
+    connect?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+  };
+
   export type CharacterKinkUncheckedCreateNestedManyWithoutCharacterInput = {
     create?:
       | XOR<
@@ -34954,6 +38709,21 @@ export namespace Prisma {
       | ReelCreateOrConnectWithoutCharacterInput[];
     createMany?: ReelCreateManyCharacterInputEnvelope;
     connect?: ReelWhereUniqueInput | ReelWhereUniqueInput[];
+  };
+
+  export type PrivateContentUncheckedCreateNestedManyWithoutCharacterInput = {
+    create?:
+      | XOR<
+          PrivateContentCreateWithoutCharacterInput,
+          PrivateContentUncheckedCreateWithoutCharacterInput
+        >
+      | PrivateContentCreateWithoutCharacterInput[]
+      | PrivateContentUncheckedCreateWithoutCharacterInput[];
+    connectOrCreate?:
+      | PrivateContentCreateOrConnectWithoutCharacterInput
+      | PrivateContentCreateOrConnectWithoutCharacterInput[];
+    createMany?: PrivateContentCreateManyCharacterInputEnvelope;
+    connect?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
   };
 
   export type EnumCharacterGenderFieldUpdateOperationsInput = {
@@ -35179,6 +38949,38 @@ export namespace Prisma {
     deleteMany?: ReelScalarWhereInput | ReelScalarWhereInput[];
   };
 
+  export type PrivateContentUpdateManyWithoutCharacterNestedInput = {
+    create?:
+      | XOR<
+          PrivateContentCreateWithoutCharacterInput,
+          PrivateContentUncheckedCreateWithoutCharacterInput
+        >
+      | PrivateContentCreateWithoutCharacterInput[]
+      | PrivateContentUncheckedCreateWithoutCharacterInput[];
+    connectOrCreate?:
+      | PrivateContentCreateOrConnectWithoutCharacterInput
+      | PrivateContentCreateOrConnectWithoutCharacterInput[];
+    upsert?:
+      | PrivateContentUpsertWithWhereUniqueWithoutCharacterInput
+      | PrivateContentUpsertWithWhereUniqueWithoutCharacterInput[];
+    createMany?: PrivateContentCreateManyCharacterInputEnvelope;
+    set?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    disconnect?:
+      | PrivateContentWhereUniqueInput
+      | PrivateContentWhereUniqueInput[];
+    delete?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    connect?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    update?:
+      | PrivateContentUpdateWithWhereUniqueWithoutCharacterInput
+      | PrivateContentUpdateWithWhereUniqueWithoutCharacterInput[];
+    updateMany?:
+      | PrivateContentUpdateManyWithWhereWithoutCharacterInput
+      | PrivateContentUpdateManyWithWhereWithoutCharacterInput[];
+    deleteMany?:
+      | PrivateContentScalarWhereInput
+      | PrivateContentScalarWhereInput[];
+  };
+
   export type CharacterKinkUncheckedUpdateManyWithoutCharacterNestedInput = {
     create?:
       | XOR<
@@ -35293,6 +39095,38 @@ export namespace Prisma {
       | ReelUpdateManyWithWhereWithoutCharacterInput
       | ReelUpdateManyWithWhereWithoutCharacterInput[];
     deleteMany?: ReelScalarWhereInput | ReelScalarWhereInput[];
+  };
+
+  export type PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput = {
+    create?:
+      | XOR<
+          PrivateContentCreateWithoutCharacterInput,
+          PrivateContentUncheckedCreateWithoutCharacterInput
+        >
+      | PrivateContentCreateWithoutCharacterInput[]
+      | PrivateContentUncheckedCreateWithoutCharacterInput[];
+    connectOrCreate?:
+      | PrivateContentCreateOrConnectWithoutCharacterInput
+      | PrivateContentCreateOrConnectWithoutCharacterInput[];
+    upsert?:
+      | PrivateContentUpsertWithWhereUniqueWithoutCharacterInput
+      | PrivateContentUpsertWithWhereUniqueWithoutCharacterInput[];
+    createMany?: PrivateContentCreateManyCharacterInputEnvelope;
+    set?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    disconnect?:
+      | PrivateContentWhereUniqueInput
+      | PrivateContentWhereUniqueInput[];
+    delete?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    connect?: PrivateContentWhereUniqueInput | PrivateContentWhereUniqueInput[];
+    update?:
+      | PrivateContentUpdateWithWhereUniqueWithoutCharacterInput
+      | PrivateContentUpdateWithWhereUniqueWithoutCharacterInput[];
+    updateMany?:
+      | PrivateContentUpdateManyWithWhereWithoutCharacterInput
+      | PrivateContentUpdateManyWithWhereWithoutCharacterInput[];
+    deleteMany?:
+      | PrivateContentScalarWhereInput
+      | PrivateContentScalarWhereInput[];
   };
 
   export type CharacterCreateNestedOneWithoutKinksInput = {
@@ -35846,6 +39680,196 @@ export namespace Prisma {
         CharacterUpdateWithoutReelsInput
       >,
       CharacterUncheckedUpdateWithoutReelsInput
+    >;
+  };
+
+  export type CharacterCreateNestedOneWithoutPrivateContentsInput = {
+    create?: XOR<
+      CharacterCreateWithoutPrivateContentsInput,
+      CharacterUncheckedCreateWithoutPrivateContentsInput
+    >;
+    connectOrCreate?: CharacterCreateOrConnectWithoutPrivateContentsInput;
+    connect?: CharacterWhereUniqueInput;
+  };
+
+  export type PrivateContentMediaCreateNestedManyWithoutPrivateContentInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutPrivateContentInput,
+          PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+        >
+      | PrivateContentMediaCreateWithoutPrivateContentInput[]
+      | PrivateContentMediaUncheckedCreateWithoutPrivateContentInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput
+      | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput[];
+    createMany?: PrivateContentMediaCreateManyPrivateContentInputEnvelope;
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+  };
+
+  export type PrivateContentMediaUncheckedCreateNestedManyWithoutPrivateContentInput =
+    {
+      create?:
+        | XOR<
+            PrivateContentMediaCreateWithoutPrivateContentInput,
+            PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+          >
+        | PrivateContentMediaCreateWithoutPrivateContentInput[]
+        | PrivateContentMediaUncheckedCreateWithoutPrivateContentInput[];
+      connectOrCreate?:
+        | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput
+        | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput[];
+      createMany?: PrivateContentMediaCreateManyPrivateContentInputEnvelope;
+      connect?:
+        | PrivateContentMediaWhereUniqueInput
+        | PrivateContentMediaWhereUniqueInput[];
+    };
+
+  export type CharacterUpdateOneRequiredWithoutPrivateContentsNestedInput = {
+    create?: XOR<
+      CharacterCreateWithoutPrivateContentsInput,
+      CharacterUncheckedCreateWithoutPrivateContentsInput
+    >;
+    connectOrCreate?: CharacterCreateOrConnectWithoutPrivateContentsInput;
+    upsert?: CharacterUpsertWithoutPrivateContentsInput;
+    connect?: CharacterWhereUniqueInput;
+    update?: XOR<
+      XOR<
+        CharacterUpdateToOneWithWhereWithoutPrivateContentsInput,
+        CharacterUpdateWithoutPrivateContentsInput
+      >,
+      CharacterUncheckedUpdateWithoutPrivateContentsInput
+    >;
+  };
+
+  export type PrivateContentMediaUpdateManyWithoutPrivateContentNestedInput = {
+    create?:
+      | XOR<
+          PrivateContentMediaCreateWithoutPrivateContentInput,
+          PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+        >
+      | PrivateContentMediaCreateWithoutPrivateContentInput[]
+      | PrivateContentMediaUncheckedCreateWithoutPrivateContentInput[];
+    connectOrCreate?:
+      | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput
+      | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput[];
+    upsert?:
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutPrivateContentInput
+      | PrivateContentMediaUpsertWithWhereUniqueWithoutPrivateContentInput[];
+    createMany?: PrivateContentMediaCreateManyPrivateContentInputEnvelope;
+    set?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    disconnect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    delete?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    connect?:
+      | PrivateContentMediaWhereUniqueInput
+      | PrivateContentMediaWhereUniqueInput[];
+    update?:
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutPrivateContentInput
+      | PrivateContentMediaUpdateWithWhereUniqueWithoutPrivateContentInput[];
+    updateMany?:
+      | PrivateContentMediaUpdateManyWithWhereWithoutPrivateContentInput
+      | PrivateContentMediaUpdateManyWithWhereWithoutPrivateContentInput[];
+    deleteMany?:
+      | PrivateContentMediaScalarWhereInput
+      | PrivateContentMediaScalarWhereInput[];
+  };
+
+  export type PrivateContentMediaUncheckedUpdateManyWithoutPrivateContentNestedInput =
+    {
+      create?:
+        | XOR<
+            PrivateContentMediaCreateWithoutPrivateContentInput,
+            PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+          >
+        | PrivateContentMediaCreateWithoutPrivateContentInput[]
+        | PrivateContentMediaUncheckedCreateWithoutPrivateContentInput[];
+      connectOrCreate?:
+        | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput
+        | PrivateContentMediaCreateOrConnectWithoutPrivateContentInput[];
+      upsert?:
+        | PrivateContentMediaUpsertWithWhereUniqueWithoutPrivateContentInput
+        | PrivateContentMediaUpsertWithWhereUniqueWithoutPrivateContentInput[];
+      createMany?: PrivateContentMediaCreateManyPrivateContentInputEnvelope;
+      set?:
+        | PrivateContentMediaWhereUniqueInput
+        | PrivateContentMediaWhereUniqueInput[];
+      disconnect?:
+        | PrivateContentMediaWhereUniqueInput
+        | PrivateContentMediaWhereUniqueInput[];
+      delete?:
+        | PrivateContentMediaWhereUniqueInput
+        | PrivateContentMediaWhereUniqueInput[];
+      connect?:
+        | PrivateContentMediaWhereUniqueInput
+        | PrivateContentMediaWhereUniqueInput[];
+      update?:
+        | PrivateContentMediaUpdateWithWhereUniqueWithoutPrivateContentInput
+        | PrivateContentMediaUpdateWithWhereUniqueWithoutPrivateContentInput[];
+      updateMany?:
+        | PrivateContentMediaUpdateManyWithWhereWithoutPrivateContentInput
+        | PrivateContentMediaUpdateManyWithWhereWithoutPrivateContentInput[];
+      deleteMany?:
+        | PrivateContentMediaScalarWhereInput
+        | PrivateContentMediaScalarWhereInput[];
+    };
+
+  export type PrivateContentCreateNestedOneWithoutMediaInput = {
+    create?: XOR<
+      PrivateContentCreateWithoutMediaInput,
+      PrivateContentUncheckedCreateWithoutMediaInput
+    >;
+    connectOrCreate?: PrivateContentCreateOrConnectWithoutMediaInput;
+    connect?: PrivateContentWhereUniqueInput;
+  };
+
+  export type MediaCreateNestedOneWithoutPrivateContentMediaInput = {
+    create?: XOR<
+      MediaCreateWithoutPrivateContentMediaInput,
+      MediaUncheckedCreateWithoutPrivateContentMediaInput
+    >;
+    connectOrCreate?: MediaCreateOrConnectWithoutPrivateContentMediaInput;
+    connect?: MediaWhereUniqueInput;
+  };
+
+  export type PrivateContentUpdateOneRequiredWithoutMediaNestedInput = {
+    create?: XOR<
+      PrivateContentCreateWithoutMediaInput,
+      PrivateContentUncheckedCreateWithoutMediaInput
+    >;
+    connectOrCreate?: PrivateContentCreateOrConnectWithoutMediaInput;
+    upsert?: PrivateContentUpsertWithoutMediaInput;
+    connect?: PrivateContentWhereUniqueInput;
+    update?: XOR<
+      XOR<
+        PrivateContentUpdateToOneWithWhereWithoutMediaInput,
+        PrivateContentUpdateWithoutMediaInput
+      >,
+      PrivateContentUncheckedUpdateWithoutMediaInput
+    >;
+  };
+
+  export type MediaUpdateOneRequiredWithoutPrivateContentMediaNestedInput = {
+    create?: XOR<
+      MediaCreateWithoutPrivateContentMediaInput,
+      MediaUncheckedCreateWithoutPrivateContentMediaInput
+    >;
+    connectOrCreate?: MediaCreateOrConnectWithoutPrivateContentMediaInput;
+    upsert?: MediaUpsertWithoutPrivateContentMediaInput;
+    connect?: MediaWhereUniqueInput;
+    update?: XOR<
+      XOR<
+        MediaUpdateToOneWithWhereWithoutPrivateContentMediaInput,
+        MediaUpdateWithoutPrivateContentMediaInput
+      >,
+      MediaUncheckedUpdateWithoutPrivateContentMediaInput
     >;
   };
 
@@ -36827,6 +40851,7 @@ export namespace Prisma {
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutPosterInput = {
@@ -36856,6 +40881,7 @@ export namespace Prisma {
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutPosterInput = {
@@ -36898,6 +40924,7 @@ export namespace Prisma {
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutVideoInput = {
@@ -36927,6 +40954,7 @@ export namespace Prisma {
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutVideoInput = {
@@ -37102,6 +41130,35 @@ export namespace Prisma {
 
   export type CollectionCreateManyMediaInputEnvelope = {
     data: CollectionCreateManyMediaInput | CollectionCreateManyMediaInput[];
+    skipDuplicates?: boolean;
+  };
+
+  export type PrivateContentMediaCreateWithoutMediaInput = {
+    id?: string;
+    order?: number;
+    createdAt?: Date | string;
+    privateContent: PrivateContentCreateNestedOneWithoutMediaInput;
+  };
+
+  export type PrivateContentMediaUncheckedCreateWithoutMediaInput = {
+    id?: string;
+    privateContentId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
+  export type PrivateContentMediaCreateOrConnectWithoutMediaInput = {
+    where: PrivateContentMediaWhereUniqueInput;
+    create: XOR<
+      PrivateContentMediaCreateWithoutMediaInput,
+      PrivateContentMediaUncheckedCreateWithoutMediaInput
+    >;
+  };
+
+  export type PrivateContentMediaCreateManyMediaInputEnvelope = {
+    data:
+      | PrivateContentMediaCreateManyMediaInput
+      | PrivateContentMediaCreateManyMediaInput[];
     skipDuplicates?: boolean;
   };
 
@@ -37370,6 +41427,49 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Collection"> | Date | string;
   };
 
+  export type PrivateContentMediaUpsertWithWhereUniqueWithoutMediaInput = {
+    where: PrivateContentMediaWhereUniqueInput;
+    update: XOR<
+      PrivateContentMediaUpdateWithoutMediaInput,
+      PrivateContentMediaUncheckedUpdateWithoutMediaInput
+    >;
+    create: XOR<
+      PrivateContentMediaCreateWithoutMediaInput,
+      PrivateContentMediaUncheckedCreateWithoutMediaInput
+    >;
+  };
+
+  export type PrivateContentMediaUpdateWithWhereUniqueWithoutMediaInput = {
+    where: PrivateContentMediaWhereUniqueInput;
+    data: XOR<
+      PrivateContentMediaUpdateWithoutMediaInput,
+      PrivateContentMediaUncheckedUpdateWithoutMediaInput
+    >;
+  };
+
+  export type PrivateContentMediaUpdateManyWithWhereWithoutMediaInput = {
+    where: PrivateContentMediaScalarWhereInput;
+    data: XOR<
+      PrivateContentMediaUpdateManyMutationInput,
+      PrivateContentMediaUncheckedUpdateManyWithoutMediaInput
+    >;
+  };
+
+  export type PrivateContentMediaScalarWhereInput = {
+    AND?:
+      | PrivateContentMediaScalarWhereInput
+      | PrivateContentMediaScalarWhereInput[];
+    OR?: PrivateContentMediaScalarWhereInput[];
+    NOT?:
+      | PrivateContentMediaScalarWhereInput
+      | PrivateContentMediaScalarWhereInput[];
+    id?: StringFilter<"PrivateContentMedia"> | string;
+    privateContentId?: StringFilter<"PrivateContentMedia"> | string;
+    mediaId?: StringFilter<"PrivateContentMedia"> | string;
+    order?: IntFilter<"PrivateContentMedia"> | number;
+    createdAt?: DateTimeFilter<"PrivateContentMedia"> | Date | string;
+  };
+
   export type UserCreateWithoutPostsInput = {
     id: string;
     name: string;
@@ -37628,6 +41728,7 @@ export namespace Prisma {
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutCreatedByInput = {
@@ -37657,6 +41758,7 @@ export namespace Prisma {
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutCreatedByInput = {
@@ -38602,6 +42704,7 @@ export namespace Prisma {
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutCharacterPostersInput = {
@@ -38621,6 +42724,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutCharacterPostersInput = {
@@ -38648,6 +42752,7 @@ export namespace Prisma {
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutCharacterVideosInput = {
@@ -38667,6 +42772,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutCharacterVideosInput = {
@@ -38863,6 +42969,43 @@ export namespace Prisma {
     skipDuplicates?: boolean;
   };
 
+  export type PrivateContentCreateWithoutCharacterInput = {
+    id?: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    media?: PrivateContentMediaCreateNestedManyWithoutPrivateContentInput;
+  };
+
+  export type PrivateContentUncheckedCreateWithoutCharacterInput = {
+    id?: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    media?: PrivateContentMediaUncheckedCreateNestedManyWithoutPrivateContentInput;
+  };
+
+  export type PrivateContentCreateOrConnectWithoutCharacterInput = {
+    where: PrivateContentWhereUniqueInput;
+    create: XOR<
+      PrivateContentCreateWithoutCharacterInput,
+      PrivateContentUncheckedCreateWithoutCharacterInput
+    >;
+  };
+
+  export type PrivateContentCreateManyCharacterInputEnvelope = {
+    data:
+      | PrivateContentCreateManyCharacterInput
+      | PrivateContentCreateManyCharacterInput[];
+    skipDuplicates?: boolean;
+  };
+
   export type MediaUpsertWithoutCharacterPostersInput = {
     update: XOR<
       MediaUpdateWithoutCharacterPostersInput,
@@ -38900,6 +43043,7 @@ export namespace Prisma {
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutCharacterPostersInput = {
@@ -38919,6 +43063,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUpsertWithoutCharacterVideosInput = {
@@ -38958,6 +43103,7 @@ export namespace Prisma {
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutCharacterVideosInput = {
@@ -38977,6 +43123,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type UserUpsertWithoutCreatedCharactersInput = {
@@ -39171,6 +43318,48 @@ export namespace Prisma {
     >;
   };
 
+  export type PrivateContentUpsertWithWhereUniqueWithoutCharacterInput = {
+    where: PrivateContentWhereUniqueInput;
+    update: XOR<
+      PrivateContentUpdateWithoutCharacterInput,
+      PrivateContentUncheckedUpdateWithoutCharacterInput
+    >;
+    create: XOR<
+      PrivateContentCreateWithoutCharacterInput,
+      PrivateContentUncheckedCreateWithoutCharacterInput
+    >;
+  };
+
+  export type PrivateContentUpdateWithWhereUniqueWithoutCharacterInput = {
+    where: PrivateContentWhereUniqueInput;
+    data: XOR<
+      PrivateContentUpdateWithoutCharacterInput,
+      PrivateContentUncheckedUpdateWithoutCharacterInput
+    >;
+  };
+
+  export type PrivateContentUpdateManyWithWhereWithoutCharacterInput = {
+    where: PrivateContentScalarWhereInput;
+    data: XOR<
+      PrivateContentUpdateManyMutationInput,
+      PrivateContentUncheckedUpdateManyWithoutCharacterInput
+    >;
+  };
+
+  export type PrivateContentScalarWhereInput = {
+    AND?: PrivateContentScalarWhereInput | PrivateContentScalarWhereInput[];
+    OR?: PrivateContentScalarWhereInput[];
+    NOT?: PrivateContentScalarWhereInput | PrivateContentScalarWhereInput[];
+    id?: StringFilter<"PrivateContent"> | string;
+    characterId?: StringFilter<"PrivateContent"> | string;
+    description?: StringNullableFilter<"PrivateContent"> | string | null;
+    tokenCost?: IntFilter<"PrivateContent"> | number;
+    likeCount?: IntFilter<"PrivateContent"> | number;
+    isActive?: BoolFilter<"PrivateContent"> | boolean;
+    createdAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+    updatedAt?: DateTimeFilter<"PrivateContent"> | Date | string;
+  };
+
   export type CharacterCreateWithoutKinksInput = {
     id?: string;
     name: string;
@@ -39198,6 +43387,7 @@ export namespace Prisma {
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutKinksInput = {
@@ -39227,6 +43417,7 @@ export namespace Prisma {
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutKinksInput = {
@@ -39292,6 +43483,7 @@ export namespace Prisma {
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutKinksInput = {
@@ -39329,6 +43521,7 @@ export namespace Prisma {
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type UserCreateWithoutChatsInput = {
@@ -39416,6 +43609,7 @@ export namespace Prisma {
     kinks?: CharacterKinkCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutChatsInput = {
@@ -39445,6 +43639,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutChatsInput = {
@@ -39613,6 +43808,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutChatsInput = {
@@ -39650,6 +43846,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type MessageUpsertWithWhereUniqueWithoutChatInput = {
@@ -39842,6 +44039,7 @@ export namespace Prisma {
     storyThumbnails?: StoryCreateNestedManyWithoutThumbnailInput;
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutCollectionsInput = {
@@ -39861,6 +44059,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedCreateNestedManyWithoutThumbnailInput;
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutCollectionsInput = {
@@ -39994,6 +44193,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUpdateManyWithoutThumbnailNestedInput;
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutCollectionsInput = {
@@ -40013,6 +44213,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedUpdateManyWithoutThumbnailNestedInput;
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type UserUpsertWithoutCollectionsInput = {
@@ -40398,6 +44599,7 @@ export namespace Prisma {
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutStoryMediaInput = {
@@ -40417,6 +44619,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutStoryMediaInput = {
@@ -40444,6 +44647,7 @@ export namespace Prisma {
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutStoryThumbnailsInput = {
@@ -40463,6 +44667,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutStoryThumbnailsInput = {
@@ -40500,6 +44705,7 @@ export namespace Prisma {
     kinks?: CharacterKinkCreateNestedManyWithoutCharacterInput;
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     reels?: ReelCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutStoriesInput = {
@@ -40529,6 +44735,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedCreateNestedManyWithoutCharacterInput;
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutStoriesInput = {
@@ -40576,6 +44783,7 @@ export namespace Prisma {
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutStoryMediaInput = {
@@ -40595,6 +44803,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUpsertWithoutStoryThumbnailsInput = {
@@ -40634,6 +44843,7 @@ export namespace Prisma {
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutStoryThumbnailsInput = {
@@ -40653,6 +44863,7 @@ export namespace Prisma {
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type CharacterUpsertWithoutStoriesInput = {
@@ -40710,6 +44921,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUpdateManyWithoutCharacterNestedInput;
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutStoriesInput = {
@@ -40747,6 +44959,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedUpdateManyWithoutCharacterNestedInput;
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type MediaCreateWithoutReelVideosInput = {
@@ -40766,6 +44979,7 @@ export namespace Prisma {
     storyThumbnails?: StoryCreateNestedManyWithoutThumbnailInput;
     reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutReelVideosInput = {
@@ -40785,6 +44999,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedCreateNestedManyWithoutThumbnailInput;
     reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutReelVideosInput = {
@@ -40812,6 +45027,7 @@ export namespace Prisma {
     storyThumbnails?: StoryCreateNestedManyWithoutThumbnailInput;
     reelVideos?: ReelCreateNestedManyWithoutVideoInput;
     collections?: CollectionCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaUncheckedCreateWithoutReelThumbnailsInput = {
@@ -40831,6 +45047,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedCreateNestedManyWithoutThumbnailInput;
     reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
     collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+    privateContentMedia?: PrivateContentMediaUncheckedCreateNestedManyWithoutMediaInput;
   };
 
   export type MediaCreateOrConnectWithoutReelThumbnailsInput = {
@@ -40868,6 +45085,7 @@ export namespace Prisma {
     kinks?: CharacterKinkCreateNestedManyWithoutCharacterInput;
     chats?: ChatCreateNestedManyWithoutCharacterInput;
     stories?: StoryCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterUncheckedCreateWithoutReelsInput = {
@@ -40897,6 +45115,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedCreateNestedManyWithoutCharacterInput;
     chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
     stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
+    privateContents?: PrivateContentUncheckedCreateNestedManyWithoutCharacterInput;
   };
 
   export type CharacterCreateOrConnectWithoutReelsInput = {
@@ -40944,6 +45163,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUpdateManyWithoutThumbnailNestedInput;
     reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutReelVideosInput = {
@@ -40963,6 +45183,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedUpdateManyWithoutThumbnailNestedInput;
     reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUpsertWithoutReelThumbnailsInput = {
@@ -41002,6 +45223,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUpdateManyWithoutThumbnailNestedInput;
     reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
     collections?: CollectionUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUpdateManyWithoutMediaNestedInput;
   };
 
   export type MediaUncheckedUpdateWithoutReelThumbnailsInput = {
@@ -41021,6 +45243,7 @@ export namespace Prisma {
     storyThumbnails?: StoryUncheckedUpdateManyWithoutThumbnailNestedInput;
     reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
     collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
+    privateContentMedia?: PrivateContentMediaUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type CharacterUpsertWithoutReelsInput = {
@@ -41078,6 +45301,7 @@ export namespace Prisma {
     kinks?: CharacterKinkUpdateManyWithoutCharacterNestedInput;
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutReelsInput = {
@@ -41115,6 +45339,411 @@ export namespace Prisma {
     kinks?: CharacterKinkUncheckedUpdateManyWithoutCharacterNestedInput;
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
+  };
+
+  export type CharacterCreateWithoutPrivateContentsInput = {
+    id?: string;
+    name: string;
+    gender: $Enums.CharacterGender;
+    style: $Enums.CharacterStyle;
+    ethnicity: $Enums.Ethnicity;
+    age: number;
+    hairStyle: $Enums.HairStyle;
+    hairColor: $Enums.HairColor;
+    eyeColor: $Enums.EyeColor;
+    bodyType: $Enums.BodyType;
+    breastSize: $Enums.BreastSize;
+    personality: $Enums.Personality;
+    relationship: $Enums.Relationship;
+    occupation: $Enums.Occupation;
+    voice: string;
+    isPublic?: boolean;
+    isActive?: boolean;
+    isLive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    poster?: MediaCreateNestedOneWithoutCharacterPostersInput;
+    video?: MediaCreateNestedOneWithoutCharacterVideosInput;
+    createdBy: UserCreateNestedOneWithoutCreatedCharactersInput;
+    kinks?: CharacterKinkCreateNestedManyWithoutCharacterInput;
+    chats?: ChatCreateNestedManyWithoutCharacterInput;
+    stories?: StoryCreateNestedManyWithoutCharacterInput;
+    reels?: ReelCreateNestedManyWithoutCharacterInput;
+  };
+
+  export type CharacterUncheckedCreateWithoutPrivateContentsInput = {
+    id?: string;
+    name: string;
+    posterId?: string | null;
+    videoId?: string | null;
+    gender: $Enums.CharacterGender;
+    style: $Enums.CharacterStyle;
+    ethnicity: $Enums.Ethnicity;
+    age: number;
+    hairStyle: $Enums.HairStyle;
+    hairColor: $Enums.HairColor;
+    eyeColor: $Enums.EyeColor;
+    bodyType: $Enums.BodyType;
+    breastSize: $Enums.BreastSize;
+    personality: $Enums.Personality;
+    relationship: $Enums.Relationship;
+    occupation: $Enums.Occupation;
+    voice: string;
+    isPublic?: boolean;
+    isActive?: boolean;
+    isLive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    createdById: string;
+    kinks?: CharacterKinkUncheckedCreateNestedManyWithoutCharacterInput;
+    chats?: ChatUncheckedCreateNestedManyWithoutCharacterInput;
+    stories?: StoryUncheckedCreateNestedManyWithoutCharacterInput;
+    reels?: ReelUncheckedCreateNestedManyWithoutCharacterInput;
+  };
+
+  export type CharacterCreateOrConnectWithoutPrivateContentsInput = {
+    where: CharacterWhereUniqueInput;
+    create: XOR<
+      CharacterCreateWithoutPrivateContentsInput,
+      CharacterUncheckedCreateWithoutPrivateContentsInput
+    >;
+  };
+
+  export type PrivateContentMediaCreateWithoutPrivateContentInput = {
+    id?: string;
+    order?: number;
+    createdAt?: Date | string;
+    media: MediaCreateNestedOneWithoutPrivateContentMediaInput;
+  };
+
+  export type PrivateContentMediaUncheckedCreateWithoutPrivateContentInput = {
+    id?: string;
+    mediaId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
+  export type PrivateContentMediaCreateOrConnectWithoutPrivateContentInput = {
+    where: PrivateContentMediaWhereUniqueInput;
+    create: XOR<
+      PrivateContentMediaCreateWithoutPrivateContentInput,
+      PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+    >;
+  };
+
+  export type PrivateContentMediaCreateManyPrivateContentInputEnvelope = {
+    data:
+      | PrivateContentMediaCreateManyPrivateContentInput
+      | PrivateContentMediaCreateManyPrivateContentInput[];
+    skipDuplicates?: boolean;
+  };
+
+  export type CharacterUpsertWithoutPrivateContentsInput = {
+    update: XOR<
+      CharacterUpdateWithoutPrivateContentsInput,
+      CharacterUncheckedUpdateWithoutPrivateContentsInput
+    >;
+    create: XOR<
+      CharacterCreateWithoutPrivateContentsInput,
+      CharacterUncheckedCreateWithoutPrivateContentsInput
+    >;
+    where?: CharacterWhereInput;
+  };
+
+  export type CharacterUpdateToOneWithWhereWithoutPrivateContentsInput = {
+    where?: CharacterWhereInput;
+    data: XOR<
+      CharacterUpdateWithoutPrivateContentsInput,
+      CharacterUncheckedUpdateWithoutPrivateContentsInput
+    >;
+  };
+
+  export type CharacterUpdateWithoutPrivateContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    name?: StringFieldUpdateOperationsInput | string;
+    gender?:
+      | EnumCharacterGenderFieldUpdateOperationsInput
+      | $Enums.CharacterGender;
+    style?:
+      | EnumCharacterStyleFieldUpdateOperationsInput
+      | $Enums.CharacterStyle;
+    ethnicity?: EnumEthnicityFieldUpdateOperationsInput | $Enums.Ethnicity;
+    age?: IntFieldUpdateOperationsInput | number;
+    hairStyle?: EnumHairStyleFieldUpdateOperationsInput | $Enums.HairStyle;
+    hairColor?: EnumHairColorFieldUpdateOperationsInput | $Enums.HairColor;
+    eyeColor?: EnumEyeColorFieldUpdateOperationsInput | $Enums.EyeColor;
+    bodyType?: EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType;
+    breastSize?: EnumBreastSizeFieldUpdateOperationsInput | $Enums.BreastSize;
+    personality?:
+      | EnumPersonalityFieldUpdateOperationsInput
+      | $Enums.Personality;
+    relationship?:
+      | EnumRelationshipFieldUpdateOperationsInput
+      | $Enums.Relationship;
+    occupation?: EnumOccupationFieldUpdateOperationsInput | $Enums.Occupation;
+    voice?: StringFieldUpdateOperationsInput | string;
+    isPublic?: BoolFieldUpdateOperationsInput | boolean;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    isLive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    poster?: MediaUpdateOneWithoutCharacterPostersNestedInput;
+    video?: MediaUpdateOneWithoutCharacterVideosNestedInput;
+    createdBy?: UserUpdateOneRequiredWithoutCreatedCharactersNestedInput;
+    kinks?: CharacterKinkUpdateManyWithoutCharacterNestedInput;
+    chats?: ChatUpdateManyWithoutCharacterNestedInput;
+    stories?: StoryUpdateManyWithoutCharacterNestedInput;
+    reels?: ReelUpdateManyWithoutCharacterNestedInput;
+  };
+
+  export type CharacterUncheckedUpdateWithoutPrivateContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    name?: StringFieldUpdateOperationsInput | string;
+    posterId?: NullableStringFieldUpdateOperationsInput | string | null;
+    videoId?: NullableStringFieldUpdateOperationsInput | string | null;
+    gender?:
+      | EnumCharacterGenderFieldUpdateOperationsInput
+      | $Enums.CharacterGender;
+    style?:
+      | EnumCharacterStyleFieldUpdateOperationsInput
+      | $Enums.CharacterStyle;
+    ethnicity?: EnumEthnicityFieldUpdateOperationsInput | $Enums.Ethnicity;
+    age?: IntFieldUpdateOperationsInput | number;
+    hairStyle?: EnumHairStyleFieldUpdateOperationsInput | $Enums.HairStyle;
+    hairColor?: EnumHairColorFieldUpdateOperationsInput | $Enums.HairColor;
+    eyeColor?: EnumEyeColorFieldUpdateOperationsInput | $Enums.EyeColor;
+    bodyType?: EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType;
+    breastSize?: EnumBreastSizeFieldUpdateOperationsInput | $Enums.BreastSize;
+    personality?:
+      | EnumPersonalityFieldUpdateOperationsInput
+      | $Enums.Personality;
+    relationship?:
+      | EnumRelationshipFieldUpdateOperationsInput
+      | $Enums.Relationship;
+    occupation?: EnumOccupationFieldUpdateOperationsInput | $Enums.Occupation;
+    voice?: StringFieldUpdateOperationsInput | string;
+    isPublic?: BoolFieldUpdateOperationsInput | boolean;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    isLive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdById?: StringFieldUpdateOperationsInput | string;
+    kinks?: CharacterKinkUncheckedUpdateManyWithoutCharacterNestedInput;
+    chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
+    stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
+    reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+  };
+
+  export type PrivateContentMediaUpsertWithWhereUniqueWithoutPrivateContentInput =
+    {
+      where: PrivateContentMediaWhereUniqueInput;
+      update: XOR<
+        PrivateContentMediaUpdateWithoutPrivateContentInput,
+        PrivateContentMediaUncheckedUpdateWithoutPrivateContentInput
+      >;
+      create: XOR<
+        PrivateContentMediaCreateWithoutPrivateContentInput,
+        PrivateContentMediaUncheckedCreateWithoutPrivateContentInput
+      >;
+    };
+
+  export type PrivateContentMediaUpdateWithWhereUniqueWithoutPrivateContentInput =
+    {
+      where: PrivateContentMediaWhereUniqueInput;
+      data: XOR<
+        PrivateContentMediaUpdateWithoutPrivateContentInput,
+        PrivateContentMediaUncheckedUpdateWithoutPrivateContentInput
+      >;
+    };
+
+  export type PrivateContentMediaUpdateManyWithWhereWithoutPrivateContentInput =
+    {
+      where: PrivateContentMediaScalarWhereInput;
+      data: XOR<
+        PrivateContentMediaUpdateManyMutationInput,
+        PrivateContentMediaUncheckedUpdateManyWithoutPrivateContentInput
+      >;
+    };
+
+  export type PrivateContentCreateWithoutMediaInput = {
+    id?: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    character: CharacterCreateNestedOneWithoutPrivateContentsInput;
+  };
+
+  export type PrivateContentUncheckedCreateWithoutMediaInput = {
+    id?: string;
+    characterId: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type PrivateContentCreateOrConnectWithoutMediaInput = {
+    where: PrivateContentWhereUniqueInput;
+    create: XOR<
+      PrivateContentCreateWithoutMediaInput,
+      PrivateContentUncheckedCreateWithoutMediaInput
+    >;
+  };
+
+  export type MediaCreateWithoutPrivateContentMediaInput = {
+    id?: string;
+    type: $Enums.MediaType;
+    key: string;
+    url: string;
+    mimeType?: string | null;
+    size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    duration?: number | null;
+    createdAt?: Date | string;
+    characterPosters?: CharacterCreateNestedManyWithoutPosterInput;
+    characterVideos?: CharacterCreateNestedManyWithoutVideoInput;
+    storyMedia?: StoryCreateNestedManyWithoutMediaInput;
+    storyThumbnails?: StoryCreateNestedManyWithoutThumbnailInput;
+    reelVideos?: ReelCreateNestedManyWithoutVideoInput;
+    reelThumbnails?: ReelCreateNestedManyWithoutThumbnailInput;
+    collections?: CollectionCreateNestedManyWithoutMediaInput;
+  };
+
+  export type MediaUncheckedCreateWithoutPrivateContentMediaInput = {
+    id?: string;
+    type: $Enums.MediaType;
+    key: string;
+    url: string;
+    mimeType?: string | null;
+    size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    duration?: number | null;
+    createdAt?: Date | string;
+    characterPosters?: CharacterUncheckedCreateNestedManyWithoutPosterInput;
+    characterVideos?: CharacterUncheckedCreateNestedManyWithoutVideoInput;
+    storyMedia?: StoryUncheckedCreateNestedManyWithoutMediaInput;
+    storyThumbnails?: StoryUncheckedCreateNestedManyWithoutThumbnailInput;
+    reelVideos?: ReelUncheckedCreateNestedManyWithoutVideoInput;
+    reelThumbnails?: ReelUncheckedCreateNestedManyWithoutThumbnailInput;
+    collections?: CollectionUncheckedCreateNestedManyWithoutMediaInput;
+  };
+
+  export type MediaCreateOrConnectWithoutPrivateContentMediaInput = {
+    where: MediaWhereUniqueInput;
+    create: XOR<
+      MediaCreateWithoutPrivateContentMediaInput,
+      MediaUncheckedCreateWithoutPrivateContentMediaInput
+    >;
+  };
+
+  export type PrivateContentUpsertWithoutMediaInput = {
+    update: XOR<
+      PrivateContentUpdateWithoutMediaInput,
+      PrivateContentUncheckedUpdateWithoutMediaInput
+    >;
+    create: XOR<
+      PrivateContentCreateWithoutMediaInput,
+      PrivateContentUncheckedCreateWithoutMediaInput
+    >;
+    where?: PrivateContentWhereInput;
+  };
+
+  export type PrivateContentUpdateToOneWithWhereWithoutMediaInput = {
+    where?: PrivateContentWhereInput;
+    data: XOR<
+      PrivateContentUpdateWithoutMediaInput,
+      PrivateContentUncheckedUpdateWithoutMediaInput
+    >;
+  };
+
+  export type PrivateContentUpdateWithoutMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    character?: CharacterUpdateOneRequiredWithoutPrivateContentsNestedInput;
+  };
+
+  export type PrivateContentUncheckedUpdateWithoutMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    characterId?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MediaUpsertWithoutPrivateContentMediaInput = {
+    update: XOR<
+      MediaUpdateWithoutPrivateContentMediaInput,
+      MediaUncheckedUpdateWithoutPrivateContentMediaInput
+    >;
+    create: XOR<
+      MediaCreateWithoutPrivateContentMediaInput,
+      MediaUncheckedCreateWithoutPrivateContentMediaInput
+    >;
+    where?: MediaWhereInput;
+  };
+
+  export type MediaUpdateToOneWithWhereWithoutPrivateContentMediaInput = {
+    where?: MediaWhereInput;
+    data: XOR<
+      MediaUpdateWithoutPrivateContentMediaInput,
+      MediaUncheckedUpdateWithoutPrivateContentMediaInput
+    >;
+  };
+
+  export type MediaUpdateWithoutPrivateContentMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    type?: EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType;
+    key?: StringFieldUpdateOperationsInput | string;
+    url?: StringFieldUpdateOperationsInput | string;
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null;
+    size?: NullableIntFieldUpdateOperationsInput | number | null;
+    width?: NullableIntFieldUpdateOperationsInput | number | null;
+    height?: NullableIntFieldUpdateOperationsInput | number | null;
+    duration?: NullableIntFieldUpdateOperationsInput | number | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    characterPosters?: CharacterUpdateManyWithoutPosterNestedInput;
+    characterVideos?: CharacterUpdateManyWithoutVideoNestedInput;
+    storyMedia?: StoryUpdateManyWithoutMediaNestedInput;
+    storyThumbnails?: StoryUpdateManyWithoutThumbnailNestedInput;
+    reelVideos?: ReelUpdateManyWithoutVideoNestedInput;
+    reelThumbnails?: ReelUpdateManyWithoutThumbnailNestedInput;
+    collections?: CollectionUpdateManyWithoutMediaNestedInput;
+  };
+
+  export type MediaUncheckedUpdateWithoutPrivateContentMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    type?: EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType;
+    key?: StringFieldUpdateOperationsInput | string;
+    url?: StringFieldUpdateOperationsInput | string;
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null;
+    size?: NullableIntFieldUpdateOperationsInput | number | null;
+    width?: NullableIntFieldUpdateOperationsInput | number | null;
+    height?: NullableIntFieldUpdateOperationsInput | number | null;
+    duration?: NullableIntFieldUpdateOperationsInput | number | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    characterPosters?: CharacterUncheckedUpdateManyWithoutPosterNestedInput;
+    characterVideos?: CharacterUncheckedUpdateManyWithoutVideoNestedInput;
+    storyMedia?: StoryUncheckedUpdateManyWithoutMediaNestedInput;
+    storyThumbnails?: StoryUncheckedUpdateManyWithoutThumbnailNestedInput;
+    reelVideos?: ReelUncheckedUpdateManyWithoutVideoNestedInput;
+    reelThumbnails?: ReelUncheckedUpdateManyWithoutThumbnailNestedInput;
+    collections?: CollectionUncheckedUpdateManyWithoutMediaNestedInput;
   };
 
   export type UserCreateWithoutAffiliateInput = {
@@ -41647,6 +46276,13 @@ export namespace Prisma {
     createdAt?: Date | string;
   };
 
+  export type PrivateContentMediaCreateManyMediaInput = {
+    id?: string;
+    privateContentId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
   export type CharacterUpdateWithoutPosterInput = {
     id?: StringFieldUpdateOperationsInput | string;
     name?: StringFieldUpdateOperationsInput | string;
@@ -41682,6 +46318,7 @@ export namespace Prisma {
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutPosterInput = {
@@ -41719,6 +46356,7 @@ export namespace Prisma {
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateManyWithoutPosterInput = {
@@ -41789,6 +46427,7 @@ export namespace Prisma {
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutVideoInput = {
@@ -41826,6 +46465,7 @@ export namespace Prisma {
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateManyWithoutVideoInput = {
@@ -42005,6 +46645,27 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string;
     userId?: StringFieldUpdateOperationsInput | string;
     messageId?: NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaUpdateWithoutMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    privateContent?: PrivateContentUpdateOneRequiredWithoutMediaNestedInput;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateWithoutMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    privateContentId?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateManyWithoutMediaInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    privateContentId?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
@@ -42250,6 +46911,7 @@ export namespace Prisma {
     chats?: ChatUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateWithoutCreatedByInput = {
@@ -42287,6 +46949,7 @@ export namespace Prisma {
     chats?: ChatUncheckedUpdateManyWithoutCharacterNestedInput;
     stories?: StoryUncheckedUpdateManyWithoutCharacterNestedInput;
     reels?: ReelUncheckedUpdateManyWithoutCharacterNestedInput;
+    privateContents?: PrivateContentUncheckedUpdateManyWithoutCharacterNestedInput;
   };
 
   export type CharacterUncheckedUpdateManyWithoutCreatedByInput = {
@@ -42462,6 +47125,16 @@ export namespace Prisma {
     updatedAt?: Date | string;
   };
 
+  export type PrivateContentCreateManyCharacterInput = {
+    id?: string;
+    description?: string | null;
+    tokenCost?: number;
+    likeCount?: number;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
   export type CharacterKinkUpdateWithoutCharacterInput = {
     id?: StringFieldUpdateOperationsInput | string;
     kink?: EnumKinkFieldUpdateOperationsInput | $Enums.Kink;
@@ -42584,6 +47257,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
+  export type PrivateContentUpdateWithoutCharacterInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    media?: PrivateContentMediaUpdateManyWithoutPrivateContentNestedInput;
+  };
+
+  export type PrivateContentUncheckedUpdateWithoutCharacterInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    media?: PrivateContentMediaUncheckedUpdateManyWithoutPrivateContentNestedInput;
+  };
+
+  export type PrivateContentUncheckedUpdateManyWithoutCharacterInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    description?: NullableStringFieldUpdateOperationsInput | string | null;
+    tokenCost?: IntFieldUpdateOperationsInput | number;
+    likeCount?: IntFieldUpdateOperationsInput | number;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
   export type MessageCreateManyChatInput = {
     id?: string;
     type: $Enums.MessageType;
@@ -42621,6 +47326,35 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
+
+  export type PrivateContentMediaCreateManyPrivateContentInput = {
+    id?: string;
+    mediaId: string;
+    order?: number;
+    createdAt?: Date | string;
+  };
+
+  export type PrivateContentMediaUpdateWithoutPrivateContentInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    media?: MediaUpdateOneRequiredWithoutPrivateContentMediaNestedInput;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateWithoutPrivateContentInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    mediaId?: StringFieldUpdateOperationsInput | string;
+    order?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type PrivateContentMediaUncheckedUpdateManyWithoutPrivateContentInput =
+    {
+      id?: StringFieldUpdateOperationsInput | string;
+      mediaId?: StringFieldUpdateOperationsInput | string;
+      order?: IntFieldUpdateOperationsInput | number;
+      createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    };
 
   export type ReferralCreateManyAffiliateInput = {
     id?: string;

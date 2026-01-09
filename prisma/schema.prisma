@@ -222,13 +222,14 @@ model Media {
   createdAt DateTime  @default(now())
 
   // Reverse relations
-  characterPosters Character[]  @relation("CharacterPoster")
-  characterVideos  Character[]  @relation("CharacterVideo")
-  storyMedia       Story[]      @relation("StoryMedia")
-  storyThumbnails  Story[]      @relation("StoryThumbnail")
-  reelVideos       Reel[]       @relation("ReelVideo")
-  reelThumbnails   Reel[]       @relation("ReelThumbnail")
-  collections      Collection[]
+  characterPosters    Character[]            @relation("CharacterPoster")
+  characterVideos     Character[]            @relation("CharacterVideo")
+  storyMedia          Story[]                @relation("StoryMedia")
+  storyThumbnails     Story[]                @relation("StoryThumbnail")
+  reelVideos          Reel[]                 @relation("ReelVideo")
+  reelThumbnails      Reel[]                 @relation("ReelThumbnail")
+  collections         Collection[]
+  privateContentMedia PrivateContentMedia[]
 
   @@index([type])
   @@index([createdAt])
@@ -366,10 +367,11 @@ model Character {
   createdById String
 
   // Relations
-  kinks   CharacterKink[]
-  chats   Chat[]
-  stories Story[]
-  reels   Reel[]
+  kinks           CharacterKink[]
+  chats           Chat[]
+  stories         Story[]
+  reels           Reel[]
+  privateContents PrivateContent[]
 
   @@index([createdById])
   @@index([isPublic])
@@ -541,6 +543,43 @@ model Reel {
   @@index([isActive])
   @@index([createdAt])
   @@map("reel")
+}
+
+// PrivateContent - Premium/locked content for characters
+model PrivateContent {
+  id          String   @id @default(cuid())
+  characterId String
+  description String?  @db.Text
+  tokenCost   Int      @default(0)
+  likeCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  character Character              @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media     PrivateContentMedia[]
+
+  @@index([characterId])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("private_content")
+}
+
+// PrivateContentMedia - Junction table for PrivateContent and Media (many-to-many)
+model PrivateContentMedia {
+  id               String   @id @default(cuid())
+  privateContentId String
+  mediaId          String
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  privateContent PrivateContent @relation(fields: [privateContentId], references: [id], onDelete: Cascade)
+  media          Media          @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([privateContentId, mediaId])
+  @@index([privateContentId])
+  @@index([mediaId])
+  @@map("private_content_media")
 }
 
 // Affiliate - User affiliate accounts for referral program

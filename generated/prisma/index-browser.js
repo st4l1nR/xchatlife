@@ -302,6 +302,25 @@ exports.Prisma.ReelScalarFieldEnum = {
   updatedAt: "updatedAt",
 };
 
+exports.Prisma.PrivateContentScalarFieldEnum = {
+  id: "id",
+  characterId: "characterId",
+  description: "description",
+  tokenCost: "tokenCost",
+  likeCount: "likeCount",
+  isActive: "isActive",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+};
+
+exports.Prisma.PrivateContentMediaScalarFieldEnum = {
+  id: "id",
+  privateContentId: "privateContentId",
+  mediaId: "mediaId",
+  order: "order",
+  createdAt: "createdAt",
+};
+
 exports.Prisma.AffiliateScalarFieldEnum = {
   id: "id",
   userId: "userId",
@@ -540,6 +559,8 @@ exports.Prisma.ModelName = {
   UsageQuota: "UsageQuota",
   Story: "Story",
   Reel: "Reel",
+  PrivateContent: "PrivateContent",
+  PrivateContentMedia: "PrivateContentMedia",
   Affiliate: "Affiliate",
   Referral: "Referral",
 };
