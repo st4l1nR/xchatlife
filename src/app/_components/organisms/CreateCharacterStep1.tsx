@@ -26,8 +26,10 @@ const STYLE_OPTIONS = {
     realistic: {
       value: "realistic" as const,
       label: "Realistic",
-      imageSrc: "/images/create-character/girls/realistic/step-1/276307461-4943cc8c-0300-4916-8c9c-5dbdeb5c8aab-webp90 (1).webp",
-      videoSrc: "/images/create-character/girls/realistic/step-1/276307461-9eed0f84-9c12-4662-8ec4-6723eda29420 (1).mp4",
+      imageSrc:
+        "/images/create-character/girls/realistic/step-1/276307461-4943cc8c-0300-4916-8c9c-5dbdeb5c8aab-webp90 (1).webp",
+      videoSrc:
+        "/images/create-character/girls/realistic/step-1/276307461-9eed0f84-9c12-4662-8ec4-6723eda29420 (1).mp4",
       posterUrl: `${R2_BASE}/seed/characters/276307461-4943cc8c-0300-4916-8c9c-5dbdeb5c8aab-webp90%20(1).webp`,
       videoUrl: `${R2_BASE}/seed/characters/276307461-9eed0f84-9c12-4662-8ec4-6723eda29420%20(1).mp4`,
       disabled: false,
@@ -35,8 +37,10 @@ const STYLE_OPTIONS = {
     anime: {
       value: "anime" as const,
       label: "Anime",
-      imageSrc: "/images/create-character/girls/anime/step-1/249369779-ac2fc07d-9a74-4f9d-8e62-d9903128f452-webp90 (1).webp",
-      videoSrc: "/images/create-character/girls/anime/step-1/249369779-944123a4-da88-42bc-8d11-fd183dbd8449 (1).mp4",
+      imageSrc:
+        "/images/create-character/girls/anime/step-1/249369779-ac2fc07d-9a74-4f9d-8e62-d9903128f452-webp90 (1).webp",
+      videoSrc:
+        "/images/create-character/girls/anime/step-1/249369779-944123a4-da88-42bc-8d11-fd183dbd8449 (1).mp4",
       posterUrl: `${R2_BASE}/seed/characters/249369779-ac2fc07d-9a74-4f9d-8e62-d9903128f452-webp90%20(1).webp`,
       videoUrl: `${R2_BASE}/seed/characters/249369779-944123a4-da88-42bc-8d11-fd183dbd8449%20(1).mp4`,
       disabled: false,
@@ -46,8 +50,10 @@ const STYLE_OPTIONS = {
     realistic: {
       value: "realistic" as const,
       label: "Realistic",
-      imageSrc: "/images/create-character/trans/realistic/step 1/a27b9a04-a900-46e1-a13e-bef80005294f.jpg",
-      videoSrc: "/images/create-character/trans/realistic/step 1/e53ff50c-3be5-404a-8c9c-a6369e243945.mp4",
+      imageSrc:
+        "/images/create-character/trans/realistic/step 1/a27b9a04-a900-46e1-a13e-bef80005294f.jpg",
+      videoSrc:
+        "/images/create-character/trans/realistic/step 1/e53ff50c-3be5-404a-8c9c-a6369e243945.mp4",
       posterUrl: `${R2_BASE}/seed/characters/a27b9a04-a900-46e1-a13e-bef80005294f.jpg`,
       videoUrl: `${R2_BASE}/seed/characters/e53ff50c-3be5-404a-8c9c-a6369e243945.mp4`,
       disabled: false,
@@ -55,8 +61,10 @@ const STYLE_OPTIONS = {
     anime: {
       value: "anime" as const,
       label: "Anime",
-      imageSrc: "/images/create-character/trans/anime/step 1/028f58c3-0134-49e2-bf4f-ced82716a7d6.jpg",
-      videoSrc: "/images/create-character/trans/anime/step 1/4fc1f5dd-8b9f-48d0-b012-b45d4e8ea46c.mp4",
+      imageSrc:
+        "/images/create-character/trans/anime/step 1/028f58c3-0134-49e2-bf4f-ced82716a7d6.jpg",
+      videoSrc:
+        "/images/create-character/trans/anime/step 1/4fc1f5dd-8b9f-48d0-b012-b45d4e8ea46c.mp4",
       posterUrl: `${R2_BASE}/seed/characters/028f58c3-0134-49e2-bf4f-ced82716a7d6.jpg`,
       videoUrl: `${R2_BASE}/seed/characters/4fc1f5dd-8b9f-48d0-b012-b45d4e8ea46c.mp4`,
       disabled: true,
@@ -70,7 +78,11 @@ const CHARACTER_TYPE_OPTIONS = [
   { value: "trans" as const, label: "Trans" },
 ] as const;
 
-const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setValue, errors }) => {
+const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({
+  watch,
+  setValue,
+  errors,
+}) => {
   const selectedStyle = watch("style");
   const characterType = watch("characterType") ?? "girl";
 
@@ -78,22 +90,45 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
 
   const resetFormFields = () => {
     // Reset all subsequent form fields to undefined when variant changes
-    setValue("ethnicity", undefined as unknown as CharacterFormData["ethnicity"]);
+    setValue(
+      "ethnicity",
+      undefined as unknown as CharacterFormData["ethnicity"],
+    );
     setValue("age", 21);
-    setValue("hairStyle", undefined as unknown as CharacterFormData["hairStyle"]);
-    setValue("hairColor", undefined as unknown as CharacterFormData["hairColor"]);
+    setValue(
+      "hairStyle",
+      undefined as unknown as CharacterFormData["hairStyle"],
+    );
+    setValue(
+      "hairColor",
+      undefined as unknown as CharacterFormData["hairColor"],
+    );
     setValue("eyeColor", undefined as unknown as CharacterFormData["eyeColor"]);
     setValue("bodyType", undefined as unknown as CharacterFormData["bodyType"]);
-    setValue("breastSize", undefined as unknown as CharacterFormData["breastSize"]);
+    setValue(
+      "breastSize",
+      undefined as unknown as CharacterFormData["breastSize"],
+    );
     setValue("name", undefined as unknown as CharacterFormData["name"]);
-    setValue("personality", undefined as unknown as CharacterFormData["personality"]);
-    setValue("relationship", undefined as unknown as CharacterFormData["relationship"]);
-    setValue("occupation", undefined as unknown as CharacterFormData["occupation"]);
+    setValue(
+      "personality",
+      undefined as unknown as CharacterFormData["personality"],
+    );
+    setValue(
+      "relationship",
+      undefined as unknown as CharacterFormData["relationship"],
+    );
+    setValue(
+      "occupation",
+      undefined as unknown as CharacterFormData["occupation"],
+    );
     setValue("kinks", []);
     setValue("voice", undefined as unknown as CharacterFormData["voice"]);
   };
 
-  const handleCharacterTypeChange = (newType: CharacterFormData["characterType"]) => {
+  const handleCharacterTypeChange = (
+    newType: CharacterFormData["characterType"],
+  ) => {
     if (newType === characterType) return;
 
     setValue("characterType", newType, { shouldValidate: true });
@@ -123,7 +158,7 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
   return (
     <div className="flex flex-col items-center">
       {/* Character Type Toggle */}
-      <div className="mb-6 flex items-center gap-1 rounded-full bg-muted p-1">
+      <div className="bg-muted mb-6 flex items-center gap-1 rounded-full p-1">
         {CHARACTER_TYPE_OPTIONS.map((option) => (
           <button
             key={option.value}
@@ -133,7 +168,7 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
               "rounded-full px-6 py-2 text-sm font-medium transition-all",
               characterType === option.value
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {option.label}
@@ -141,7 +176,7 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
         ))}
       </div>
 
-      <h2 className="mb-8 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mb-8 text-2xl font-bold">
         Create my AI {characterType === "girl" ? "Girl" : "Trans"}
       </h2>
 
@@ -166,13 +201,13 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
                 size="lg"
                 className={clsx(
                   "w-64 sm:w-72",
-                  isDisabled && "cursor-not-allowed opacity-50"
+                  isDisabled && "cursor-not-allowed opacity-50",
                 )}
                 disabled={isDisabled}
               />
               {isComingSoon && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60">
-                  <span className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+                  <span className="bg-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-semibold">
                     Coming Soon
                   </span>
                 </div>
@@ -183,7 +218,9 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({ watch, setV
       </div>
 
       {errors.style && (
-        <p className="mt-4 text-base/6 text-destructive sm:text-sm/6">{errors.style.message}</p>
+        <p className="text-destructive mt-4 text-base/6 sm:text-sm/6">
+          {errors.style.message}
+        </p>
       )}
     </div>
   );
