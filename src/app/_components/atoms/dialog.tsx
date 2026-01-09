@@ -113,12 +113,15 @@ export function Dialog({
           className={clsx(
             "min-h-full sm:p-4",
             containerBounds
-              ? "flex justify-center items-start"
+              ? "flex items-start justify-center"
               : "grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
           )}
           style={
             containerBounds
-              ? { paddingTop: containerBounds.height * 0.1, paddingBottom: containerBounds.height * 0.1 }
+              ? {
+                  paddingTop: containerBounds.height * 0.1,
+                  paddingBottom: containerBounds.height * 0.1,
+                }
               : undefined
           }
         >

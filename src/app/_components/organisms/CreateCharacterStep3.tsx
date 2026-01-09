@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import type { UseFormSetValue, UseFormWatch, FieldErrors } from "react-hook-form";
+import type {
+  UseFormSetValue,
+  UseFormWatch,
+  FieldErrors,
+} from "react-hook-form";
 import CardSelectable from "../molecules/CardSelectable";
 import type { CharacterFormData } from "../pages/CreateCharacterPage";
 
@@ -14,14 +18,23 @@ type CreateCharacterStep3Props = {
 };
 
 // Helper to get variant key
-const getVariantKey = (characterType: string, style: string) => `${characterType}-${style}`;
+const getVariantKey = (characterType: string, style: string) =>
+  `${characterType}-${style}`;
 
 // Base paths
 const GIRLS_REALISTIC_BASE = "/images/create-character/girls/realistic/step-3";
 const GIRLS_ANIME_BASE = "/images/create-character/girls/anime/step 3";
 
 // Hair Style Options by variant
-const HAIR_STYLE_OPTIONS: Record<string, { value: CharacterFormData["hairStyle"]; label: string; imageSrc: string; videoSrc?: string }[]> = {
+const HAIR_STYLE_OPTIONS: Record<
+  string,
+  {
+    value: CharacterFormData["hairStyle"];
+    label: string;
+    imageSrc: string;
+    videoSrc?: string;
+  }[]
+> = {
   "girls-realistic": [
     {
       value: "straight",
@@ -103,41 +116,131 @@ const HAIR_STYLE_OPTIONS: Record<string, { value: CharacterFormData["hairStyle"]
 };
 
 // Hair Color Options by variant
-const HAIR_COLOR_OPTIONS: Record<string, { value: CharacterFormData["hairColor"]; label: string; imageSrc: string }[]> = {
+const HAIR_COLOR_OPTIONS: Record<
+  string,
+  { value: CharacterFormData["hairColor"]; label: string; imageSrc: string }[]
+> = {
   "girls-realistic": [
-    { value: "brunette", label: "Brunette", imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Brunette.png` },
-    { value: "blonde", label: "Blonde", imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Blonde.png` },
-    { value: "black", label: "Black", imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Black.png` },
-    { value: "redhead", label: "Redhead", imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Redhead.png` },
-    { value: "pink", label: "Pink", imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Pink.png` },
+    {
+      value: "brunette",
+      label: "Brunette",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Brunette.png`,
+    },
+    {
+      value: "blonde",
+      label: "Blonde",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Blonde.png`,
+    },
+    {
+      value: "black",
+      label: "Black",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Black.png`,
+    },
+    {
+      value: "redhead",
+      label: "Redhead",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Redhead.png`,
+    },
+    {
+      value: "pink",
+      label: "Pink",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Pink.png`,
+    },
   ],
   "girls-anime": [
-    { value: "black", label: "Black", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Black.webp` },
-    { value: "blonde", label: "Blonde", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Blonde.webp` },
-    { value: "blue", label: "Blue", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Blue.webp` },
-    { value: "multicolor", label: "Multicolor", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Multicolor.webp` },
-    { value: "pink", label: "Pink", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Pink.webp` },
-    { value: "purple", label: "Purple", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Purple.webp` },
-    { value: "redhead", label: "Redhead", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Redhead.webp` },
-    { value: "white", label: "White", imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/White.webp` },
+    {
+      value: "black",
+      label: "Black",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Black.webp`,
+    },
+    {
+      value: "blonde",
+      label: "Blonde",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Blonde.webp`,
+    },
+    {
+      value: "blue",
+      label: "Blue",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Blue.webp`,
+    },
+    {
+      value: "multicolor",
+      label: "Multicolor",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Multicolor.webp`,
+    },
+    {
+      value: "pink",
+      label: "Pink",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Pink.webp`,
+    },
+    {
+      value: "purple",
+      label: "Purple",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Purple.webp`,
+    },
+    {
+      value: "redhead",
+      label: "Redhead",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/Redhead.webp`,
+    },
+    {
+      value: "white",
+      label: "White",
+      imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/White.webp`,
+    },
   ],
   // Trans realistic reuses girls realistic
   "trans-realistic": [], // Will fallback to girls-realistic
 };
 
 // Eye Color Options by variant
-const EYE_COLOR_OPTIONS: Record<string, { value: CharacterFormData["eyeColor"]; label: string; imageSrc: string }[]> = {
+const EYE_COLOR_OPTIONS: Record<
+  string,
+  { value: CharacterFormData["eyeColor"]; label: string; imageSrc: string }[]
+> = {
   "girls-realistic": [
-    { value: "brown", label: "Brown", imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Brown.png` },
-    { value: "blue", label: "Blue", imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Blue.png` },
-    { value: "green", label: "Green", imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Green.png` },
+    {
+      value: "brown",
+      label: "Brown",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Brown.png`,
+    },
+    {
+      value: "blue",
+      label: "Blue",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Blue.png`,
+    },
+    {
+      value: "green",
+      label: "Green",
+      imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Green.png`,
+    },
   ],
   "girls-anime": [
-    { value: "brown", label: "Brown", imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Brown.webp` },
-    { value: "blue", label: "Blue", imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Blue.webp` },
-    { value: "green", label: "Green", imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Green.webp` },
-    { value: "red", label: "Red", imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Red.webp` },
-    { value: "yellow", label: "Yellow", imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Yellow.webp` },
+    {
+      value: "brown",
+      label: "Brown",
+      imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Brown.webp`,
+    },
+    {
+      value: "blue",
+      label: "Blue",
+      imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Blue.webp`,
+    },
+    {
+      value: "green",
+      label: "Green",
+      imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Green.webp`,
+    },
+    {
+      value: "red",
+      label: "Red",
+      imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Red.webp`,
+    },
+    {
+      value: "yellow",
+      label: "Yellow",
+      imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Yellow.webp`,
+    },
   ],
   // Trans realistic reuses girls realistic
   "trans-realistic": [], // Will fallback to girls-realistic
@@ -154,19 +257,32 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
   const selectedHairColor = watch("hairColor");
   const selectedEyeColor = watch("eyeColor");
 
-  const variantKey = getVariantKey(characterType ?? "girls", style ?? "realistic");
+  const variantKey = getVariantKey(
+    characterType ?? "girls",
+    style ?? "realistic",
+  );
 
   // Trans realistic reuses girls realistic options
-  const effectiveVariantKey = variantKey === "trans-realistic" ? "girls-realistic" : variantKey;
+  const effectiveVariantKey =
+    variantKey === "trans-realistic" ? "girls-realistic" : variantKey;
 
-  const hairStyleOptions = HAIR_STYLE_OPTIONS[effectiveVariantKey] || HAIR_STYLE_OPTIONS["girls-realistic"] || [];
-  const hairColorOptions = HAIR_COLOR_OPTIONS[effectiveVariantKey] || HAIR_COLOR_OPTIONS["girls-realistic"] || [];
-  const eyeColorOptions = EYE_COLOR_OPTIONS[effectiveVariantKey] || EYE_COLOR_OPTIONS["girls-realistic"] || [];
+  const hairStyleOptions =
+    HAIR_STYLE_OPTIONS[effectiveVariantKey] ||
+    HAIR_STYLE_OPTIONS["girls-realistic"] ||
+    [];
+  const hairColorOptions =
+    HAIR_COLOR_OPTIONS[effectiveVariantKey] ||
+    HAIR_COLOR_OPTIONS["girls-realistic"] ||
+    [];
+  const eyeColorOptions =
+    EYE_COLOR_OPTIONS[effectiveVariantKey] ||
+    EYE_COLOR_OPTIONS["girls-realistic"] ||
+    [];
 
   return (
     <div className="flex flex-col items-center">
       {/* Hair Style Section */}
-      <h2 className="mb-6 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mb-6 text-2xl font-bold">
         Choose Hair Style
       </h2>
 
@@ -178,7 +294,9 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
             videoSrc={option.videoSrc}
             label={option.label}
             selected={selectedHairStyle === option.value}
-            onClick={() => setValue("hairStyle", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("hairStyle", option.value, { shouldValidate: true })
+            }
             aspectRatio="portrait"
             size="sm"
             className="w-24 sm:w-28"
@@ -187,11 +305,13 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
       </div>
 
       {errors.hairStyle && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.hairStyle.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.hairStyle.message}
+        </p>
       )}
 
       {/* Hair Color Section */}
-      <h2 className="mb-6 mt-4 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mt-4 mb-6 text-2xl font-bold">
         Choose Hair Color
       </h2>
 
@@ -202,7 +322,9 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
             imageSrc={option.imageSrc}
             label={option.label}
             selected={selectedHairColor === option.value}
-            onClick={() => setValue("hairColor", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("hairColor", option.value, { shouldValidate: true })
+            }
             aspectRatio="portrait"
             size="sm"
             className="w-24 sm:w-28"
@@ -211,11 +333,13 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
       </div>
 
       {errors.hairColor && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.hairColor.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.hairColor.message}
+        </p>
       )}
 
       {/* Eye Color Section */}
-      <h2 className="mb-6 mt-4 text-2xl font-bold text-foreground">
+      <h2 className="text-foreground mt-4 mb-6 text-2xl font-bold">
         Choose Eye Color
       </h2>
 
@@ -226,7 +350,9 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
             imageSrc={option.imageSrc}
             label={option.label}
             selected={selectedEyeColor === option.value}
-            onClick={() => setValue("eyeColor", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("eyeColor", option.value, { shouldValidate: true })
+            }
             aspectRatio="landscape"
             size="md"
             className="w-32 sm:w-36"
@@ -235,7 +361,9 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
       </div>
 
       {errors.eyeColor && (
-        <p className="mb-6 text-destructive text-base/6 sm:text-sm/6">{errors.eyeColor.message}</p>
+        <p className="text-destructive mb-6 text-base/6 sm:text-sm/6">
+          {errors.eyeColor.message}
+        </p>
       )}
     </div>
   );

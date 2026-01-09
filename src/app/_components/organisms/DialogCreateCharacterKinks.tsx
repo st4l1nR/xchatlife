@@ -95,8 +95,15 @@ const DialogCreateCharacterKinks: React.FC<DialogCreateCharacterKinksProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} size="4xl" containerRef={containerRef}>
-      <DialogTitle className="text-center text-xl! sm:text-2xl!">Edit Kinks</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="4xl"
+      containerRef={containerRef}
+    >
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">
+        Edit Kinks
+      </DialogTitle>
 
       <DialogBody>
         {/* Search Input */}

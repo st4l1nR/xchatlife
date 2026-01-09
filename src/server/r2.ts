@@ -32,7 +32,7 @@ function getMimeType(filePath: string): string {
 // Upload a file from the public directory to R2
 export async function uploadPublicFileToR2(
   publicPath: string, // e.g., "/images/create-character/girls/realistic/step-1/image.webp"
-  r2Key: string // e.g., "characters/abc123/poster.webp"
+  r2Key: string, // e.g., "characters/abc123/poster.webp"
 ): Promise<{ url: string; key: string; mimeType: string; size: number }> {
   // Resolve the absolute path from the public directory
   const absolutePath = path.join(process.cwd(), "public", publicPath);
@@ -48,7 +48,7 @@ export async function uploadPublicFileToR2(
       Key: r2Key,
       Body: fileBuffer,
       ContentType: mimeType,
-    })
+    }),
   );
 
   // Return the public URL
@@ -66,7 +66,7 @@ export async function uploadPublicFileToR2(
 export function generateCharacterMediaKey(
   characterId: string,
   type: "poster" | "video",
-  extension: string
+  extension: string,
 ): string {
   return `characters/${characterId}/${type}.${extension}`;
 }
