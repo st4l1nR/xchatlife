@@ -98,7 +98,7 @@ const DialogCreateCharacterRelationship: React.FC<
       </DialogTitle>
 
       <DialogBody>
-        <div className="mx-auto grid max-w-sm grid-cols-2 gap-4 sm:max-w-2xl sm:grid-cols-5">
+        <div className="mx-auto flex max-w-sm flex-wrap justify-center gap-4 sm:max-w-2xl">
           {visibleOptions.map((option) => (
             <button
               key={option.value}
@@ -107,7 +107,7 @@ const DialogCreateCharacterRelationship: React.FC<
                 setLocalValue(option.value as CharacterFormData["relationship"])
               }
               className={clsx(
-                "relative flex flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-3 transition-all",
+                "relative flex w-[calc(50%-0.5rem)] flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-3 transition-all sm:w-[calc(20%-0.8rem)]",
                 localValue === option.value
                   ? "border-primary bg-primary/10"
                   : "border-border bg-muted hover:border-muted-foreground",

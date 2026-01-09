@@ -5,6 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "@/server/api/trpc";
+import { fetchAndUploadToR2 } from "@/server/r2";
 
 // Input schema matching frontend form with Prisma enum values
 const createCharacterSchema = z.object({
@@ -120,30 +121,9 @@ const createCharacterSchema = z.object({
   // Media URLs (R2 URLs)
   posterUrl: z.string().url(),
   videoUrl: z.string().url(),
+  // Visibility
+  isPublic: z.boolean(),
 });
-
-// Helper to get mime type from URL
-function getMimeTypeFromUrl(url: string): string {
-  const extension = url.split(".").pop()?.toLowerCase().split("?")[0];
-  const mimeTypes: Record<string, string> = {
-    webp: "image/webp",
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    png: "image/png",
-    gif: "image/gif",
-    mp4: "video/mp4",
-    webm: "video/webm",
-    mov: "video/quicktime",
-  };
-  return mimeTypes[extension ?? ""] ?? "application/octet-stream";
-}
-
-// Helper to extract key from R2 URL
-function getKeyFromR2Url(url: string): string {
-  const urlObj = new URL(url);
-  // Remove leading slash and decode URL encoding
-  return decodeURIComponent(urlObj.pathname.slice(1));
-}
 
 export const characterRouter = createTRPCRouter({
   /**
@@ -312,9 +292,15 @@ export const characterRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createCharacterSchema)
     .mutation(async ({ ctx, input }) => {
-      // Extract keys from R2 URLs
-      const posterKey = getKeyFromR2Url(input.posterUrl);
-      const videoKey = getKeyFromR2Url(input.videoUrl);
+      console.log("[character.create] Input posterUrl:", input.posterUrl);
+      console.log("[character.create] Input videoUrl:", input.videoUrl);
+
+      // Fetch media from URLs and re-upload to R2 with unique keys
+      // This avoids unique constraint violations on the Media.key field
+      const [posterUpload, videoUpload] = await Promise.all([
+        fetchAndUploadToR2(input.posterUrl, "characters", "poster"),
+        fetchAndUploadToR2(input.videoUrl, "characters", "video"),
+      ]);
 
       // Create media records and character in a transaction
       const character = await ctx.db.$transaction(async (tx) => {
@@ -322,9 +308,10 @@ export const characterRouter = createTRPCRouter({
         const posterMedia = await tx.media.create({
           data: {
             type: "image",
-            key: posterKey,
-            url: input.posterUrl,
-            mimeType: getMimeTypeFromUrl(input.posterUrl),
+            key: posterUpload.key,
+            url: posterUpload.url,
+            mimeType: posterUpload.mimeType,
+            size: posterUpload.size,
           },
         });
 
@@ -332,9 +319,10 @@ export const characterRouter = createTRPCRouter({
         const videoMedia = await tx.media.create({
           data: {
             type: "video",
-            key: videoKey,
-            url: input.videoUrl,
-            mimeType: getMimeTypeFromUrl(input.videoUrl),
+            key: videoUpload.key,
+            url: videoUpload.url,
+            mimeType: videoUpload.mimeType,
+            size: videoUpload.size,
           },
         });
 
@@ -355,6 +343,7 @@ export const characterRouter = createTRPCRouter({
             relationship: input.relationship,
             occupation: input.occupation,
             voice: input.voice,
+            isPublic: input.isPublic,
             posterId: posterMedia.id,
             videoId: videoMedia.id,
             createdById: ctx.session.user.id,

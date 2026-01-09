@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
-import { LogOut, Venus, Sparkles, Mars } from "lucide-react";
+import { LogOut, Venus, Sparkles, Mars, Transgender } from "lucide-react";
 import { Avatar } from "../atoms/avatar";
 import { Button } from "../atoms/button";
 import {
@@ -34,6 +34,7 @@ const CATEGORY_TABS = [
   { label: "Girls", href: "/realistic-girl", icon: Venus },
   { label: "Anime", href: "/anime-girl", icon: Sparkles },
   { label: "Guys", href: "/realistic-men", icon: Mars },
+  { label: "Trans", href: "/realistic-trans", icon: Transgender },
 ] as const;
 
 export type NavbarHomeProps = {

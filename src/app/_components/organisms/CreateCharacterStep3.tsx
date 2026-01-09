@@ -35,7 +35,7 @@ const HAIR_STYLE_OPTIONS: Record<
     videoSrc?: string;
   }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "straight",
       label: "Straight",
@@ -73,7 +73,7 @@ const HAIR_STYLE_OPTIONS: Record<
       videoSrc: `${GIRLS_REALISTIC_BASE}/hair-style/ponytail/43954e0a-1ce8-443c-9ade-e5f641f85dd1 (1).mp4`,
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "straight",
       label: "Straight",
@@ -111,8 +111,8 @@ const HAIR_STYLE_OPTIONS: Record<
       videoSrc: `${GIRLS_ANIME_BASE}/Hair Style/Ponytail/01aeaf81-7c31-4e67-8b46-64b0ab2b37a9.mp4`,
     },
   ],
-  // Trans realistic reuses girls realistic
-  "trans-realistic": [], // Will fallback to girls-realistic
+  // Trans realistic reuses girl realistic
+  "trans-realistic": [], // Will fallback to girl-realistic
 };
 
 // Hair Color Options by variant
@@ -120,7 +120,7 @@ const HAIR_COLOR_OPTIONS: Record<
   string,
   { value: CharacterFormData["hairColor"]; label: string; imageSrc: string }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "brunette",
       label: "Brunette",
@@ -147,7 +147,7 @@ const HAIR_COLOR_OPTIONS: Record<
       imageSrc: `${GIRLS_REALISTIC_BASE}/hair-color/Pink.png`,
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "black",
       label: "Black",
@@ -189,8 +189,8 @@ const HAIR_COLOR_OPTIONS: Record<
       imageSrc: `${GIRLS_ANIME_BASE}/Hair Color/White.webp`,
     },
   ],
-  // Trans realistic reuses girls realistic
-  "trans-realistic": [], // Will fallback to girls-realistic
+  // Trans realistic reuses girl realistic
+  "trans-realistic": [], // Will fallback to girl-realistic
 };
 
 // Eye Color Options by variant
@@ -198,7 +198,7 @@ const EYE_COLOR_OPTIONS: Record<
   string,
   { value: CharacterFormData["eyeColor"]; label: string; imageSrc: string }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "brown",
       label: "Brown",
@@ -215,7 +215,7 @@ const EYE_COLOR_OPTIONS: Record<
       imageSrc: `${GIRLS_REALISTIC_BASE}/eye-color/Green.png`,
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "brown",
       label: "Brown",
@@ -242,8 +242,8 @@ const EYE_COLOR_OPTIONS: Record<
       imageSrc: `${GIRLS_ANIME_BASE}/Eye Color/Yellow.webp`,
     },
   ],
-  // Trans realistic reuses girls realistic
-  "trans-realistic": [], // Will fallback to girls-realistic
+  // Trans realistic reuses girl realistic
+  "trans-realistic": [], // Will fallback to girl-realistic
 };
 
 const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
@@ -258,25 +258,25 @@ const CreateCharacterStep3: React.FC<CreateCharacterStep3Props> = ({
   const selectedEyeColor = watch("eyeColor");
 
   const variantKey = getVariantKey(
-    characterType ?? "girls",
+    characterType ?? "girl",
     style ?? "realistic",
   );
 
-  // Trans realistic reuses girls realistic options
+  // Trans realistic reuses girl realistic options
   const effectiveVariantKey =
-    variantKey === "trans-realistic" ? "girls-realistic" : variantKey;
+    variantKey === "trans-realistic" ? "girl-realistic" : variantKey;
 
   const hairStyleOptions =
     HAIR_STYLE_OPTIONS[effectiveVariantKey] ||
-    HAIR_STYLE_OPTIONS["girls-realistic"] ||
+    HAIR_STYLE_OPTIONS["girl-realistic"] ||
     [];
   const hairColorOptions =
     HAIR_COLOR_OPTIONS[effectiveVariantKey] ||
-    HAIR_COLOR_OPTIONS["girls-realistic"] ||
+    HAIR_COLOR_OPTIONS["girl-realistic"] ||
     [];
   const eyeColorOptions =
     EYE_COLOR_OPTIONS[effectiveVariantKey] ||
-    EYE_COLOR_OPTIONS["girls-realistic"] ||
+    EYE_COLOR_OPTIONS["girl-realistic"] ||
     [];
 
   return (

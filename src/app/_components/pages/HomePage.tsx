@@ -26,7 +26,7 @@ export type HomePageProps = {
   /**
    * Character gender filter
    */
-  gender?: "girl" | "men";
+  gender?: "girl" | "men" | "trans";
   /**
    * Optional mock data for Storybook and development
    * When provided, uses mock data instead of fetching from API
