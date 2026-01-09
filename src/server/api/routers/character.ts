@@ -1,5 +1,13 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  CharacterGender,
+  CharacterStyle,
+} from "../../../../generated/prisma";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 
 // Input schema matching frontend form with Prisma enum values
 const createCharacterSchema = z.object({
@@ -132,6 +140,169 @@ function getKeyFromR2Url(url: string): string {
 }
 
 export const characterRouter = createTRPCRouter({
+  /**
+   * Get all public active characters (non-paginated, for backward compatibility)
+   */
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const characters = await ctx.db.character.findMany({
+      where: {
+        isPublic: true,
+        isActive: true,
+      },
+      include: {
+        poster: true,
+        video: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return characters.map((character) => ({
+      id: character.id,
+      name: character.name,
+      age: character.age,
+      href: `/chat/${character.id}`,
+      imageSrc: character.poster?.url ?? "/images/girl-poster.webp",
+      videoSrc: character.video?.url,
+      description: undefined,
+      isNew:
+        new Date().getTime() - character.createdAt.getTime() <
+        7 * 24 * 60 * 60 * 1000, // 7 days
+      isLive: character.isLive,
+      playWithMeHref: character.isLive ? `/play/${character.id}` : undefined,
+    }));
+  }),
+
+  /**
+   * Get public active characters with cursor-based pagination (for infinite scroll)
+   */
+  getInfinite: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(16),
+        cursor: z.string().nullish(),
+        style: z.nativeEnum(CharacterStyle).optional(),
+        gender: z.nativeEnum(CharacterGender).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor, style, gender } = input;
+
+      const characters = await ctx.db.character.findMany({
+        take: limit + 1,
+        where: {
+          isPublic: true,
+          isActive: true,
+          isLive: false, // Exclude live characters (shown in separate section)
+          ...(style && { style }),
+          ...(gender && { gender }),
+        },
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          poster: true,
+          video: true,
+        },
+      });
+
+      let nextCursor: string | undefined = undefined;
+      if (characters.length > limit) {
+        const nextItem = characters.pop();
+        nextCursor = nextItem!.id;
+      }
+
+      const items = characters.map((character) => ({
+        id: character.id,
+        name: character.name,
+        age: character.age,
+        href: `/chat/${character.id}`,
+        imageSrc: character.poster?.url ?? "/images/girl-poster.webp",
+        videoSrc: character.video?.url,
+        description: undefined,
+        isNew:
+          new Date().getTime() - character.createdAt.getTime() <
+          7 * 24 * 60 * 60 * 1000,
+      }));
+
+      return {
+        items,
+        nextCursor,
+      };
+    }),
+
+  /**
+   * Get live characters only
+   */
+  getLive: publicProcedure
+    .input(
+      z
+        .object({
+          style: z.nativeEnum(CharacterStyle).optional(),
+          gender: z.nativeEnum(CharacterGender).optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const characters = await ctx.db.character.findMany({
+        where: {
+          isPublic: true,
+          isActive: true,
+          isLive: true,
+          ...(input?.style && { style: input.style }),
+          ...(input?.gender && { gender: input.gender }),
+        },
+        include: {
+          poster: true,
+          video: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return characters.map((character) => ({
+        id: character.id,
+        name: character.name,
+        age: character.age,
+        href: `/chat/${character.id}`,
+        imageSrc: character.poster?.url ?? "/images/girl-poster.webp",
+        videoSrc: character.video?.url,
+        isLive: true,
+        playWithMeHref: `/play/${character.id}`,
+      }));
+    }),
+
+  /**
+   * Get character by ID with full details
+   */
+  getById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const character = await ctx.db.character.findUnique({
+        where: { id: input.id },
+        include: {
+          poster: true,
+          video: true,
+          kinks: true,
+        },
+      });
+
+      if (!character) {
+        return null;
+      }
+
+      return {
+        ...character,
+        kinks: character.kinks.map((k) => k.kink),
+      };
+    }),
+
+  /**
+   * Create a new character
+   */
   create: protectedProcedure
     .input(createCharacterSchema)
     .mutation(async ({ ctx, input }) => {

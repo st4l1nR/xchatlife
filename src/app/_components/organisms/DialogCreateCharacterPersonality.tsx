@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { Check } from "lucide-react";
 import {
   Dialog,
   DialogBody,
@@ -42,14 +41,9 @@ const getPersonalityImagePath = (value: string): string => {
   return `/images/create-character/girls/realistic/step-5/personality/${filename}.png`;
 };
 
-const DialogCreateCharacterPersonality: React.FC<DialogCreateCharacterPersonalityProps> = ({
-  open,
-  onClose,
-  value,
-  onChange,
-  options,
-  containerRef,
-}) => {
+const DialogCreateCharacterPersonality: React.FC<
+  DialogCreateCharacterPersonalityProps
+> = ({ open, onClose, value, onChange, options, containerRef }) => {
   const [localValue, setLocalValue] = useState(value);
 
   // Sync local state with prop when dialog opens
@@ -61,7 +55,7 @@ const DialogCreateCharacterPersonality: React.FC<DialogCreateCharacterPersonalit
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue as CharacterFormData["personality"]);
+      onChange(localValue);
     }
     onClose();
   };
@@ -77,8 +71,15 @@ const DialogCreateCharacterPersonality: React.FC<DialogCreateCharacterPersonalit
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} size="5xl" containerRef={containerRef}>
-      <DialogTitle className="text-center text-xl! sm:text-2xl!">Edit Personality</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="5xl"
+      containerRef={containerRef}
+    >
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">
+        Edit Personality
+      </DialogTitle>
 
       <DialogBody>
         <div className="mx-auto grid max-w-sm grid-cols-1 gap-3 sm:flex sm:max-w-2xl sm:flex-wrap sm:justify-center">
@@ -86,9 +87,11 @@ const DialogCreateCharacterPersonality: React.FC<DialogCreateCharacterPersonalit
             <button
               key={option.value}
               type="button"
-              onClick={() => setLocalValue(option.value as CharacterFormData["personality"])}
+              onClick={() =>
+                setLocalValue(option.value as CharacterFormData["personality"])
+              }
               className={clsx(
-                "flex w-full items-center gap-2 rounded-xl border py-3 pl-3 pr-4 transition-all sm:w-fit",
+                "flex w-full items-center gap-2 rounded-xl border py-3 pr-4 pl-3 transition-all sm:w-fit",
                 localValue === option.value
                   ? "border-primary bg-primary/10"
                   : "border-border bg-muted hover:border-muted-foreground",

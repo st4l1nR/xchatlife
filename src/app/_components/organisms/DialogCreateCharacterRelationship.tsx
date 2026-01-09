@@ -42,14 +42,9 @@ const getRelationshipImagePath = (value: string): string => {
   return `/images/create-character/girls/realistic/step-5/relationship/${filename}.png`;
 };
 
-const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelationshipProps> = ({
-  open,
-  onClose,
-  value,
-  onChange,
-  options,
-  containerRef,
-}) => {
+const DialogCreateCharacterRelationship: React.FC<
+  DialogCreateCharacterRelationshipProps
+> = ({ open, onClose, value, onChange, options, containerRef }) => {
   const [localValue, setLocalValue] = useState(value);
   const [showAll, setShowAll] = useState(false);
 
@@ -63,7 +58,7 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
 
   const handleSave = () => {
     if (localValue) {
-      onChange(localValue as CharacterFormData["relationship"]);
+      onChange(localValue);
     }
     onClose();
   };
@@ -83,8 +78,15 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
     : options.slice(0, INITIAL_SHOW_COUNT);
 
   return (
-    <Dialog open={open} onClose={handleClose} size="5xl" containerRef={containerRef}>
-      <DialogTitle className="text-center text-xl! sm:text-2xl!">Edit Relationship</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="5xl"
+      containerRef={containerRef}
+    >
+      <DialogTitle className="text-center text-xl! sm:text-2xl!">
+        Edit Relationship
+      </DialogTitle>
 
       <DialogBody>
         <div className="mx-auto grid max-w-sm grid-cols-2 gap-4 sm:max-w-2xl sm:grid-cols-5">
@@ -92,7 +94,9 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
             <button
               key={option.value}
               type="button"
-              onClick={() => setLocalValue(option.value as CharacterFormData["relationship"])}
+              onClick={() =>
+                setLocalValue(option.value as CharacterFormData["relationship"])
+              }
               className={clsx(
                 "relative flex flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-3 transition-all",
                 localValue === option.value
@@ -101,9 +105,19 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
               )}
             >
               {localValue === option.value && (
-                <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                  <svg className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <div className="bg-primary absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
+                  <svg
+                    className="text-primary-foreground h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               )}
@@ -116,10 +130,16 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
                   sizes="80px"
                 />
               </div>
-              <span className={clsx(
+              <span
+                className={clsx(
                   "text-center text-sm font-medium",
-                  localValue === option.value ? "text-primary" : "text-foreground"
-                )}>{option.label}</span>
+                  localValue === option.value
+                    ? "text-primary"
+                    : "text-foreground",
+                )}
+              >
+                {option.label}
+              </span>
             </button>
           ))}
         </div>
@@ -129,7 +149,7 @@ const DialogCreateCharacterRelationship: React.FC<DialogCreateCharacterRelations
             <button
               type="button"
               onClick={() => setShowAll(!showAll)}
-              className="mt-4 w-full rounded-xl bg-muted py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+              className="bg-muted text-muted-foreground hover:bg-muted/80 mt-4 w-full rounded-xl py-3 text-sm font-medium transition-colors"
             >
               {showAll ? "Show less" : "Show all"}
             </button>
