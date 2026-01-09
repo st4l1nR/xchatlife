@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  CharacterGender,
-  CharacterStyle,
-} from "../../../../generated/prisma";
+import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
 import {
   createTRPCRouter,
   publicProcedure,
