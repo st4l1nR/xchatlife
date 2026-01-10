@@ -10,7 +10,7 @@ export const userRouter = createTRPCRouter({
 
   getUsageQuota: protectedProcedure.query(async ({ ctx }) => {
     const now = new Date();
-    const usage = await ctx.db.usageQuota.findFirst({
+    const usage = await ctx.db.usage_quota.findFirst({
       where: {
         userId: ctx.session.user.id,
         periodStart: { lte: now },

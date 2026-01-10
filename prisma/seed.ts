@@ -131,6 +131,7 @@ async function main() {
         providerId: "credential",
         userId: userId,
         password: hashedPassword,
+        updatedAt: new Date(),
       },
     });
 
@@ -246,14 +247,14 @@ async function main() {
       isActive: true,
       isLive,
       createdById: user.id,
-      kinks: {
+      character_kink: {
         create: selectedKinks.map((kink) => ({ kink })),
       },
     };
 
     const character = await prisma.character.create({
       data: characterData,
-      include: { kinks: true },
+      include: { character_kink: true },
     });
 
     characters.push(character);

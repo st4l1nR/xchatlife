@@ -1,6 +1,3 @@
-// Prisma schema for XChatLife
-// Extends Better Auth with chatbot application models
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -11,25 +8,340 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================================================
-// ENUMS
-// ============================================================================
+model Post {
+  id          String   @id @default(cuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  createdById String
+  user        user     @relation(fields: [createdById], references: [id])
 
-// User Enums
-enum Language {
-  english
-  german
-  french
-  spanish
+  @@index([name])
 }
 
-enum UserRole {
-  default
-  admin
-  superadmin
+model account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @default(now()) @updatedAt
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Character Enums
+model affiliate {
+  id             String     @id @default(cuid())
+  userId         String     @unique
+  referralCode   String     @unique
+  commissionRate Decimal    @db.Decimal(5, 4)
+  totalEarned    Decimal    @default(0) @db.Decimal(10, 2)
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @default(now()) @updatedAt
+  user           user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referral       referral[]
+
+  @@index([isActive])
+  @@index([referralCode])
+}
+
+model character {
+  id                              String           @id @default(cuid())
+  name                            String
+  posterId                        String?
+  videoId                         String?
+  gender                          CharacterGender
+  style                           CharacterStyle
+  ethnicity                       Ethnicity
+  age                             Int
+  hairStyle                       HairStyle
+  hairColor                       HairColor
+  eyeColor                        EyeColor
+  bodyType                        BodyType
+  breastSize                      BreastSize
+  personality                     Personality
+  relationship                    Relationship
+  occupation                      Occupation
+  voice                           String
+  isPublic                        Boolean          @default(false)
+  isActive                        Boolean          @default(true)
+  isLive                          Boolean          @default(false)
+  createdAt                       DateTime         @default(now())
+  updatedAt                       DateTime         @default(now()) @updatedAt
+  createdById                     String
+  user   user   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  poster media? @relation("character_poster", fields: [posterId], references: [id])
+  video  media? @relation("character_video", fields: [videoId], references: [id])
+  character_kink                  character_kink[]
+  chat                            chat[]
+  reel                            reel[]
+  story                           story[]
+
+  @@index([createdById])
+  @@index([gender])
+  @@index([isActive])
+  @@index([isPublic])
+  @@index([personality])
+  @@index([style])
+}
+
+model character_kink {
+  id          String    @id @default(cuid())
+  characterId String
+  kink        Kink
+  createdAt   DateTime  @default(now())
+  character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, kink])
+  @@index([characterId])
+  @@index([kink])
+}
+
+model chat {
+  id            String    @id @default(cuid())
+  userId        String
+  characterId   String
+  isArchived    Boolean   @default(false)
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  character     character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  user          user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      message[]
+
+  @@unique([userId, characterId])
+  @@index([characterId])
+  @@index([isArchived])
+  @@index([lastMessageAt])
+  @@index([userId])
+}
+
+model collection {
+  id        String   @id @default(cuid())
+  userId    String
+  messageId String?  @unique
+  mediaId   String
+  createdAt DateTime @default(now())
+  media     media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  message   message? @relation(fields: [messageId], references: [id])
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([mediaId])
+  @@index([userId])
+}
+
+model media {
+  id                                  String       @id @default(cuid())
+  type                                MediaType
+  key                                 String       @unique
+  url                                 String
+  mimeType                            String?
+  size                                Int?
+  width                               Int?
+  height                              Int?
+  duration                            Int?
+  createdAt            DateTime    @default(now())
+  character_as_poster  character[] @relation("character_poster")
+  character_as_video   character[] @relation("character_video")
+  collection           collection[]
+  reel_as_thumbnail    reel[]      @relation("reel_thumbnail")
+  reel_as_video        reel[]      @relation("reel_video")
+  story_as_media       story[]     @relation("story_media")
+  story_as_thumbnail   story[]     @relation("story_thumbnail")
+
+  @@index([createdAt])
+  @@index([type])
+}
+
+model message {
+  id         String      @id @default(cuid())
+  chatId     String
+  type       MessageType
+  content    String
+  isFromUser Boolean
+  isDeleted  Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  collection collection?
+  chat       chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+  @@index([createdAt])
+  @@index([isFromUser])
+}
+
+model reel {
+  id                            String    @id @default(cuid())
+  characterId                   String
+  videoId                       String
+  thumbnailId                   String?
+  title                         String?
+  description                   String?
+  viewCount                     Int       @default(0)
+  isActive                      Boolean   @default(true)
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @default(now()) @updatedAt
+  character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  thumbnail media?    @relation("reel_thumbnail", fields: [thumbnailId], references: [id])
+  video     media     @relation("reel_video", fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+  @@index([createdAt])
+  @@index([isActive])
+  @@index([videoId])
+}
+
+model referral {
+  id             String         @id @default(cuid())
+  affiliateId    String
+  referredUserId String         @unique
+  status         ReferralStatus @default(pending)
+  commission     Decimal        @default(0) @db.Decimal(10, 2)
+  convertedAt    DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+  affiliate      affiliate      @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  user           user           @relation(fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([affiliateId])
+  @@index([status])
+}
+
+model session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model story {
+  id                             String    @id @default(cuid())
+  characterId                    String
+  mediaId                        String
+  thumbnailId                    String?
+  expiresAt                      DateTime
+  isActive                       Boolean   @default(true)
+  createdAt                      DateTime  @default(now())
+  character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media     media     @relation("story_media", fields: [mediaId], references: [id], onDelete: Cascade)
+  thumbnail media?    @relation("story_thumbnail", fields: [thumbnailId], references: [id])
+
+  @@index([characterId])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@index([mediaId])
+}
+
+model subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  billingCycle       BillingCycle
+  status             SubscriptionStatus
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  coinGateOrderId    String?
+  cancelledAt        DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now()) @updatedAt
+  user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([coinGateOrderId])
+  @@index([currentPeriodEnd])
+  @@index([status])
+}
+
+model usage_quota {
+  id              String   @id @default(cuid())
+  userId          String
+  periodStart     DateTime
+  periodEnd       DateTime
+  tokensUsed      Int      @default(0)
+  tokensLimit     Int
+  messagesUsed    Int      @default(0)
+  imagesGenerated Int      @default(0)
+  videosGenerated Int      @default(0)
+  audiosGenerated Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+  user            user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, periodStart, periodEnd])
+  @@index([periodEnd])
+  @@index([userId])
+}
+
+model user {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  emailVerified Boolean       @default(false)
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  avatar        String?
+  nickname      String?
+  gender        String?
+  language      Language      @default(english)
+  notifications Boolean       @default(true)
+  role          UserRole      @default(default)
+  Post          Post[]
+  account       account[]
+  affiliate     affiliate?
+  character     character[]
+  chat          chat[]
+  collection    collection[]
+  referral      referral?
+  session       session[]
+  subscription  subscription?
+  usage_quota   usage_quota[]
+
+  @@index([language])
+  @@index([role])
+}
+
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+enum BillingCycle {
+  monthly
+  quarterly
+  annually
+}
+
+enum BodyType {
+  skinny
+  athletic
+  average
+  curvy
+  bbw
+}
+
+enum BreastSize {
+  small
+  medium
+  large
+  extra_large
+}
+
 enum CharacterGender {
   girl
   men
@@ -49,13 +361,12 @@ enum Ethnicity {
   arab
 }
 
-enum HairStyle {
-  straight
-  bangs
-  curly
-  bun
-  short
-  ponytail
+enum EyeColor {
+  brown
+  blue
+  green
+  red
+  yellow
 }
 
 enum HairColor {
@@ -70,87 +381,13 @@ enum HairColor {
   multicolor
 }
 
-enum EyeColor {
-  brown
-  blue
-  green
-  red
-  yellow
-}
-
-enum BodyType {
-  skinny
-  athletic
-  average
-  curvy
-  bbw
-}
-
-enum BreastSize {
-  small
-  medium
-  large
-  extra_large
-}
-
-enum Personality {
-  nympho
-  lover
-  submissive
-  dominant
-  temptress
-  innocent
-  caregiver
-  experimenter
-  mean
-  confidant
-  shy
-  queen
-}
-
-enum Relationship {
-  stranger
-  girlfriend
-  sex_friend
-  school_mate
-  work_colleague
-  wife
-  mistress
-  friend
-  step_sister
-  step_mom
-  step_daughter
-  landlord
-  sugar_baby
-  boss
-  teacher
-  student
-  neighbour
-  mother_in_law
-  sister_in_law
-}
-
-enum Occupation {
-  student
-  dancer
-  model
-  stripper
-  maid
-  cam_girl
-  boss
-  babysitter
-  pornstar
-  streamer
-  bartender
-  tech_engineer
-  lifeguard
-  cashier
-  massage_therapist
-  teacher
-  nurse
-  secretary
-  yoga_instructor
-  fitness_coach
+enum HairStyle {
+  straight
+  bangs
+  curly
+  bun
+  short
+  ponytail
 }
 
 enum Kink {
@@ -180,12 +417,11 @@ enum Kink {
   hair_pulling
 }
 
-// Message & Media Enums
-enum MessageType {
-  text
-  image
-  video
-  audio
+enum Language {
+  english
+  german
+  french
+  spanish
 }
 
 enum MediaType {
@@ -193,11 +429,77 @@ enum MediaType {
   video
 }
 
-// Subscription & Affiliate Enums
-enum BillingCycle {
-  monthly
-  quarterly
-  annually
+enum MessageType {
+  text
+  image
+  video
+  audio
+}
+
+enum Occupation {
+  student
+  dancer
+  model
+  stripper
+  maid
+  cam_girl
+  boss
+  babysitter
+  pornstar
+  streamer
+  bartender
+  tech_engineer
+  lifeguard
+  cashier
+  massage_therapist
+  teacher
+  nurse
+  secretary
+  yoga_instructor
+  fitness_coach
+}
+
+enum Personality {
+  nympho
+  lover
+  submissive
+  dominant
+  temptress
+  innocent
+  caregiver
+  experimenter
+  mean
+  confidant
+  shy
+  queen
+}
+
+enum ReferralStatus {
+  pending
+  converted
+  paid
+}
+
+enum Relationship {
+  stranger
+  girlfriend
+  sex_friend
+  school_mate
+  work_colleague
+  wife
+  mistress
+  friend
+  step_sister
+  step_mom
+  step_daughter
+  landlord
+  sugar_baby
+  boss
+  teacher
+  student
+  neighbour
+  mother_in_law
+  sister_in_law
 }
 
 enum SubscriptionStatus {
@@ -207,386 +509,8 @@ enum SubscriptionStatus {
   pending
 }
 
-enum ReferralStatus {
-  pending
-  converted
-  paid
-}
-
-// ============================================================================
-// MODELS
-// ============================================================================
-
-// Media - Centralized storage for all R2 assets (images and videos)
-model Media {
-  id        String    @id @default(cuid())
-  type      MediaType
-  key       String    @unique // R2 storage key (used for deletion)
-  url       String    // Public URL
-  mimeType  String?   // e.g., "image/webp", "video/mp4"
-  size      Int?      // File size in bytes
-  width     Int?      // For images/videos
-  height    Int?      // For images/videos
-  duration  Int?      // For videos (seconds)
-  createdAt DateTime  @default(now())
-
-  // Reverse relations
-  characterPosters Character[]  @relation("CharacterPoster")
-  characterVideos  Character[]  @relation("CharacterVideo")
-  storyMedia       Story[]      @relation("StoryMedia")
-  storyThumbnails  Story[]      @relation("StoryThumbnail")
-  reelVideos       Reel[]       @relation("ReelVideo")
-  reelThumbnails   Reel[]       @relation("ReelThumbnail")
-  collections      Collection[]
-
-  @@index([type])
-  @@index([createdAt])
-  @@map("media")
-}
-
-// Legacy Post model (can be removed if not needed)
-model Post {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
-
-  @@index([name])
-}
-
-// User - Extended Better Auth model
-model User {
-  // Existing Better Auth fields
-  id            String   @id
-  name          String
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
-
-  // Extended fields
-  avatar        String?
-  nickname      String?
-  gender        String?
-  language      Language @default(english)
-  notifications Boolean  @default(true)
-  role          UserRole @default(default)
-
-  // Relations
-  sessions          Session[]
-  accounts          Account[]
-  posts             Post[]
-  createdCharacters Character[]   @relation("CreatedCharacters")
-  chats             Chat[]
-  collections       Collection[]
-  subscription      Subscription?
-  usageQuotas       UsageQuota[]
-  affiliate         Affiliate?
-  referredBy        Referral?     @relation("ReferredUser")
-
-  @@index([role])
-  @@index([language])
-  @@map("user")
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("session")
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-
-  @@map("verification")
-}
-
-// Character - AI characters that users can chat with
-model Character {
-  id       String  @id @default(cuid())
-  name     String
-  posterId String?
-  poster   Media?  @relation("CharacterPoster", fields: [posterId], references: [id], onDelete: SetNull)
-  videoId  String?
-  video    Media?  @relation("CharacterVideo", fields: [videoId], references: [id], onDelete: SetNull)
-
-  // Physical attributes
-  gender     CharacterGender
-  style      CharacterStyle
-  ethnicity  Ethnicity
-  age        Int
-  hairStyle  HairStyle
-  hairColor  HairColor
-  eyeColor   EyeColor
-  bodyType   BodyType
-  breastSize BreastSize
-
-  // Personality & behavior
-  personality  Personality
-  relationship Relationship
-  occupation   Occupation
-  voice        String
-
-  // Visibility
-  isPublic Boolean @default(false)
-  isActive Boolean @default(true)
-  isLive   Boolean @default(false)
-
-  // Metadata
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   User     @relation("CreatedCharacters", fields: [createdById], references: [id], onDelete: Cascade)
-  createdById String
-
-  // Relations
-  kinks   CharacterKink[]
-  chats   Chat[]
-  stories Story[]
-  reels   Reel[]
-
-  @@index([createdById])
-  @@index([isPublic])
-  @@index([gender])
-  @@index([style])
-  @@index([personality])
-  @@index([isActive])
-  @@map("character")
-}
-
-// CharacterKink - Junction table for many-to-many between characters and kinks
-model CharacterKink {
-  id          String   @id @default(cuid())
-  characterId String
-  kink        Kink
-  createdAt   DateTime @default(now())
-
-  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-
-  @@unique([characterId, kink])
-  @@index([characterId])
-  @@index([kink])
-  @@map("character_kink")
-}
-
-// Chat - 1-to-1 conversation between a user and a character
-model Chat {
-  id            String    @id @default(cuid())
-  userId        String
-  characterId   String
-  isArchived    Boolean   @default(false)
-  lastMessageAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  messages  Message[]
-
-  @@unique([userId, characterId])
-  @@index([userId])
-  @@index([characterId])
-  @@index([lastMessageAt])
-  @@index([isArchived])
-  @@map("chat")
-}
-
-// Message - Individual messages within a chat
-model Message {
-  id         String      @id @default(cuid())
-  chatId     String
-  type       MessageType
-  content    String      @db.Text
-  isFromUser Boolean
-  isDeleted  Boolean     @default(false)
-  createdAt  DateTime    @default(now())
-
-  chat       Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  collection Collection?
-
-  @@index([chatId])
-  @@index([createdAt])
-  @@index([isFromUser])
-  @@map("message")
-}
-
-// Collection - Saved images from chats
-model Collection {
-  id        String   @id @default(cuid())
-  userId    String
-  messageId String?  @unique
-  mediaId   String
-  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  message Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([mediaId])
-  @@index([createdAt])
-  @@map("collection")
-}
-
-// Subscription - Premium subscription via CoinGate
-model Subscription {
-  id                 String             @id @default(cuid())
-  userId             String             @unique
-  billingCycle       BillingCycle
-  status             SubscriptionStatus
-  currentPeriodStart DateTime
-  currentPeriodEnd   DateTime
-  coinGateOrderId    String?
-  cancelledAt        DateTime?
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([currentPeriodEnd])
-  @@index([coinGateOrderId])
-  @@map("subscription")
-}
-
-// UsageQuota - Track token and resource usage per billing period
-model UsageQuota {
-  id              String   @id @default(cuid())
-  userId          String
-  periodStart     DateTime
-  periodEnd       DateTime
-  tokensUsed      Int      @default(0)
-  tokensLimit     Int
-  messagesUsed    Int      @default(0)
-  imagesGenerated Int      @default(0)
-  videosGenerated Int      @default(0)
-  audiosGenerated Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, periodStart, periodEnd])
-  @@index([userId])
-  @@index([periodEnd])
-  @@map("usage_quota")
-}
-
-// Story - Character stories (24-hour expiry like Instagram)
-model Story {
-  id          String   @id @default(cuid())
-  characterId String
-  mediaId     String
-  media       Media    @relation("StoryMedia", fields: [mediaId], references: [id], onDelete: Cascade)
-  thumbnailId String?
-  thumbnail   Media?   @relation("StoryThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
-  expiresAt   DateTime
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-
-  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-
-  @@index([characterId])
-  @@index([mediaId])
-  @@index([expiresAt])
-  @@index([isActive])
-  @@map("story")
-}
-
-// Reel - Character video reels (permanent, admin-managed content)
-model Reel {
-  id          String   @id @default(cuid())
-  characterId String
-  videoId     String
-  video       Media    @relation("ReelVideo", fields: [videoId], references: [id], onDelete: Cascade)
-  thumbnailId String?
-  thumbnail   Media?   @relation("ReelThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
-  title       String?
-  description String?
-  viewCount   Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-
-  @@index([characterId])
-  @@index([videoId])
-  @@index([isActive])
-  @@index([createdAt])
-  @@map("reel")
-}
-
-// Affiliate - User affiliate accounts for referral program
-model Affiliate {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  referralCode   String   @unique
-  commissionRate Decimal  @db.Decimal(5, 4)
-  totalEarned    Decimal  @default(0) @db.Decimal(10, 2)
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  referrals Referral[]
-
-  @@index([referralCode])
-  @@index([isActive])
-  @@map("affiliate")
-}
-
-// Referral - Tracks referred users and their conversion status
-model Referral {
-  id             String         @id @default(cuid())
-  affiliateId    String
-  referredUserId String         @unique
-  status         ReferralStatus @default(pending)
-  commission     Decimal        @default(0) @db.Decimal(10, 2)
-  convertedAt    DateTime?
-  paidAt         DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-
-  affiliate    Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
-  referredUser User      @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
-
-  @@index([affiliateId])
-  @@index([status])
-  @@map("referral")
+enum UserRole {
+  default
+  admin
+  superadmin
 }
