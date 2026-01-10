@@ -177,6 +177,7 @@ async function main() {
 
   const posterMedia = await prisma.media.create({
     data: {
+      id: crypto.randomUUID(),
       type: MediaType.image,
       key: posterUpload.key,
       url: posterUpload.url,
@@ -188,6 +189,7 @@ async function main() {
 
   const videoMedia = await prisma.media.create({
     data: {
+      id: crypto.randomUUID(),
       type: MediaType.video,
       key: videoUpload.key,
       url: videoUpload.url,
