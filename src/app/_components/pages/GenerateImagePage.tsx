@@ -42,10 +42,7 @@ const GenerateImagePage: React.FC<GenerateImagePageProps> = ({ className }) => {
       )}
 
       {currentStep === 2 && selectedCharacter && (
-        <GenerateImageStep2
-          character={selectedCharacter}
-          onBack={handleBack}
-        />
+        <GenerateImageStep2 character={selectedCharacter} onBack={handleBack} />
       )}
     </div>
   );

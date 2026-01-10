@@ -69,7 +69,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       {isVisible && (
         <div
           className={clsx(
-            "bg-popover text-popover-foreground absolute z-50 whitespace-nowrap rounded-md px-3 py-1.5 text-sm shadow-md",
+            "bg-popover text-popover-foreground absolute z-50 rounded-md px-3 py-1.5 text-sm whitespace-nowrap shadow-md",
             positionClasses[position],
           )}
           role="tooltip"

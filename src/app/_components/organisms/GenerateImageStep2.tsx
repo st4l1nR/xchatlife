@@ -164,7 +164,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   return (
     <div className={clsx("flex min-h-screen flex-col", className)}>
       {/* Header - Single row */}
-      <header className="bg-background/95 sticky top-0 z-40 border-b border-border backdrop-blur-sm">
+      <header className="bg-background/95 border-border sticky top-0 z-40 border-b backdrop-blur-sm">
         <div className="flex items-center gap-4 px-4 py-3">
           {/* Back button */}
           <Button plain onClick={onBack} className="shrink-0">
@@ -173,8 +173,8 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
           {/* Title - centered with flex-1 */}
           <div className="flex flex-1 items-center justify-center gap-2">
-            <Sparkles className="size-5 text-primary" />
-            <h1 className="text-base font-bold text-foreground sm:text-lg">
+            <Sparkles className="text-primary size-5" />
+            <h1 className="text-foreground text-base font-bold sm:text-lg">
               Generate Image
             </h1>
           </div>
@@ -201,7 +201,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
               />
 
               {/* V2 badge */}
-              <div className="absolute top-2 left-2 flex items-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+              <div className="bg-primary text-primary-foreground absolute top-2 left-2 flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold">
                 <Eye className="size-3" />
                 V2
               </div>
@@ -221,10 +221,10 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="bg-muted text-foreground placeholder:text-muted-foreground min-h-32 w-full resize-none rounded-xl border border-border p-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-muted text-foreground placeholder:text-muted-foreground border-border focus:ring-primary min-h-32 w-full resize-none rounded-xl border p-4 pr-10 text-sm focus:ring-2 focus:outline-none"
                 placeholder="Describe the image you want to generate..."
               />
-              <Edit3 className="absolute top-4 right-4 size-4 text-muted-foreground" />
+              <Edit3 className="text-muted-foreground absolute top-4 right-4 size-4" />
             </div>
           </div>
         </div>
@@ -232,7 +232,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         {/* Suggestions section */}
         <div className="mb-8">
           <div className="mb-4 flex items-center gap-4">
-            <h2 className="text-base font-semibold text-foreground">
+            <h2 className="text-foreground text-base font-semibold">
               Suggestions
             </h2>
 
@@ -244,10 +244,10 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
                   type="button"
                   onClick={() => setActiveCategory(category.id)}
                   className={clsx(
-                    "whitespace-nowrap border-b-2 pb-1 text-sm font-medium transition-colors",
+                    "border-b-2 pb-1 text-sm font-medium whitespace-nowrap transition-colors",
                     activeCategory === category.id
                       ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground hover:text-foreground",
+                      : "text-muted-foreground hover:text-foreground border-transparent",
                   )}
                 >
                   {category.label}
@@ -273,7 +273,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
         {/* Number of images selector */}
         <div className="mb-8">
-          <h2 className="mb-4 text-base font-semibold text-foreground">
+          <h2 className="text-foreground mb-4 text-base font-semibold">
             Number of images
           </h2>
 
@@ -281,8 +281,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
             {IMAGE_COUNT_OPTIONS.map((option) => {
               const Icon = option.icon;
               const isSelected = numberOfImages === option.value;
-              const showPremiumBadge =
-                option.premium && !hasActiveSubscription;
+              const showPremiumBadge = option.premium && !hasActiveSubscription;
 
               return (
                 <button
@@ -301,7 +300,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
                   {/* Premium badge */}
                   {showPremiumBadge && (
-                    <Gem className="absolute -top-1 -right-1 size-4 text-primary" />
+                    <Gem className="text-primary absolute -top-1 -right-1 size-4" />
                   )}
                 </button>
               );
@@ -318,7 +317,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         >
           <Sparkles className="size-4" data-slot="icon" />
           Generate Image
-          <span className="ml-2 flex items-center gap-1 rounded-full bg-primary-foreground/20 px-2 py-0.5 text-xs">
+          <span className="bg-primary-foreground/20 ml-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
             <span className="text-amber-400">*</span>
             {tokenCost}
           </span>
@@ -328,16 +327,16 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         {generatedImages.length > 0 && (
           <div className="mt-8">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-foreground">
+              <h2 className="text-foreground text-lg font-bold">
                 Generated Images
               </h2>
 
               {/* Toggle for video-capable images */}
               <label className="flex cursor-pointer items-center gap-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   Show images you can turn into video
                 </span>
-                <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
                   New
                 </span>
                 <input
@@ -362,7 +361,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
               </label>
             </div>
 
-            <p className="mb-4 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-4 text-sm">
               Here, you can find your images. You can leave the page or start a
               new series while others are still loading.
             </p>

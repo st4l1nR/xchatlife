@@ -2,7 +2,14 @@
 
 import React, { useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, Venus, Sparkles, Mars, Transgender, Wand2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Venus,
+  Sparkles,
+  Mars,
+  Transgender,
+  Wand2,
+} from "lucide-react";
 import { Button } from "../atoms/button";
 import Tooltip from "../atoms/tooltip";
 import ListCardCharacterSelectable from "./ListCardCharacterSelectable";
@@ -10,10 +17,30 @@ import BannerSelectCharacter from "../molecules/BannerSelectCharacter";
 import { api } from "@/trpc/react";
 
 const CATEGORY_TABS = [
-  { label: "Girls", value: "girl" as const, style: "realistic" as const, icon: Venus },
-  { label: "Anime", value: "anime" as const, style: "anime" as const, icon: Sparkles },
-  { label: "Guys", value: "men" as const, style: "realistic" as const, icon: Mars },
-  { label: "Trans", value: "trans" as const, style: "realistic" as const, icon: Transgender },
+  {
+    label: "Girls",
+    value: "girl" as const,
+    style: "realistic" as const,
+    icon: Venus,
+  },
+  {
+    label: "Anime",
+    value: "anime" as const,
+    style: "anime" as const,
+    icon: Sparkles,
+  },
+  {
+    label: "Guys",
+    value: "men" as const,
+    style: "realistic" as const,
+    icon: Mars,
+  },
+  {
+    label: "Trans",
+    value: "trans" as const,
+    style: "realistic" as const,
+    icon: Transgender,
+  },
 ] as const;
 
 type CategoryValue = (typeof CATEGORY_TABS)[number]["value"];
@@ -63,8 +90,7 @@ const GenerateImageStep1: React.FC<GenerateImageStep1Props> = ({
   );
 
   // Flatten paginated data
-  const characters =
-    charactersData?.pages.flatMap((page) => page.items) ?? [];
+  const characters = charactersData?.pages.flatMap((page) => page.items) ?? [];
 
   // Map to selectable card format
   const selectableItems = characters.map((char) => ({
@@ -90,7 +116,7 @@ const GenerateImageStep1: React.FC<GenerateImageStep1Props> = ({
   return (
     <div className={clsx("relative flex min-h-screen flex-col", className)}>
       {/* Header - Single row with all elements */}
-      <header className="bg-background/95 sticky top-0 z-40 border-b border-border backdrop-blur-sm">
+      <header className="bg-background/95 border-border sticky top-0 z-40 border-b backdrop-blur-sm">
         <div className="flex items-center gap-2 px-4 py-3 sm:gap-4">
           {/* Back button */}
           <Button plain onClick={onBack} className="shrink-0">
@@ -127,12 +153,12 @@ const GenerateImageStep1: React.FC<GenerateImageStep1Props> = ({
           {/* Title section - right after tabs */}
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="size-4 text-primary sm:size-5" />
-              <h1 className="text-sm font-bold text-foreground sm:text-base">
+              <Sparkles className="text-primary size-4 sm:size-5" />
+              <h1 className="text-foreground text-sm font-bold sm:text-base">
                 Generate Image
               </h1>
             </div>
-            <p className="hidden text-xs text-muted-foreground sm:block">
+            <p className="text-muted-foreground hidden text-xs sm:block">
               Choose character
             </p>
           </div>

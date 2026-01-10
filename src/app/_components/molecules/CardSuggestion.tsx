@@ -35,8 +35,8 @@ const CardSuggestion: React.FC<CardSuggestionProps> = ({
         className={clsx(
           "bg-muted relative aspect-[3/4] w-20 overflow-hidden rounded-xl transition-all sm:w-24",
           selected
-            ? "ring-primary ring-2 ring-offset-2 ring-offset-background"
-            : "ring-1 ring-transparent hover:ring-border",
+            ? "ring-primary ring-offset-background ring-2 ring-offset-2"
+            : "hover:ring-border ring-1 ring-transparent",
         )}
       >
         <Image

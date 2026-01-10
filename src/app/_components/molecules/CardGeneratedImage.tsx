@@ -44,7 +44,7 @@ const CardGeneratedImage: React.FC<CardGeneratedImageProps> = ({
       type="button"
       onClick={onClick}
       className={clsx(
-        "group bg-muted relative aspect-[3/4] w-full overflow-hidden rounded-xl transition-all hover:ring-2 hover:ring-border",
+        "group bg-muted hover:ring-border relative aspect-[3/4] w-full overflow-hidden rounded-xl transition-all hover:ring-2",
         className,
       )}
     >

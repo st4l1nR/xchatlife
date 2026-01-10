@@ -18,7 +18,7 @@ const BannerSelectCharacter: React.FC<BannerSelectCharacterProps> = ({
   return (
     <div
       className={clsx(
-        "bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t border-border px-4 py-4 backdrop-blur-sm transition-transform duration-300 ease-out",
+        "bg-background/95 border-border fixed inset-x-0 bottom-0 z-50 border-t px-4 py-4 backdrop-blur-sm transition-transform duration-300 ease-out",
         isVisible ? "translate-y-0" : "translate-y-full",
         className,
       )}
