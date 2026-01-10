@@ -31,7 +31,8 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm list:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm db:seed:*)"
+      "Bash(pnpm db:seed:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

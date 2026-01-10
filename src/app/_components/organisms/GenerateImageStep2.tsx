@@ -32,48 +32,233 @@ const SUGGESTION_CATEGORIES = [
 
 type SuggestionCategoryId = (typeof SUGGESTION_CATEGORIES)[number]["id"];
 
-const MOCK_SUGGESTIONS: Record<
-  SuggestionCategoryId,
-  Array<{ id: string; label: string; imageSrc: string }>
-> = {
+type Suggestion = {
+  id: string;
+  label: string;
+  imageSrc: string;
+  prompt: string;
+};
+
+const SUGGESTIONS: Record<SuggestionCategoryId, Suggestion[]> = {
   outfit: [
-    { id: "bikini", label: "Bikini", imageSrc: "/images/girl-poster.webp" },
-    { id: "skirt", label: "Skirt", imageSrc: "/images/girl-poster.webp" },
-    { id: "lingerie", label: "Lingerie", imageSrc: "/images/girl-poster.webp" },
-    { id: "crop-top", label: "Crop top", imageSrc: "/images/girl-poster.webp" },
-    { id: "leather", label: "Leather", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "bikini",
+      label: "Bikini",
+      imageSrc: "/images/suggestions/outfit/bikini.webp",
+      prompt: "wearing a sexy bikini",
+    },
+    {
+      id: "skirt",
+      label: "Skirt",
+      imageSrc: "/images/suggestions/outfit/skirt.webp",
+      prompt: "wearing a stylish skirt",
+    },
+    {
+      id: "lingerie",
+      label: "Lingerie",
+      imageSrc: "/images/suggestions/outfit/lingerie.webp",
+      prompt: "wearing elegant lace lingerie",
+    },
+    {
+      id: "crop-top",
+      label: "Crop top",
+      imageSrc: "/images/suggestions/outfit/crop-top.webp",
+      prompt: "wearing a cute crop top",
+    },
+    {
+      id: "leather",
+      label: "Leather",
+      imageSrc: "/images/suggestions/outfit/leather.webp",
+      prompt: "wearing a sleek leather outfit",
+    },
     {
       id: "mini-skirt",
       label: "Mini-skirt",
-      imageSrc: "/images/girl-poster.webp",
+      imageSrc: "/images/suggestions/outfit/mini-skirt.webp",
+      prompt: "wearing a flirty mini-skirt",
     },
-    { id: "satin", label: "Satin", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "satin-robe",
+      label: "Satin Robe",
+      imageSrc: "/images/suggestions/outfit/satin-robe.webp",
+      prompt: "wearing a luxurious satin robe",
+    },
+    {
+      id: "jeans",
+      label: "Jeans",
+      imageSrc: "/images/suggestions/outfit/jeans.webp",
+      prompt: "wearing tight-fitting jeans",
+    },
+    {
+      id: "jumpsuit",
+      label: "Jumpsuit",
+      imageSrc: "/images/suggestions/outfit/jumpsuit.webp",
+      prompt: "wearing a fashionable jumpsuit",
+    },
+    {
+      id: "sundress",
+      label: "Sundress",
+      imageSrc: "/images/suggestions/outfit/sundress.webp",
+      prompt: "wearing a flowy sundress",
+    },
   ],
   action: [
-    { id: "sitting", label: "Sitting", imageSrc: "/images/girl-poster.webp" },
-    { id: "standing", label: "Standing", imageSrc: "/images/girl-poster.webp" },
-    { id: "walking", label: "Walking", imageSrc: "/images/girl-poster.webp" },
-    { id: "dancing", label: "Dancing", imageSrc: "/images/girl-poster.webp" },
-    { id: "lying", label: "Lying", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "working-out",
+      label: "Working out",
+      imageSrc: "/images/suggestions/action/working-out.webp",
+      prompt: "working out intensely",
+    },
+    {
+      id: "dining",
+      label: "Dining",
+      imageSrc: "/images/suggestions/action/dining.webp",
+      prompt: "enjoying a fine dining experience",
+    },
+    {
+      id: "tanning",
+      label: "Tanning",
+      imageSrc: "/images/suggestions/action/tanning.webp",
+      prompt: "tanning under the sun",
+    },
+    {
+      id: "walking",
+      label: "Walking",
+      imageSrc: "/images/suggestions/action/walking.webp",
+      prompt: "walking gracefully",
+    },
   ],
   pose: [
-    { id: "front", label: "Front", imageSrc: "/images/girl-poster.webp" },
-    { id: "side", label: "Side", imageSrc: "/images/girl-poster.webp" },
-    { id: "back", label: "Back", imageSrc: "/images/girl-poster.webp" },
-    { id: "close-up", label: "Close-up", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "standing",
+      label: "Standing",
+      imageSrc: "/images/suggestions/pose/standing.webp",
+      prompt: "standing confidently",
+    },
+    {
+      id: "sitting",
+      label: "Sitting",
+      imageSrc: "/images/suggestions/pose/sitting.webp",
+      prompt: "sitting elegantly",
+    },
+    {
+      id: "squatting",
+      label: "Squatting",
+      imageSrc: "/images/suggestions/pose/squatting.webp",
+      prompt: "in a squatting pose",
+    },
+    {
+      id: "stretching",
+      label: "Stretching",
+      imageSrc: "/images/suggestions/pose/stretching.webp",
+      prompt: "stretching sensually",
+    },
+    {
+      id: "kneeling",
+      label: "Kneeling",
+      imageSrc: "/images/suggestions/pose/kneeling.webp",
+      prompt: "kneeling gracefully",
+    },
   ],
   accessories: [
-    { id: "glasses", label: "Glasses", imageSrc: "/images/girl-poster.webp" },
-    { id: "hat", label: "Hat", imageSrc: "/images/girl-poster.webp" },
-    { id: "earrings", label: "Earrings", imageSrc: "/images/girl-poster.webp" },
-    { id: "necklace", label: "Necklace", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "necklace",
+      label: "Necklace",
+      imageSrc: "/images/suggestions/accessories/necklace.webp",
+      prompt: "wearing a beautiful necklace",
+    },
+    {
+      id: "earrings",
+      label: "Earrings",
+      imageSrc: "/images/suggestions/accessories/earrings.webp",
+      prompt: "wearing elegant earrings",
+    },
+    {
+      id: "glasses",
+      label: "Glasses",
+      imageSrc: "/images/suggestions/accessories/glasses.webp",
+      prompt: "wearing stylish glasses",
+    },
+    {
+      id: "choker",
+      label: "Choker",
+      imageSrc: "/images/suggestions/accessories/choker.webp",
+      prompt: "wearing a sleek choker",
+    },
+    {
+      id: "hat",
+      label: "Hat",
+      imageSrc: "/images/suggestions/accessories/hat.webp",
+      prompt: "wearing a fashionable hat",
+    },
+    {
+      id: "sunglasses",
+      label: "Sunglasses",
+      imageSrc: "/images/suggestions/accessories/sunglasses.webp",
+      prompt: "wearing cool sunglasses",
+    },
   ],
   scene: [
-    { id: "bedroom", label: "Bedroom", imageSrc: "/images/girl-poster.webp" },
-    { id: "beach", label: "Beach", imageSrc: "/images/girl-poster.webp" },
-    { id: "office", label: "Office", imageSrc: "/images/girl-poster.webp" },
-    { id: "outdoors", label: "Outdoors", imageSrc: "/images/girl-poster.webp" },
-    { id: "studio", label: "Studio", imageSrc: "/images/girl-poster.webp" },
+    {
+      id: "garden",
+      label: "Garden",
+      imageSrc: "/images/suggestions/scene/garden.webp",
+      prompt: "in a beautiful garden",
+    },
+    {
+      id: "beach",
+      label: "Beach",
+      imageSrc: "/images/suggestions/scene/beach.webp",
+      prompt: "at a sunny beach",
+    },
+    {
+      id: "bedroom",
+      label: "Bedroom",
+      imageSrc: "/images/suggestions/scene/bedroom.webp",
+      prompt: "in a cozy bedroom",
+    },
+    {
+      id: "gym",
+      label: "Gym",
+      imageSrc: "/images/suggestions/scene/gym.webp",
+      prompt: "at the gym",
+    },
+    {
+      id: "bar",
+      label: "Bar",
+      imageSrc: "/images/suggestions/scene/bar.webp",
+      prompt: "at a stylish bar",
+    },
+    {
+      id: "kitchen",
+      label: "Kitchen",
+      imageSrc: "/images/suggestions/scene/kitchen.webp",
+      prompt: "in the kitchen",
+    },
+    {
+      id: "restaurant",
+      label: "Restaurant",
+      imageSrc: "/images/suggestions/scene/restaurant.webp",
+      prompt: "at an elegant restaurant",
+    },
+    {
+      id: "balcony",
+      label: "Balcony",
+      imageSrc: "/images/suggestions/scene/balcony.webp",
+      prompt: "on a scenic balcony",
+    },
+    {
+      id: "bathtub",
+      label: "Bathtub",
+      imageSrc: "/images/suggestions/scene/bathtub.webp",
+      prompt: "in a relaxing bathtub",
+    },
+    {
+      id: "street",
+      label: "Street",
+      imageSrc: "/images/suggestions/scene/street.webp",
+      prompt: "on a city street",
+    },
   ],
 };
 
@@ -108,7 +293,6 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
   const [activeCategory, setActiveCategory] =
     useState<SuggestionCategoryId>("outfit");
-  const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
   const [numberOfImages, setNumberOfImages] = useState<ImageCount>(1);
   const [prompt, setPrompt] = useState(
     "Sitting on a leather sofa, wearing a fur jacket, wearing lace underwear, gazing seductively at the viewer.",
@@ -121,14 +305,16 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-in");
 
-  const currentSuggestions = MOCK_SUGGESTIONS[activeCategory];
+  const currentSuggestions = SUGGESTIONS[activeCategory];
 
-  const toggleSuggestion = (suggestionId: string) => {
-    setSelectedSuggestions((prev) =>
-      prev.includes(suggestionId)
-        ? prev.filter((id) => id !== suggestionId)
-        : [...prev, suggestionId],
-    );
+  const addSuggestionToPrompt = (suggestion: Suggestion) => {
+    setPrompt((prev) => {
+      const trimmed = prev.trim();
+      if (!trimmed) return suggestion.prompt;
+      // Add comma if the prompt doesn't end with punctuation
+      const needsComma = !trimmed.endsWith(",") && !trimmed.endsWith(".");
+      return `${trimmed}${needsComma ? "," : ""} ${suggestion.prompt}`;
+    });
   };
 
   // Mock generate function
@@ -164,7 +350,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   return (
     <div className={clsx("flex min-h-screen flex-col", className)}>
       {/* Header - Single row */}
-      <header className="bg-background/95 sticky top-0 z-40 border-b border-border backdrop-blur-sm">
+      <header className="bg-background/95 border-border sticky top-0 z-40 border-b backdrop-blur-sm">
         <div className="flex items-center gap-4 px-4 py-3">
           {/* Back button */}
           <Button plain onClick={onBack} className="shrink-0">
@@ -173,8 +359,8 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
           {/* Title - centered with flex-1 */}
           <div className="flex flex-1 items-center justify-center gap-2">
-            <Sparkles className="size-5 text-primary" />
-            <h1 className="text-base font-bold text-foreground sm:text-lg">
+            <Sparkles className="text-primary size-5" />
+            <h1 className="text-foreground text-base font-bold sm:text-lg">
               Generate Image
             </h1>
           </div>
@@ -185,69 +371,69 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
       </header>
 
       {/* Main content */}
-      <main className="flex-1 px-4 py-6">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
         {/* Character preview and prompt */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-stretch md:gap-6">
           {/* Character image */}
-          <div className="relative mx-auto w-40 shrink-0 md:mx-0 md:w-48">
-            <div className="bg-muted relative aspect-[3/4] overflow-hidden rounded-xl">
+          <div className="relative mx-auto aspect-square w-52 shrink-0 md:mx-0 md:aspect-auto md:w-[40%]">
+            <div className="bg-muted relative h-full overflow-hidden rounded-xl">
               <Image
                 src={character.imageSrc}
                 alt={character.name}
                 fill
                 unoptimized
-                className="object-cover"
+                className="object-cover object-top"
                 sizes="192px"
               />
 
               {/* V2 badge */}
-              <div className="absolute top-2 left-2 flex items-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+              <div className="bg-primary text-primary-foreground absolute top-2 left-2 flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold">
                 <Eye className="size-3" />
                 V2
               </div>
 
               {/* Name overlay */}
               <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <span className="text-base font-bold text-white">
+                <span className="text-sm font-bold text-white">
                   {character.name}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Prompt input */}
-          <div className="flex-1">
-            <div className="relative">
+          {/* Prompt input - 60% width */}
+          <div className="md:w-[60%]">
+            <div className="relative h-full">
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="bg-muted text-foreground placeholder:text-muted-foreground min-h-32 w-full resize-none rounded-xl border border-border p-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-muted text-foreground placeholder:text-muted-foreground border-border focus:ring-primary h-full min-h-64 w-full resize-none rounded-xl border p-4 pr-10 text-sm focus:ring-2 focus:outline-none"
                 placeholder="Describe the image you want to generate..."
               />
-              <Edit3 className="absolute top-4 right-4 size-4 text-muted-foreground" />
+              <Edit3 className="text-muted-foreground absolute top-4 right-4 size-4" />
             </div>
           </div>
         </div>
 
         {/* Suggestions section */}
         <div className="mb-8">
-          <div className="mb-4 flex items-center gap-4">
-            <h2 className="text-base font-semibold text-foreground">
+          <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <h2 className="text-foreground text-base font-semibold">
               Suggestions
             </h2>
 
             {/* Category tabs */}
-            <div className="flex gap-4 overflow-x-auto">
+            <div className="flex gap-4 overflow-x-auto sm:mx-auto">
               {SUGGESTION_CATEGORIES.map((category) => (
                 <button
                   key={category.id}
                   type="button"
                   onClick={() => setActiveCategory(category.id)}
                   className={clsx(
-                    "whitespace-nowrap border-b-2 pb-1 text-sm font-medium transition-colors",
+                    "border-b-2 pb-1 text-sm font-medium whitespace-nowrap transition-colors",
                     activeCategory === category.id
                       ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground hover:text-foreground",
+                      : "text-muted-foreground hover:text-foreground border-transparent",
                   )}
                 >
                   {category.label}
@@ -257,15 +443,14 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
           </div>
 
           {/* Suggestion cards */}
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="scrollbar-muted flex gap-3 overflow-x-auto pb-2">
             {currentSuggestions.map((suggestion) => (
               <CardSuggestion
                 key={suggestion.id}
                 id={suggestion.id}
                 label={suggestion.label}
                 imageSrc={suggestion.imageSrc}
-                selected={selectedSuggestions.includes(suggestion.id)}
-                onClick={() => toggleSuggestion(suggestion.id)}
+                onClick={() => addSuggestionToPrompt(suggestion)}
               />
             ))}
           </div>
@@ -273,7 +458,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
         {/* Number of images selector */}
         <div className="mb-8">
-          <h2 className="mb-4 text-base font-semibold text-foreground">
+          <h2 className="text-foreground mb-4 text-base font-semibold">
             Number of images
           </h2>
 
@@ -281,8 +466,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
             {IMAGE_COUNT_OPTIONS.map((option) => {
               const Icon = option.icon;
               const isSelected = numberOfImages === option.value;
-              const showPremiumBadge =
-                option.premium && !hasActiveSubscription;
+              const showPremiumBadge = option.premium && !hasActiveSubscription;
 
               return (
                 <button
@@ -301,7 +485,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
 
                   {/* Premium badge */}
                   {showPremiumBadge && (
-                    <Gem className="absolute -top-1 -right-1 size-4 text-primary" />
+                    <Gem className="text-primary absolute -top-1 -right-1 size-4" />
                   )}
                 </button>
               );
@@ -318,7 +502,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         >
           <Sparkles className="size-4" data-slot="icon" />
           Generate Image
-          <span className="ml-2 flex items-center gap-1 rounded-full bg-primary-foreground/20 px-2 py-0.5 text-xs">
+          <span className="bg-primary-foreground/20 ml-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
             <span className="text-amber-400">*</span>
             {tokenCost}
           </span>
@@ -328,16 +512,16 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         {generatedImages.length > 0 && (
           <div className="mt-8">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-foreground">
+              <h2 className="text-foreground text-lg font-bold">
                 Generated Images
               </h2>
 
               {/* Toggle for video-capable images */}
               <label className="flex cursor-pointer items-center gap-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   Show images you can turn into video
                 </span>
-                <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
                   New
                 </span>
                 <input
@@ -362,7 +546,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
               </label>
             </div>
 
-            <p className="mb-4 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-4 text-sm">
               Here, you can find your images. You can leave the page or start a
               new series while others are still loading.
             </p>

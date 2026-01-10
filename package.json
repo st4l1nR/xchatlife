@@ -28,6 +28,7 @@
     "@auth/prisma-adapter": "^2.7.2",
     "@aws-sdk/client-s3": "^3.965.0",
     "@bramus/pagination-sequence": "^1.2.1",
+    "@floating-ui/react": "^0.27.16",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",

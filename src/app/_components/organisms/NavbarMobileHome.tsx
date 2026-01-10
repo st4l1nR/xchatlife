@@ -32,7 +32,6 @@ export const NavbarMobileHome = forwardRef<
     <nav
       ref={ref}
       className={clsx(
-        "fixed right-0 bottom-0 left-0 z-50",
         "border-border bg-card",
         "border-t",
         "shadow-lg",

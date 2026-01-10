@@ -48,19 +48,13 @@ export const TemplateDashboard = ({
         {/* Top Navbar */}
         <NavbarHome />
 
-        {/* Page Content with bottom padding on mobile to prevent navbar overlap */}
-        <main
-          className={clsx(
-            "bg-background flex-1 overflow-auto",
-            isMobile && "pb-20", // Add padding bottom on mobile for NavbarMobileHome (height + safe area)
-          )}
-        >
+        {/* Page Content */}
+        <main className="bg-background flex flex-1 flex-col overflow-auto">
           {children}
         </main>
+        {/* Mobile Bottom Navigation - Mobile only, sticky inside main */}
+        {isMobile && <NavbarMobileHome />}
       </div>
-
-      {/* Mobile Bottom Navigation - Mobile only */}
-      {isMobile && <NavbarMobileHome />}
     </div>
   );
 };
