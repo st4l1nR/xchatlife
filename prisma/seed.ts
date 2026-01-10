@@ -110,13 +110,11 @@ async function main() {
 
   if (!user) {
     console.log(`User not found. Creating new user...`);
-    const userId = crypto.randomUUID();
     const password = "12345690";
     const hashedPassword = await hashPassword(password);
 
     user = await prisma.user.create({
       data: {
-        id: userId,
         name: "Seed User",
         email: TARGET_USER_EMAIL,
         emailVerified: true,
@@ -126,12 +124,10 @@ async function main() {
     // Create credential account with password
     await prisma.account.create({
       data: {
-        id: crypto.randomUUID(),
-        accountId: userId,
+        accountId: user.id,
         providerId: "credential",
-        userId: userId,
+        userId: user.id,
         password: hashedPassword,
-        updatedAt: new Date(),
       },
     });
 
@@ -177,7 +173,6 @@ async function main() {
 
   const posterMedia = await prisma.media.create({
     data: {
-      id: crypto.randomUUID(),
       type: MediaType.image,
       key: posterUpload.key,
       url: posterUpload.url,
@@ -189,7 +184,6 @@ async function main() {
 
   const videoMedia = await prisma.media.create({
     data: {
-      id: crypto.randomUUID(),
       type: MediaType.video,
       key: videoUpload.key,
       url: videoUpload.url,
@@ -229,7 +223,6 @@ async function main() {
     const selectedKinks = getRandomItems(kinkValues, numKinks);
 
     const characterData = {
-      id: crypto.randomUUID(),
       name,
       posterId: posterMedia.id,
       videoId: videoMedia.id,
@@ -251,10 +244,7 @@ async function main() {
       isLive,
       createdById: user.id,
       character_kink: {
-        create: selectedKinks.map((kink) => ({
-          id: crypto.randomUUID(),
-          kink,
-        })),
+        create: selectedKinks.map((kink) => ({ kink })),
       },
     };
 
@@ -278,7 +268,6 @@ async function main() {
     for (let j = 0; j < numStories; j++) {
       await prisma.story.create({
         data: {
-          id: crypto.randomUUID(),
           characterId: character.id,
           mediaId: posterMedia.id,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
@@ -317,7 +306,6 @@ async function main() {
     for (let j = 0; j < numReels; j++) {
       await prisma.reel.create({
         data: {
-          id: crypto.randomUUID(),
           characterId: character.id,
           videoId: videoMedia.id,
           thumbnailId: posterMedia.id,
