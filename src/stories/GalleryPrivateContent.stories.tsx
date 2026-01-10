@@ -67,21 +67,18 @@ export const Default: Story = {
 };
 
 export const WithVideos: Story = {
-  name: "With Videos",
   args: {
     items: generateMockItems(9, true),
   },
 };
 
 export const SingleItem: Story = {
-  name: "Single Item",
   args: {
     items: generateMockItems(1),
   },
 };
 
 export const TwoItems: Story = {
-  name: "Two Items",
   args: {
     items: generateMockItems(2),
   },
@@ -103,7 +100,6 @@ export const WithInitialIndex: Story = {
 };
 
 export const VideoSelected: Story = {
-  name: "Video Selected",
   args: {
     items: [
       { id: "1", type: "image", src: mockImage, alt: "Image 1" },

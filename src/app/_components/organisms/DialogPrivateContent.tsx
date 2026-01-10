@@ -51,7 +51,7 @@ const DialogPrivateContent: React.FC<DialogPrivateContentProps> = ({
   }, [open]);
 
   // Handle item click - switch to gallery view
-  const handleItemClick = (item: CardPrivateContentProps, index: number) => {
+  const handleItemClick = (item: CardPrivateContentProps, _index: number) => {
     // Only allow gallery view for unlocked items with media
     if (!item.locked && item.media && item.media.length > 0) {
       setSelectedItem(item);
