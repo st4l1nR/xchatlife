@@ -131,6 +131,7 @@ async function main() {
         providerId: "credential",
         userId: userId,
         password: hashedPassword,
+        updatedAt: new Date(),
       },
     });
 

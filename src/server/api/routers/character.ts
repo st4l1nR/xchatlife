@@ -1,5 +1,17 @@
 import { z } from "zod";
 import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
+import type {
+  Ethnicity,
+  HairStyle,
+  HairColor,
+  EyeColor,
+  BodyType,
+  BreastSize,
+  Personality,
+  Relationship,
+  Occupation,
+  Kink,
+} from "../../../../generated/prisma";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -330,25 +342,25 @@ export const characterRouter = createTRPCRouter({
         const newCharacter = await tx.character.create({
           data: {
             name: input.name,
-            gender: input.characterType,
-            style: input.style,
-            ethnicity: input.ethnicity,
+            gender: input.characterType as CharacterGender,
+            style: input.style as CharacterStyle,
+            ethnicity: input.ethnicity as Ethnicity,
             age: input.age,
-            hairStyle: input.hairStyle,
-            hairColor: input.hairColor,
-            eyeColor: input.eyeColor,
-            bodyType: input.bodyType,
-            breastSize: input.breastSize,
-            personality: input.personality,
-            relationship: input.relationship,
-            occupation: input.occupation,
+            hairStyle: input.hairStyle as HairStyle,
+            hairColor: input.hairColor as HairColor,
+            eyeColor: input.eyeColor as EyeColor,
+            bodyType: input.bodyType as BodyType,
+            breastSize: input.breastSize as BreastSize,
+            personality: input.personality as Personality,
+            relationship: input.relationship as Relationship,
+            occupation: input.occupation as Occupation,
             voice: input.voice,
             isPublic: input.isPublic,
             posterId: posterMedia.id,
             videoId: videoMedia.id,
             createdById: ctx.session.user.id,
             kinks: {
-              create: input.kinks.map((kink) => ({ kink })),
+              create: input.kinks.map((kink) => ({ kink: kink as Kink })),
             },
           },
         });
