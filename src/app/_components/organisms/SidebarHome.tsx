@@ -21,6 +21,26 @@ import {
   tokenNavigation,
 } from "@/lib/constants";
 
+// Check if a pathname is a home/category route
+// Home routes are "/" or any category like "/realistic-girl", "/anime-girl", etc.
+function isHomeRoute(pathname: string, otherNavPaths: string[]): boolean {
+  if (pathname === "/") return true;
+
+  // Check if pathname starts with any other navigation paths (not home routes)
+  const isOtherNavRoute = otherNavPaths.some(
+    (navPath) => pathname === navPath || pathname.startsWith(navPath + "/"),
+  );
+
+  // If it's not another nav route and it's a top-level path, it's a home/category route
+  if (!isOtherNavRoute) {
+    // Top-level paths like /realistic-girl, /anime-girl, /realistic-men, /realistic-trans
+    const segments = pathname.split("/").filter(Boolean);
+    return segments.length === 1;
+  }
+
+  return false;
+}
+
 export type SidebarHomeProps = {
   hasActiveSubscription?: boolean;
 };
@@ -98,27 +118,40 @@ export const SidebarHome: React.FC<SidebarHomeProps> = ({
 
         <SidebarBody>
           <SidebarSection>
-            {mainNavigation.map((item) => (
-              <SidebarItem
-                key={item.name}
-                href={item.href}
-                current={pathname === item.href}
-              >
-                <item.icon className="h-5 w-5" />
-                <AnimatePresence initial={false}>
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <SidebarLabel>{item.name}</SidebarLabel>
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </SidebarItem>
-            ))}
+            {mainNavigation.map((item) => {
+              // For Home item, check if pathname is a home/category route
+              // Other nav paths are used to determine what's NOT a home route
+              const otherNavPaths = mainNavigation
+                .filter((nav) => nav.href !== "/")
+                .map((nav) => nav.href);
+              const isCurrent =
+                item.href === "/"
+                  ? isHomeRoute(pathname, otherNavPaths)
+                  : pathname === item.href ||
+                    pathname.startsWith(item.href + "/");
+
+              return (
+                <SidebarItem
+                  key={item.name}
+                  href={item.href}
+                  current={isCurrent}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "auto" }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <SidebarLabel>{item.name}</SidebarLabel>
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </SidebarItem>
+              );
+            })}
           </SidebarSection>
 
           <SidebarSpacer />

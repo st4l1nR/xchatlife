@@ -31,7 +31,7 @@ const BODY_TYPE_OPTIONS: Record<
   string,
   { value: CharacterFormData["bodyType"]; label: string; imageSrc: string }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "skinny",
       label: "Skinny",
@@ -58,7 +58,7 @@ const BODY_TYPE_OPTIONS: Record<
       imageSrc: `${GIRLS_REALISTIC_BASE}/body-type/BBW.png`,
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "skinny",
       label: "Skinny",
@@ -115,7 +115,7 @@ const BREAST_SIZE_OPTIONS: Record<
   string,
   { value: CharacterFormData["breastSize"]; label: string; imageSrc: string }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "small",
       label: "Small",
@@ -137,7 +137,7 @@ const BREAST_SIZE_OPTIONS: Record<
       imageSrc: `${GIRLS_REALISTIC_BASE}/breast-size/Extra Large.png`,
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "small",
       label: "Small",
@@ -159,8 +159,8 @@ const BREAST_SIZE_OPTIONS: Record<
       imageSrc: `${GIRLS_ANIME_BASE}/Breast Size/Extra Large.webp`,
     },
   ],
-  // Trans realistic reuses girls realistic breast size
-  "trans-realistic": [], // Will fallback to girls-realistic
+  // Trans realistic reuses girl realistic breast size
+  "trans-realistic": [], // Will fallback to girl-realistic
 };
 
 const CreateCharacterStep4: React.FC<CreateCharacterStep4Props> = ({
@@ -174,20 +174,20 @@ const CreateCharacterStep4: React.FC<CreateCharacterStep4Props> = ({
   const selectedBreastSize = watch("breastSize");
 
   const variantKey = getVariantKey(
-    characterType ?? "girls",
+    characterType ?? "girl",
     style ?? "realistic",
   );
 
   // Get body type options for the current variant
   const bodyTypeOptions =
-    BODY_TYPE_OPTIONS[variantKey] || BODY_TYPE_OPTIONS["girls-realistic"] || [];
+    BODY_TYPE_OPTIONS[variantKey] || BODY_TYPE_OPTIONS["girl-realistic"] || [];
 
-  // Trans realistic reuses girls realistic breast size options
+  // Trans realistic reuses girl realistic breast size options
   const breastSizeVariantKey =
-    variantKey === "trans-realistic" ? "girls-realistic" : variantKey;
+    variantKey === "trans-realistic" ? "girl-realistic" : variantKey;
   const breastSizeOptions =
     BREAST_SIZE_OPTIONS[breastSizeVariantKey] ||
-    BREAST_SIZE_OPTIONS["girls-realistic"] ||
+    BREAST_SIZE_OPTIONS["girl-realistic"] ||
     [];
 
   return (

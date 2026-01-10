@@ -31,7 +31,7 @@ const ETHNICITY_OPTIONS: Record<
     videoSrc?: string;
   }[]
 > = {
-  "girls-realistic": [
+  "girl-realistic": [
     {
       value: "caucasian",
       label: "Caucasian",
@@ -73,7 +73,7 @@ const ETHNICITY_OPTIONS: Record<
         "/images/create-character/girls/realistic/step-2-ethnicity/arab/4558188a-87e0-42a3-b1e2-013fa7bc2313 (1).mp4",
     },
   ],
-  "girls-anime": [
+  "girl-anime": [
     {
       value: "caucasian",
       label: "Caucasian",
@@ -132,11 +132,11 @@ const CreateCharacterStep2: React.FC<CreateCharacterStep2Props> = ({
   const age = watch("age") ?? 21;
 
   const variantKey = getVariantKey(
-    characterType ?? "girls",
+    characterType ?? "girl",
     style ?? "realistic",
   );
   const ethnicityOptions =
-    ETHNICITY_OPTIONS[variantKey] || ETHNICITY_OPTIONS["girls-realistic"] || [];
+    ETHNICITY_OPTIONS[variantKey] || ETHNICITY_OPTIONS["girl-realistic"] || [];
 
   return (
     <div className="flex flex-col items-center">

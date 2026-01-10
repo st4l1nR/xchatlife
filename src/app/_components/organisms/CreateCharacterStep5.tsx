@@ -8,7 +8,8 @@ import type {
   UseFormRegister,
 } from "react-hook-form";
 import { RefreshCw, ChevronRight } from "lucide-react";
-import { Field } from "../atoms/fieldset";
+import { Field, Label, Description } from "../atoms/fieldset";
+import { Checkbox, CheckboxField } from "../atoms/checkbox";
 import type { CharacterFormData } from "../pages/CreateCharacterPage";
 import {
   PERSONALITY_OPTIONS,
@@ -218,6 +219,7 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   const occupation = watch("occupation");
   const kinks = watch("kinks") ?? [];
   const voice = watch("voice");
+  const isPublic = watch("isPublic") ?? false;
 
   const generateRandomName = () => {
     const maxAttempts = 10;
@@ -260,7 +262,16 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
 
   const getKinksLabel = () => {
     if (kinks.length === 0) return "Select...";
-    return kinks.join(", ");
+    // Format kink values: replace underscores, capitalize each word
+    return kinks
+      .map((kink) =>
+        kink
+          .replaceAll("_", " ")
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+      )
+      .join(", ");
   };
 
   const getVoiceLabel = () => {
@@ -434,6 +445,25 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
                 {errors.voice.message}
               </p>
             )}
+          </div>
+
+          {/* Public/Private Toggle - spans full width */}
+          <div className="bg-muted rounded-xl p-4 sm:col-span-2">
+            <CheckboxField>
+              <Checkbox
+                checked={isPublic}
+                onChange={(checked) =>
+                  setValue("isPublic", checked, { shouldValidate: true })
+                }
+              />
+              <Label className="text-foreground font-semibold">
+                Make character public
+              </Label>
+              <Description>
+                Public characters will be visible to all users in the discover
+                section. Private characters are only visible to you.
+              </Description>
+            </CheckboxField>
           </div>
         </div>
       </div>

@@ -109,6 +109,15 @@ export const relationshipSchema = z.enum([
   "friend",
   "step_sister",
   "step_mom",
+  "step_daughter",
+  "landlord",
+  "sugar_baby",
+  "boss",
+  "teacher",
+  "student",
+  "neighbour",
+  "mother_in_law",
+  "sister_in_law",
 ]);
 
 export const occupationSchema = z.enum([
@@ -213,6 +222,9 @@ export const characterFormSchema = z.object({
   occupation: occupationSchema,
   kinks: kinksSchema,
   voice: voiceSchema,
+
+  // Visibility
+  isPublic: z.boolean(),
 });
 
 export type CharacterFormData = z.infer<typeof characterFormSchema>;
@@ -325,6 +337,15 @@ export const RELATIONSHIP_OPTIONS = [
   { value: "friend" as const, label: "Friend", emoji: "🤝" },
   { value: "step_sister" as const, label: "Step Sister", emoji: "💛" },
   { value: "step_mom" as const, label: "Step Mom", emoji: "💛" },
+  { value: "step_daughter" as const, label: "Step Daughter", emoji: "💛" },
+  { value: "landlord" as const, label: "Landlord", emoji: "🏠" },
+  { value: "sugar_baby" as const, label: "Sugar Baby", emoji: "🍬" },
+  { value: "boss" as const, label: "Boss", emoji: "💼" },
+  { value: "teacher" as const, label: "Teacher", emoji: "📚" },
+  { value: "student" as const, label: "Student", emoji: "🎓" },
+  { value: "neighbour" as const, label: "Neighbour", emoji: "🏡" },
+  { value: "mother_in_law" as const, label: "Mother-In-Law", emoji: "👩‍👧" },
+  { value: "sister_in_law" as const, label: "Sister-In-Law", emoji: "👭" },
 ] as const;
 
 // Occupation options with emojis (using Prisma enum values)
@@ -400,9 +421,18 @@ const CreateCharacterPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const createCharacter = api.character.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success("Character created successfully!");
-      router.push("/");
+
+      // Redirect based on character type and style
+      const { characterType, style } = variables;
+      if (characterType === "men") {
+        router.push("/realistic-men");
+      } else if (style === "anime") {
+        router.push("/anime-girl");
+      } else {
+        router.push("/realistic-girl");
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Something went wrong. Please try again.");
@@ -422,6 +452,7 @@ const CreateCharacterPage: React.FC = () => {
       characterType: "girl",
       age: 21,
       kinks: [],
+      isPublic: false,
     },
     mode: "onChange",
   });
@@ -494,6 +525,7 @@ const CreateCharacterPage: React.FC = () => {
       voice: data.voice,
       posterUrl: data.posterUrl,
       videoUrl: data.videoUrl,
+      isPublic: data.isPublic,
     });
   };
 
@@ -572,7 +604,12 @@ const CreateCharacterPage: React.FC = () => {
           {/* Navigation */}
           <div className="flex justify-center gap-4 py-4 pb-20 sm:pb-4">
             {currentStep > 1 && (
-              <Button type="button" plain onClick={handleBack}>
+              <Button
+                type="button"
+                plain
+                onClick={handleBack}
+                disabled={createCharacter.isPending}
+              >
                 Back
               </Button>
             )}
@@ -582,6 +619,7 @@ const CreateCharacterPage: React.FC = () => {
                 type="button"
                 onClick={handleCreateCharacter}
                 loading={createCharacter.isPending}
+                disabled={createCharacter.isPending}
                 className="min-w-48"
               >
                 Create Character

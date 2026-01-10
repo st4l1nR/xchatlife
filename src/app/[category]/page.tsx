@@ -5,6 +5,7 @@ const VALID_CATEGORIES = [
   "realistic-girl",
   "anime-girl",
   "realistic-men",
+  "realistic-trans",
 ] as const;
 
 type Category = (typeof VALID_CATEGORIES)[number];
@@ -15,11 +16,12 @@ type CategoryParams = { category: string };
 function parseCategory(category: Category) {
   const map: Record<
     Category,
-    { style: "realistic" | "anime"; gender: "girl" | "men" }
+    { style: "realistic" | "anime"; gender: "girl" | "men" | "trans" }
   > = {
     "realistic-girl": { style: "realistic", gender: "girl" },
     "anime-girl": { style: "anime", gender: "girl" },
     "realistic-men": { style: "realistic", gender: "men" },
+    "realistic-trans": { style: "realistic", gender: "trans" },
   };
   return map[category];
 }

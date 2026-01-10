@@ -2,6 +2,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "@/env";
 import * as fs from "fs";
 import * as path from "path";
+import { randomUUID } from "crypto";
 
 // Initialize S3 client for Cloudflare R2
 export const r2Client = new S3Client({
@@ -69,4 +70,105 @@ export function generateCharacterMediaKey(
   extension: string,
 ): string {
   return `characters/${characterId}/${type}.${extension}`;
+}
+
+// Get extension from URL or mime type
+function getExtensionFromUrl(url: string, mimeType?: string): string {
+  // Try to get extension from URL path
+  const urlPath = new URL(url).pathname;
+  const ext = path.extname(urlPath).toLowerCase().replace(".", "");
+  if (ext) return ext;
+
+  // Fall back to mime type
+  if (mimeType) {
+    const mimeToExt: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/gif": "gif",
+      "image/webp": "webp",
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+      "video/quicktime": "mov",
+    };
+    return mimeToExt[mimeType] ?? "bin";
+  }
+
+  return "bin";
+}
+
+// Fetch media from URL and re-upload to R2 with a unique key
+export async function fetchAndUploadToR2(
+  sourceUrl: string,
+  folder: string,
+  type: "poster" | "video",
+): Promise<{ url: string; key: string; mimeType: string; size: number }> {
+  console.log(`[fetchAndUploadToR2] Starting upload for ${type}`);
+  console.log(`[fetchAndUploadToR2] Source URL: ${sourceUrl}`);
+  console.log(`[fetchAndUploadToR2] Folder: ${folder}`);
+
+  // Validate source URL
+  let parsedSourceUrl: URL;
+  try {
+    parsedSourceUrl = new URL(sourceUrl);
+    console.log(
+      `[fetchAndUploadToR2] Parsed source URL successfully: ${parsedSourceUrl.href}`,
+    );
+  } catch (error) {
+    console.error(
+      `[fetchAndUploadToR2] Invalid source URL: ${sourceUrl}`,
+      error,
+    );
+    throw new Error(`Invalid source URL for ${type}: ${sourceUrl}`);
+  }
+
+  // Fetch the media from the source URL
+  console.log(`[fetchAndUploadToR2] Fetching media...`);
+  const response = await fetch(sourceUrl);
+  if (!response.ok) {
+    console.error(
+      `[fetchAndUploadToR2] Fetch failed: ${response.status} ${response.statusText}`,
+    );
+    throw new Error(
+      `Failed to fetch media from ${sourceUrl}: ${response.statusText}`,
+    );
+  }
+
+  const contentType =
+    response.headers.get("content-type") ?? "application/octet-stream";
+  console.log(`[fetchAndUploadToR2] Content-Type: ${contentType}`);
+
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  console.log(`[fetchAndUploadToR2] Downloaded ${buffer.length} bytes`);
+
+  // Generate a unique key with UUID to avoid collisions
+  const extension = getExtensionFromUrl(sourceUrl, contentType);
+  const uniqueId = randomUUID();
+  const r2Key = `${folder}/${uniqueId}/${type}.${extension}`;
+  console.log(`[fetchAndUploadToR2] Generated R2 key: ${r2Key}`);
+
+  // Upload to R2
+  console.log(
+    `[fetchAndUploadToR2] Uploading to R2 bucket: ${env.R2_BUCKET_NAME}`,
+  );
+  await r2Client.send(
+    new PutObjectCommand({
+      Bucket: env.R2_BUCKET_NAME,
+      Key: r2Key,
+      Body: buffer,
+      ContentType: contentType,
+    }),
+  );
+  console.log(`[fetchAndUploadToR2] Upload complete`);
+
+  // Return the public URL and metadata
+  const publicUrl = `${env.R2_PUBLIC_URL}/${r2Key}`;
+  console.log(`[fetchAndUploadToR2] Public URL: ${publicUrl}`);
+
+  return {
+    url: publicUrl,
+    key: r2Key,
+    mimeType: contentType,
+    size: buffer.length,
+  };
 }

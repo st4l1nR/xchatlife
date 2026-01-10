@@ -119,6 +119,15 @@ enum Relationship {
   friend
   step_sister
   step_mom
+  step_daughter
+  landlord
+  sugar_baby
+  boss
+  teacher
+  student
+  neighbour
+  mother_in_law
+  sister_in_law
 }
 
 enum Occupation {

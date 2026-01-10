@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
-import { LogOut, Venus, Sparkles, Mars } from "lucide-react";
+import { LogOut, Venus, Sparkles, Mars, Transgender } from "lucide-react";
 import { Avatar } from "../atoms/avatar";
 import { Button } from "../atoms/button";
 import {
@@ -34,6 +34,7 @@ const CATEGORY_TABS = [
   { label: "Girls", href: "/realistic-girl", icon: Venus },
   { label: "Anime", href: "/anime-girl", icon: Sparkles },
   { label: "Guys", href: "/realistic-men", icon: Mars },
+  { label: "Trans", href: "/realistic-trans", icon: Transgender },
 ] as const;
 
 export type NavbarHomeProps = {
@@ -67,6 +68,10 @@ export const NavbarHome = forwardRef<
   const userEmail = user?.email;
   const avatarSrc = user?.image;
   const avatarInitials = userName.substring(0, 2).toUpperCase();
+
+  // Check if we're on a /[slug] page (character page)
+  // Matches paths like /character-name (single segment, not root)
+  const isSlugPage = /^\/[^/]+$/.test(pathname) && pathname !== "/";
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -214,8 +219,8 @@ export const NavbarHome = forwardRef<
         {/* Mobile: Logo on the left */}
         {isMobile && <Logo href="/" size="sm" withText={false} />}
 
-        {/* Desktop: Tabs first */}
-        {!isMobile && CategoryTabs}
+        {/* Desktop: Tabs first (only on slug pages) */}
+        {!isMobile && isSlugPage && CategoryTabs}
 
         <div className="flex-1" />
 
@@ -227,8 +232,8 @@ export const NavbarHome = forwardRef<
         {AuthSection}
       </div>
 
-      {/* Mobile: Category tabs in second row */}
-      {isMobile && (
+      {/* Mobile: Category tabs in second row (only on slug pages) */}
+      {isMobile && isSlugPage && (
         <div className="border-border flex items-center justify-center gap-4 border-t px-4 py-2">
           {CATEGORY_TABS.map((tab) => {
             const isActive = pathname === tab.href;
