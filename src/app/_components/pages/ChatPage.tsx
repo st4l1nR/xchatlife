@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
 import ListSnackChat from "../organisms/ListSnackChat";
@@ -8,90 +8,93 @@ import ChatRoom from "../organisms/ChatRoom";
 import AsideCharacterSummary from "../organisms/AsideCharacterSummary";
 import DialogPrivateContent from "../organisms/DialogPrivateContent";
 import DialogConfirmCall from "../organisms/DialogConfirmCall";
-import type { SnackChatProps } from "../molecules/SnackChat";
-import type { CardMessageProps } from "../molecules/CardMessage";
-import type { AsideCharacterSummaryProps } from "../organisms/AsideCharacterSummary";
-import type { CardPrivateContentProps } from "../molecules/CardPrivateContent";
+import DialogInsufficientTokens from "../organisms/DialogInsufficientTokens";
+import DialogBlockedMicrophone from "../organisms/DialogBlockedMicrophone";
+import DialogCall from "../organisms/DialogCall";
+import {
+  ChatContextProvider,
+  useChat,
+  type ChatContextMock,
+} from "@/app/_contexts/ChatContext";
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export type ChatPageProps = {
   className?: string;
-  // Mock data for Storybook
-  mock?: {
-    chats: SnackChatProps[];
-    messages: CardMessageProps[];
-    character: Omit<AsideCharacterSummaryProps, "className">;
-    privateContent?: CardPrivateContentProps[];
-  };
+  mock?: ChatContextMock;
+  initialChatId?: string;
 };
 
-const ChatPage: React.FC<ChatPageProps> = ({ className, mock }) => {
+// ============================================================================
+// ChatDialogs - Renders all dialogs once at root level
+// ============================================================================
+
+const ChatDialogs: React.FC = () => {
+  const { dialogs, selectedChat, character, privateContent } = useChat();
+
+  return (
+    <>
+      <DialogPrivateContent
+        open={dialogs.privateContent.open}
+        onClose={() => dialogs.privateContent.setOpen(false)}
+        items={privateContent}
+        onUnlock={dialogs.privateContent.onUnlock}
+      />
+      <DialogInsufficientTokens
+        open={dialogs.insufficientTokens.open}
+        close={() => dialogs.insufficientTokens.setOpen(false)}
+      />
+      <DialogConfirmCall
+        open={dialogs.confirmCall.open}
+        onClose={() => dialogs.confirmCall.setOpen(false)}
+        onConfirm={dialogs.confirmCall.confirm}
+        dontShowAgain={dialogs.confirmCall.dontShowAgain}
+        onDontShowAgainChange={dialogs.confirmCall.setDontShowAgain}
+        loading={dialogs.confirmCall.isLoading}
+      />
+      <DialogBlockedMicrophone
+        open={dialogs.blockedMicrophone.open}
+        onClose={() => dialogs.blockedMicrophone.setOpen(false)}
+      />
+      <DialogCall
+        open={dialogs.activeCall.open}
+        onClose={() => dialogs.activeCall.setOpen(false)}
+        onHangUp={dialogs.activeCall.hangUp}
+        characterName={selectedChat?.name ?? ""}
+        characterImage={character?.media[0]?.src ?? ""}
+        status={dialogs.activeCall.status}
+        duration={dialogs.activeCall.duration}
+      />
+    </>
+  );
+};
+
+// ============================================================================
+// ChatPageContent - Main layout component
+// ============================================================================
+
+const ChatPageContent: React.FC<{ className?: string }> = ({ className }) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
 
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const [chatsLoading] = useState(false);
-
-  // Dialog states
-  const [privateContentOpen, setPrivateContentOpen] = useState(false);
-  const [confirmCallOpen, setConfirmCallOpen] = useState(false);
-  const [dontShowCallAgain, setDontShowCallAgain] = useState(false);
-  const [isCallLoading, setIsCallLoading] = useState(false);
-
-  // Aside visibility state
-  const [asideVisible, setAsideVisible] = useState(true);
-
-  // Mock data for development/Storybook
-  const chats = mock?.chats ?? [];
-  const messages = mock?.messages ?? [];
-  const character = mock?.character;
-  const privateContent = mock?.privateContent ?? [];
-
-  // Find selected chat data
-  const selectedChat = chats.find((chat) => chat.id === selectedChatId);
-
-  // Handlers
-  const handleSelectChat = (chat: SnackChatProps) => {
-    setSelectedChatId(chat.id ?? null);
-  };
-
-  const handleBack = () => {
-    setSelectedChatId(null);
-  };
-
-  const handleSendMessage = (message: string) => {
-    // TODO: Implement message sending
-    console.log("Send message:", message);
-  };
-
-  const handleOpenPrivateContent = () => {
-    setPrivateContentOpen(true);
-  };
-
-  const handleClosePrivateContent = () => {
-    setPrivateContentOpen(false);
-  };
-
-  const handleOpenCall = () => {
-    setConfirmCallOpen(true);
-  };
-
-  const handleCloseCall = () => {
-    setConfirmCallOpen(false);
-  };
-
-  const handleConfirmCall = () => {
-    setIsCallLoading(true);
-    // TODO: Implement call logic
-    setTimeout(() => {
-      setIsCallLoading(false);
-      setConfirmCallOpen(false);
-      console.log("Call started");
-    }, 1000);
-  };
-
-  const handleToggleAside = () => {
-    setAsideVisible((prev) => !prev);
-  };
+  const {
+    chats,
+    messages,
+    selectedChat,
+    selectedChatId,
+    character,
+    isChatsLoading,
+    selectChat,
+    clearSelection,
+    sendMessage,
+    deleteChat,
+    resetChat,
+    addToFavorites,
+    dialogs,
+    aside,
+  } = useChat();
 
   // Mobile view logic
   if (isMobile) {
@@ -101,11 +104,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ className, mock }) => {
         <div className={clsx("flex h-full flex-col", className)}>
           <ListSnackChat
             className="flex-1 overflow-y-auto p-4"
-            loading={chatsLoading}
+            loading={isChatsLoading}
             chats={chats}
             title="Chat"
             showSearch
-            onSelectChat={handleSelectChat}
+            onSelectChat={selectChat}
           />
         </div>
       );
@@ -113,115 +116,38 @@ const ChatPage: React.FC<ChatPageProps> = ({ className, mock }) => {
 
     // Show chat room when chat selected
     return (
-      <>
-        <div className={clsx("flex h-full flex-col", className)}>
-          <ChatRoom
-            className="flex-1"
-            showBackButton
-            onBack={handleBack}
-            characterName={selectedChat?.name ?? ""}
-            characterAvatarSrc={selectedChat?.avatarSrc}
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            onClickPrivateContent={handleOpenPrivateContent}
-            onCallClick={handleOpenCall}
-            onAddToFavorites={() => console.log("Add to favorites")}
-            onResetChat={() => console.log("Reset chat")}
-            onDeleteChat={() => console.log("Delete chat")}
-          />
-        </div>
-
-        {/* Dialogs */}
-        <DialogPrivateContent
-          open={privateContentOpen}
-          onClose={handleClosePrivateContent}
-          items={privateContent}
+      <div className={clsx("flex h-full flex-col", className)}>
+        <ChatRoom
+          className="flex-1"
+          showBackButton
+          onBack={clearSelection}
+          characterName={selectedChat?.name ?? ""}
+          characterAvatarSrc={selectedChat?.avatarSrc}
+          messages={messages}
+          onSendMessage={sendMessage}
+          onClickPrivateContent={() => dialogs.privateContent.setOpen(true)}
+          onCallClick={() => dialogs.confirmCall.setOpen(true)}
+          onAddToFavorites={addToFavorites}
+          onResetChat={resetChat}
+          onDeleteChat={deleteChat}
         />
-        <DialogConfirmCall
-          open={confirmCallOpen}
-          onClose={handleCloseCall}
-          onConfirm={handleConfirmCall}
-          dontShowAgain={dontShowCallAgain}
-          onDontShowAgainChange={setDontShowCallAgain}
-          loading={isCallLoading}
-        />
-      </>
+      </div>
     );
   }
 
   // Tablet view: 2 columns (no aside)
   if (isTablet) {
     return (
-      <>
-        <div className={clsx("flex h-full", className)}>
-          {/* Left column: Chat list */}
-          <div className="border-border flex w-72 shrink-0 flex-col border-r">
-            <ListSnackChat
-              className="flex-1 overflow-y-auto p-4"
-              loading={chatsLoading}
-              chats={chats}
-              title="Chat"
-              showSearch
-              onSelectChat={handleSelectChat}
-            />
-          </div>
-
-          {/* Center: Chat room */}
-          <div className="flex flex-1 flex-col">
-            {selectedChatId ? (
-              <ChatRoom
-                className="flex-1"
-                characterName={selectedChat?.name ?? ""}
-                characterAvatarSrc={selectedChat?.avatarSrc}
-                messages={messages}
-                onSendMessage={handleSendMessage}
-                onClickPrivateContent={handleOpenPrivateContent}
-                onCallClick={handleOpenCall}
-                onAddToFavorites={() => console.log("Add to favorites")}
-                onResetChat={() => console.log("Reset chat")}
-                onDeleteChat={() => console.log("Delete chat")}
-              />
-            ) : (
-              <div className="flex flex-1 items-center justify-center">
-                <p className="text-muted-foreground">
-                  Select a chat to start messaging
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Dialogs */}
-        <DialogPrivateContent
-          open={privateContentOpen}
-          onClose={handleClosePrivateContent}
-          items={privateContent}
-        />
-        <DialogConfirmCall
-          open={confirmCallOpen}
-          onClose={handleCloseCall}
-          onConfirm={handleConfirmCall}
-          dontShowAgain={dontShowCallAgain}
-          onDontShowAgainChange={setDontShowCallAgain}
-          loading={isCallLoading}
-        />
-      </>
-    );
-  }
-
-  // Desktop view: 3 columns
-  return (
-    <>
       <div className={clsx("flex h-full", className)}>
         {/* Left column: Chat list */}
-        <div className="border-border flex w-80 shrink-0 flex-col border-r">
+        <div className="border-border flex w-72 shrink-0 flex-col border-r">
           <ListSnackChat
             className="flex-1 overflow-y-auto p-4"
-            loading={chatsLoading}
+            loading={isChatsLoading}
             chats={chats}
             title="Chat"
             showSearch
-            onSelectChat={handleSelectChat}
+            onSelectChat={selectChat}
           />
         </div>
 
@@ -233,13 +159,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ className, mock }) => {
               characterName={selectedChat?.name ?? ""}
               characterAvatarSrc={selectedChat?.avatarSrc}
               messages={messages}
-              onSendMessage={handleSendMessage}
-              onClickPrivateContent={handleOpenPrivateContent}
-              onCallClick={handleOpenCall}
-              onAddToFavorites={() => console.log("Add to favorites")}
-              onResetChat={() => console.log("Reset chat")}
-              onDeleteChat={() => console.log("Delete chat")}
-              onExpand={handleToggleAside}
+              onSendMessage={sendMessage}
+              onClickPrivateContent={() => dialogs.privateContent.setOpen(true)}
+              onCallClick={() => dialogs.confirmCall.setOpen(true)}
+              onAddToFavorites={addToFavorites}
+              onResetChat={resetChat}
+              onDeleteChat={deleteChat}
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">
@@ -249,30 +174,74 @@ const ChatPage: React.FC<ChatPageProps> = ({ className, mock }) => {
             </div>
           )}
         </div>
+      </div>
+    );
+  }
 
-        {/* Right column: Character summary (only on desktop) */}
-        {character && selectedChatId && asideVisible && (
-          <div className="border-border w-80 shrink-0 border-l">
-            <AsideCharacterSummary className="h-full" {...character} />
+  // Desktop view: 3 columns
+  return (
+    <div className={clsx("flex h-full", className)}>
+      {/* Left column: Chat list */}
+      <div className="border-border flex w-80 shrink-0 flex-col border-r">
+        <ListSnackChat
+          className="flex-1 overflow-y-auto p-4"
+          loading={isChatsLoading}
+          chats={chats}
+          title="Chat"
+          showSearch
+          onSelectChat={selectChat}
+        />
+      </div>
+
+      {/* Center: Chat room */}
+      <div className="flex flex-1 flex-col">
+        {selectedChatId ? (
+          <ChatRoom
+            className="flex-1"
+            characterName={selectedChat?.name ?? ""}
+            characterAvatarSrc={selectedChat?.avatarSrc}
+            messages={messages}
+            onSendMessage={sendMessage}
+            onClickPrivateContent={() => dialogs.privateContent.setOpen(true)}
+            onCallClick={() => dialogs.confirmCall.setOpen(true)}
+            onAddToFavorites={addToFavorites}
+            onResetChat={resetChat}
+            onDeleteChat={deleteChat}
+            onExpand={aside.toggle}
+          />
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-muted-foreground">
+              Select a chat to start messaging
+            </p>
           </div>
         )}
       </div>
 
-      {/* Dialogs */}
-      <DialogPrivateContent
-        open={privateContentOpen}
-        onClose={handleClosePrivateContent}
-        items={privateContent}
-      />
-      <DialogConfirmCall
-        open={confirmCallOpen}
-        onClose={handleCloseCall}
-        onConfirm={handleConfirmCall}
-        dontShowAgain={dontShowCallAgain}
-        onDontShowAgainChange={setDontShowCallAgain}
-        loading={isCallLoading}
-      />
-    </>
+      {/* Right column: Character summary (only on desktop) */}
+      {character && selectedChatId && aside.visible && (
+        <div className="border-border w-80 shrink-0 border-l">
+          <AsideCharacterSummary className="h-full" {...character} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+const ChatPage: React.FC<ChatPageProps> = ({
+  className,
+  mock,
+  initialChatId,
+}) => {
+  return (
+    <ChatContextProvider mock={mock} initialChatId={initialChatId}>
+      <ChatPageContent className={className} />
+      <ChatDialogs />
+    </ChatContextProvider>
   );
 };
 
