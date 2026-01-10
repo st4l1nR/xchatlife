@@ -229,6 +229,7 @@ async function main() {
     const selectedKinks = getRandomItems(kinkValues, numKinks);
 
     const characterData = {
+      id: crypto.randomUUID(),
       name,
       posterId: posterMedia.id,
       videoId: videoMedia.id,
@@ -250,7 +251,10 @@ async function main() {
       isLive,
       createdById: user.id,
       character_kink: {
-        create: selectedKinks.map((kink) => ({ kink })),
+        create: selectedKinks.map((kink) => ({
+          id: crypto.randomUUID(),
+          kink,
+        })),
       },
     };
 
@@ -274,6 +278,7 @@ async function main() {
     for (let j = 0; j < numStories; j++) {
       await prisma.story.create({
         data: {
+          id: crypto.randomUUID(),
           characterId: character.id,
           mediaId: posterMedia.id,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
@@ -312,6 +317,7 @@ async function main() {
     for (let j = 0; j < numReels; j++) {
       await prisma.reel.create({
         data: {
+          id: crypto.randomUUID(),
           characterId: character.id,
           videoId: videoMedia.id,
           thumbnailId: posterMedia.id,
