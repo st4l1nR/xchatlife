@@ -397,13 +397,15 @@ const HomePage: React.FC<HomePageProps> = ({
       <Banner slides={data.bannerSlides} className="mt-4 rounded-none" />
 
       {/* Stories Section */}
-      <div className="px-4 md:px-6">
-        <ListBubbleStory
-          layout="swiper"
-          profiles={data.stories}
-          loading={isLoadingStories && !mock}
-        />
-      </div>
+      {data?.stories.length > 0 && (
+        <div className="px-4 md:px-6">
+          <ListBubbleStory
+            layout="swiper"
+            profiles={data.stories}
+            loading={isLoadingStories && !mock}
+          />
+        </div>
+      )}
 
       {/* Jump into Live Action Section */}
       <section className="px-4 md:px-6">
