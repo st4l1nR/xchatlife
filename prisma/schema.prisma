@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -9,10 +8,10 @@ datasource db {
 }
 
 model Post {
-  id          String   @id @default(cuid())
+  id          String   @id
   name        String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  updatedAt   DateTime
   createdById String
   user        user     @relation(fields: [createdById], references: [id])
 
@@ -20,7 +19,7 @@ model Post {
 }
 
 model account {
-  id                    String    @id @default(cuid())
+  id                    String    @id
   accountId             String
   providerId            String
   userId                String
@@ -32,19 +31,19 @@ model account {
   scope                 String?
   password              String?
   createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @default(now()) @updatedAt
+  updatedAt             DateTime
   user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model affiliate {
-  id             String     @id @default(cuid())
+  id             String     @id
   userId         String     @unique
   referralCode   String     @unique
   commissionRate Decimal    @db.Decimal(5, 4)
   totalEarned    Decimal    @default(0) @db.Decimal(10, 2)
   isActive       Boolean    @default(true)
   createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @default(now()) @updatedAt
+  updatedAt      DateTime
   user           user       @relation(fields: [userId], references: [id], onDelete: Cascade)
   referral       referral[]
 
@@ -53,7 +52,7 @@ model affiliate {
 }
 
 model character {
-  id                              String           @id @default(cuid())
+  id                              String           @id
   name                            String
   posterId                        String?
   videoId                         String?
@@ -74,11 +73,11 @@ model character {
   isActive                        Boolean          @default(true)
   isLive                          Boolean          @default(false)
   createdAt                       DateTime         @default(now())
-  updatedAt                       DateTime         @default(now()) @updatedAt
+  updatedAt                       DateTime
   createdById                     String
-  user   user   @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  poster media? @relation("character_poster", fields: [posterId], references: [id])
-  video  media? @relation("character_video", fields: [videoId], references: [id])
+  user                            user             @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  media_character_posterIdTomedia media?           @relation("character_posterIdTomedia", fields: [posterId], references: [id])
+  media_character_videoIdTomedia  media?           @relation("character_videoIdTomedia", fields: [videoId], references: [id])
   character_kink                  character_kink[]
   chat                            chat[]
   reel                            reel[]
@@ -93,7 +92,7 @@ model character {
 }
 
 model character_kink {
-  id          String    @id @default(cuid())
+  id          String    @id
   characterId String
   kink        Kink
   createdAt   DateTime  @default(now())
@@ -105,16 +104,17 @@ model character_kink {
 }
 
 model chat {
-  id            String    @id @default(cuid())
-  userId        String
-  characterId   String
-  isArchived    Boolean   @default(false)
-  lastMessageAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  character     character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  user          user      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages      message[]
+  id                String              @id
+  userId            String
+  characterId       String
+  isArchived        Boolean             @default(false)
+  lastMessageAt     DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  character         character           @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  user              user                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message           message[]
+  message_embedding message_embedding[]
 
   @@unique([userId, characterId])
   @@index([characterId])
@@ -124,7 +124,7 @@ model chat {
 }
 
 model collection {
-  id        String   @id @default(cuid())
+  id        String   @id
   userId    String
   messageId String?  @unique
   mediaId   String
@@ -139,7 +139,7 @@ model collection {
 }
 
 model media {
-  id                                  String       @id @default(cuid())
+  id                                  String       @id
   type                                MediaType
   key                                 String       @unique
   url                                 String
@@ -148,37 +148,50 @@ model media {
   width                               Int?
   height                              Int?
   duration                            Int?
-  createdAt            DateTime    @default(now())
-  character_as_poster  character[] @relation("character_poster")
-  character_as_video   character[] @relation("character_video")
-  collection           collection[]
-  reel_as_thumbnail    reel[]      @relation("reel_thumbnail")
-  reel_as_video        reel[]      @relation("reel_video")
-  story_as_media       story[]     @relation("story_media")
-  story_as_thumbnail   story[]     @relation("story_thumbnail")
+  createdAt                           DateTime     @default(now())
+  character_character_posterIdTomedia character[]  @relation("character_posterIdTomedia")
+  character_character_videoIdTomedia  character[]  @relation("character_videoIdTomedia")
+  collection                          collection[]
+  reel_reel_thumbnailIdTomedia        reel[]       @relation("reel_thumbnailIdTomedia")
+  reel_reel_videoIdTomedia            reel[]       @relation("reel_videoIdTomedia")
+  story_story_mediaIdTomedia          story[]      @relation("story_mediaIdTomedia")
+  story_story_thumbnailIdTomedia      story[]      @relation("story_thumbnailIdTomedia")
 
   @@index([createdAt])
   @@index([type])
 }
 
 model message {
-  id         String      @id @default(cuid())
-  chatId     String
-  type       MessageType
-  content    String
-  isFromUser Boolean
-  isDeleted  Boolean     @default(false)
-  createdAt  DateTime    @default(now())
-  collection collection?
-  chat       chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  id                String             @id
+  chatId            String
+  type              MessageType
+  content           String
+  isFromUser        Boolean
+  isDeleted         Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  collection        collection?
+  chat              chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  message_embedding message_embedding?
 
   @@index([chatId])
   @@index([createdAt])
   @@index([isFromUser])
 }
 
+model message_embedding {
+  id        String                   @id @default(dbgenerated("gen_random_uuid()::text"))
+  messageId String                   @unique @map("message_id")
+  chatId    String                   @map("chat_id")
+  embedding Unsupported("vector")?
+  createdAt DateTime                 @default(now()) @map("created_at")
+  message   message                  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  chat      chat                     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+}
+
 model reel {
-  id                            String    @id @default(cuid())
+  id                            String    @id
   characterId                   String
   videoId                       String
   thumbnailId                   String?
@@ -187,10 +200,10 @@ model reel {
   viewCount                     Int       @default(0)
   isActive                      Boolean   @default(true)
   createdAt                     DateTime  @default(now())
-  updatedAt                     DateTime  @default(now()) @updatedAt
-  character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  thumbnail media?    @relation("reel_thumbnail", fields: [thumbnailId], references: [id])
-  video     media     @relation("reel_video", fields: [videoId], references: [id], onDelete: Cascade)
+  updatedAt                     DateTime
+  character                     character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media_reel_thumbnailIdTomedia media?    @relation("reel_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
+  media_reel_videoIdTomedia     media     @relation("reel_videoIdTomedia", fields: [videoId], references: [id], onDelete: Cascade)
 
   @@index([characterId])
   @@index([createdAt])
@@ -199,7 +212,7 @@ model reel {
 }
 
 model referral {
-  id             String         @id @default(cuid())
+  id             String         @id
   affiliateId    String
   referredUserId String         @unique
   status         ReferralStatus @default(pending)
@@ -207,7 +220,7 @@ model referral {
   convertedAt    DateTime?
   paidAt         DateTime?
   createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now()) @updatedAt
+  updatedAt      DateTime
   affiliate      affiliate      @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   user           user           @relation(fields: [referredUserId], references: [id], onDelete: Cascade)
 
@@ -216,11 +229,11 @@ model referral {
 }
 
 model session {
-  id        String   @id @default(cuid())
+  id        String   @id
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime
   ipAddress String?
   userAgent String?
   userId    String
@@ -228,16 +241,16 @@ model session {
 }
 
 model story {
-  id                             String    @id @default(cuid())
+  id                             String    @id
   characterId                    String
   mediaId                        String
   thumbnailId                    String?
   expiresAt                      DateTime
   isActive                       Boolean   @default(true)
   createdAt                      DateTime  @default(now())
-  character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  media     media     @relation("story_media", fields: [mediaId], references: [id], onDelete: Cascade)
-  thumbnail media?    @relation("story_thumbnail", fields: [thumbnailId], references: [id])
+  character                      character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media_story_mediaIdTomedia     media     @relation("story_mediaIdTomedia", fields: [mediaId], references: [id], onDelete: Cascade)
+  media_story_thumbnailIdTomedia media?    @relation("story_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
 
   @@index([characterId])
   @@index([expiresAt])
@@ -246,7 +259,7 @@ model story {
 }
 
 model subscription {
-  id                 String             @id @default(cuid())
+  id                 String             @id
   userId             String             @unique
   billingCycle       BillingCycle
   status             SubscriptionStatus
@@ -255,7 +268,7 @@ model subscription {
   coinGateOrderId    String?
   cancelledAt        DateTime?
   createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @default(now()) @updatedAt
+  updatedAt          DateTime
   user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([coinGateOrderId])
@@ -264,7 +277,7 @@ model subscription {
 }
 
 model usage_quota {
-  id              String   @id @default(cuid())
+  id              String   @id
   userId          String
   periodStart     DateTime
   periodEnd       DateTime
@@ -275,7 +288,7 @@ model usage_quota {
   videosGenerated Int      @default(0)
   audiosGenerated Int      @default(0)
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now()) @updatedAt
+  updatedAt       DateTime
   user            user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, periodStart, periodEnd])
@@ -284,13 +297,13 @@ model usage_quota {
 }
 
 model user {
-  id            String        @id @default(cuid())
+  id            String        @id
   name          String
   email         String        @unique
   emailVerified Boolean       @default(false)
   image         String?
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
+  updatedAt     DateTime      @default(now())
   avatar        String?
   nickname      String?
   gender        String?
@@ -313,12 +326,12 @@ model user {
 }
 
 model verification {
-  id         String   @id @default(cuid())
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @default(now())
 }
 
 enum BillingCycle {
