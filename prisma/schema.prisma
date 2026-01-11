@@ -76,13 +76,14 @@ model character {
   createdAt                       DateTime         @default(now())
   updatedAt                       DateTime         @default(now()) @updatedAt
   createdById                     String
-  user   user   @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  poster media? @relation("character_poster", fields: [posterId], references: [id])
-  video  media? @relation("character_video", fields: [videoId], references: [id])
-  character_kink                  character_kink[]
-  chat                            chat[]
-  reel                            reel[]
-  story                           story[]
+  user            user              @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  poster          media?            @relation("character_poster", fields: [posterId], references: [id])
+  video           media?            @relation("character_video", fields: [videoId], references: [id])
+  character_kink  character_kink[]
+  character_image character_image[]
+  chat            chat[]
+  reel            reel[]
+  story           story[]
 
   @@index([createdById])
   @@index([gender])
@@ -90,6 +91,24 @@ model character {
   @@index([isPublic])
   @@index([personality])
   @@index([style])
+}
+
+model character_image {
+  id                String    @id @default(cuid())
+  userId            String
+  characterId       String
+  mediaId           String
+  prompt            String
+  canConvertToVideo Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  user      user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media     media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([characterId])
+  @@index([createdAt])
 }
 
 model character_kink {
@@ -139,23 +158,24 @@ model collection {
 }
 
 model media {
-  id                                  String       @id @default(cuid())
-  type                                MediaType
-  key                                 String       @unique
-  url                                 String
-  mimeType                            String?
-  size                                Int?
-  width                               Int?
-  height                              Int?
-  duration                            Int?
-  createdAt            DateTime    @default(now())
-  character_as_poster  character[] @relation("character_poster")
-  character_as_video   character[] @relation("character_video")
+  id                   String            @id @default(cuid())
+  type                 MediaType
+  key                  String            @unique
+  url                  String
+  mimeType             String?
+  size                 Int?
+  width                Int?
+  height               Int?
+  duration             Int?
+  createdAt            DateTime          @default(now())
+  character_as_poster  character[]       @relation("character_poster")
+  character_as_video   character[]       @relation("character_video")
+  character_image      character_image[]
   collection           collection[]
-  reel_as_thumbnail    reel[]      @relation("reel_thumbnail")
-  reel_as_video        reel[]      @relation("reel_video")
-  story_as_media       story[]     @relation("story_media")
-  story_as_thumbnail   story[]     @relation("story_thumbnail")
+  reel_as_thumbnail    reel[]            @relation("reel_thumbnail")
+  reel_as_video        reel[]            @relation("reel_video")
+  story_as_media       story[]           @relation("story_media")
+  story_as_thumbnail   story[]           @relation("story_thumbnail")
 
   @@index([createdAt])
   @@index([type])
@@ -263,50 +283,48 @@ model subscription {
   @@index([status])
 }
 
-model usage_quota {
-  id              String   @id @default(cuid())
+model token_transaction {
+  id              String               @id @default(cuid())
   userId          String
-  periodStart     DateTime
-  periodEnd       DateTime
-  tokensUsed      Int      @default(0)
-  tokensLimit     Int
-  messagesUsed    Int      @default(0)
-  imagesGenerated Int      @default(0)
-  videosGenerated Int      @default(0)
-  audiosGenerated Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now()) @updatedAt
-  user            user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Int                  // Positive = credit, Negative = debit
+  transactionType TokenTransactionType
+  description     String?              // Optional details (e.g., "Generated 2 images")
+  balanceAfter    Int                  // Balance after this transaction (audit trail)
+  metadata        Json?                // Optional: store extra data (imageIds, chatId, etc.)
+  createdAt       DateTime             @default(now())
+  user            user                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, periodStart, periodEnd])
-  @@index([periodEnd])
   @@index([userId])
+  @@index([transactionType])
+  @@index([createdAt])
 }
 
 model user {
-  id            String        @id @default(cuid())
-  name          String
-  email         String        @unique
-  emailVerified Boolean       @default(false)
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
-  avatar        String?
-  nickname      String?
-  gender        String?
-  language      Language      @default(english)
-  notifications Boolean       @default(true)
-  role          UserRole      @default(default)
-  Post          Post[]
-  account       account[]
-  affiliate     affiliate?
-  character     character[]
-  chat          chat[]
-  collection    collection[]
-  referral      referral?
-  session       session[]
-  subscription  subscription?
-  usage_quota   usage_quota[]
+  id                String              @id @default(cuid())
+  name              String
+  email             String              @unique
+  emailVerified     Boolean             @default(false)
+  image             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now()) @updatedAt
+  avatar            String?
+  nickname          String?
+  gender            String?
+  language          Language            @default(english)
+  notifications     Boolean             @default(true)
+  role              UserRole            @default(default)
+  tokenBalance      Int                 @default(0)
+  Post              Post[]
+  account           account[]
+  affiliate         affiliate?
+  character         character[]
+  character_image   character_image[]
+  chat              chat[]
+  collection        collection[]
+  referral          referral?
+  session           session[]
+  subscription      subscription?
+  token_transaction token_transaction[]
 
   @@index([language])
   @@index([role])
@@ -513,4 +531,16 @@ enum UserRole {
   default
   admin
   superadmin
+}
+
+enum TokenTransactionType {
+  subscription_renewal
+  purchase
+  image_generation
+  chat_message
+  voice_message
+  video_generation
+  refund
+  admin_adjustment
+  promotional
 }

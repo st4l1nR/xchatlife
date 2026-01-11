@@ -31,6 +31,8 @@ export const env = createEnv({
     R2_PUBLIC_URL: z.string().optional(),
     // Socket.io
     SOCKET_JWT_SECRET: z.string().min(32).optional(),
+    // xAI
+    XAI_API_KEY: z.string().min(1).optional(),
   },
 
   /**
@@ -72,6 +74,8 @@ export const env = createEnv({
     // Socket.io
     SOCKET_JWT_SECRET: process.env.SOCKET_JWT_SECRET,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
+    // xAI
+    XAI_API_KEY: process.env.XAI_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

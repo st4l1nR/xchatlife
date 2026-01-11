@@ -23,7 +23,7 @@ const BannerSelectCharacter: React.FC<BannerSelectCharacterProps> = ({
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
           className={clsx(
             "bg-background/95 border-border sticky bottom-0 z-50 border-t px-4 py-4 backdrop-blur-sm",
             className,

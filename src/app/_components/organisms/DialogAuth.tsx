@@ -416,10 +416,10 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       onClose={onClose}
       size="3xl"
     >
-      <div className="flex min-h-125">
+      <div className="flex">
         {/* Left side - Background image */}
         <div
-          className="relative hidden w-1/2 md:block"
+          className="relative hidden min-h-[500px] w-1/2 md:block"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",
@@ -428,7 +428,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
         />
 
         {/* Right side - Form content */}
-        <div className="relative flex w-full flex-col p-8 md:w-1/2">
+        <div className="relative flex w-full flex-col p-6 sm:p-8 md:w-1/2">
           {/* Close button */}
           <button
             type="button"
