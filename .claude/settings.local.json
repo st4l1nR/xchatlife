@@ -36,7 +36,8 @@
       "Bash(pnpm run storybook:*)",
       "Bash(npx storybook:*)",
       "Bash(pnpm storybook:*)",
-      "Bash(pnpm db:generate:*)"
+      "Bash(pnpm db:generate:*)",
+      "Bash(pnpm db:push:*)"
     ],
     "deny": []
   }
