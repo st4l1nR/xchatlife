@@ -64,6 +64,14 @@ export const roleRouter = createTRPCRouter({
     const roles = await ctx.db.role_custom.findMany({
       orderBy: { createdAt: "desc" },
       include: {
+        users: {
+          take: 4,
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
         _count: {
           select: { users: true },
         },
@@ -77,6 +85,11 @@ export const roleRouter = createTRPCRouter({
         name: role.name,
         permissions: role.permissions as z.infer<typeof permissionsSchema>,
         userCount: role._count.users,
+        users: role.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatarSrc: user.image ?? undefined,
+        })),
         createdAt: role.createdAt,
         updatedAt: role.updatedAt,
       })),

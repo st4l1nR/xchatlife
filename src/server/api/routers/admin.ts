@@ -242,20 +242,22 @@ export const adminRouter = createTRPCRouter({
         page: z.number().min(1).default(1),
         limit: z.number().min(1).max(100).default(20),
         search: z.string().optional(),
+        role: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, search } = input;
+      const { page, limit, search, role } = input;
       const skip = (page - 1) * limit;
 
-      const where = search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" as const } },
-              { email: { contains: search, mode: "insensitive" as const } },
-            ],
-          }
-        : {};
+      const where = {
+        ...(search && {
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { email: { contains: search, mode: "insensitive" as const } },
+          ],
+        }),
+        ...(role && { role }),
+      };
 
       const [users, total] = await Promise.all([
         ctx.db.user.findMany({

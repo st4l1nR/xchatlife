@@ -21,9 +21,6 @@ import {
 } from "../atoms/dropdown";
 import {
   ShieldCheck,
-  PencilLine,
-  Monitor,
-  Wrench,
   User,
   Trash2,
   Eye,
@@ -31,13 +28,8 @@ import {
   CircleUser,
 } from "lucide-react";
 
-export type UserRoleType =
-  | "admin"
-  | "editor"
-  | "author"
-  | "maintainer"
-  | "subscriber";
-export type UserPlanType = "enterprise" | "team" | "company" | "basic";
+export type UserRoleType = "default" | "admin" | "superadmin";
+export type UserPlanType = "yearly" | "monthly" | "quarterly" | "none";
 export type UserBillingType = "auto_debit" | "manual_paypal" | "manual_cash";
 export type UserStatusType = "pending" | "active" | "inactive";
 
@@ -47,6 +39,7 @@ export type TableUserItem = {
   username: string;
   avatarSrc?: string;
   role: UserRoleType;
+  customRoleName?: string;
   plan: UserPlanType;
   billing: UserBillingType;
   status: UserStatusType;
@@ -75,18 +68,29 @@ export type TableUserProps = {
 const getRoleIcon = (role: UserRoleType) => {
   const iconClass = "text-muted-foreground size-4";
   switch (role) {
+    case "superadmin":
+      return <ShieldCheck className={iconClass} />;
     case "admin":
       return <ShieldCheck className={iconClass} />;
-    case "editor":
-      return <PencilLine className={iconClass} />;
-    case "author":
-      return <Monitor className={iconClass} />;
-    case "maintainer":
-      return <Wrench className={iconClass} />;
-    case "subscriber":
+    case "default":
       return <User className={iconClass} />;
     default:
       return <CircleUser className={iconClass} />;
+  }
+};
+
+const formatPlan = (plan: UserPlanType): string => {
+  switch (plan) {
+    case "yearly":
+      return "Yearly";
+    case "monthly":
+      return "Monthly";
+    case "quarterly":
+      return "Quarterly";
+    case "none":
+      return "None";
+    default:
+      return plan;
   }
 };
 
@@ -163,20 +167,22 @@ const TableUser: React.FC<TableUserProps> = ({
       enableSorting: true,
       cell: (info) => {
         const role = info.getValue();
+        const customRoleName = info.row.original.customRoleName;
+        const displayRole = customRoleName ?? role;
         return (
           <div className="flex items-center gap-2">
             {getRoleIcon(role)}
-            <span className="capitalize">{role}</span>
+            <span className="capitalize">{displayRole}</span>
           </div>
         );
       },
     }),
 
-    // PLAN Column - Capitalized text
+    // PLAN Column - Subscription plan
     columnHelper.accessor("plan", {
       header: "Plan",
       enableSorting: true,
-      cell: (info) => <span className="capitalize">{info.getValue()}</span>,
+      cell: (info) => formatPlan(info.getValue()),
     }),
 
     // BILLING Column - Formatted text

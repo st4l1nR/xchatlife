@@ -39,7 +39,19 @@
       "Bash(pnpm db:generate:*)",
       "Bash(pnpm db:push:*)",
       "Bash(pnpm exec eslint:*)",
-      "Bash(pnpm prisma db push:*)"
+      "Bash(pnpm prisma db push:*)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" log --oneline --all)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show --stat HEAD)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show 6026f73 --stat)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show:*)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show 6026f73:src/server/api/routers/role.ts)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show 6026f73:src/server/api/routers/admin.ts)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" show 6026f73:src/app/_components/organisms/DialogCreateUpdateRole.tsx)",
+      "Bash(git -C \"c:\\\\Users\\\\stali\\\\Documents\\\\Projects\\\\xchatlife\" log --all --oneline --grep=\"DashboardRole\")",
+      "Bash(git -C:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(findstr:*)",
+      "Bash(Select-String -Pattern \"DashboardUsersPage\")"
     ],
     "deny": []
   }

@@ -21,11 +21,8 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   character: characterRouter,
   chat: chatRouter,
-<<<<<<< HEAD
   invitation: invitationRouter,
-=======
   image: imageRouter,
->>>>>>> 2cb53a16a15585a96d713054242d89c3780495d9
   post: postRouter,
   story: storyRouter,
   reel: reelRouter,
