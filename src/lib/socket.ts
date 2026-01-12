@@ -26,8 +26,7 @@ export type TypingUpdate = {
 };
 
 export type TokensUpdate = {
-  tokensUsed: number;
-  tokensAvailable: number;
+  tokenBalance: number;
 };
 
 export type SocketError = {

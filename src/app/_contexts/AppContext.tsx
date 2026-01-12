@@ -24,11 +24,9 @@ type AppContextValue = {
   } | null;
   isSubscriptionLoading: boolean;
 
-  // Token/Usage state
+  // Token state (simplified - just a balance)
   tokensAvailable: number;
-  tokensUsed: number;
-  tokensLimit: number;
-  isUsageLoading: boolean;
+  isTokenLoading: boolean;
 
   // Combined loading state
   isLoading: boolean;
@@ -68,12 +66,12 @@ export function AppContextProvider({
     enabled: !!session?.user,
   });
 
-  // Usage quota query (only when authenticated)
+  // Token balance query (only when authenticated)
   const {
-    data: usageData,
-    isLoading: isUsageLoading,
-    refetch: refetchUsage,
-  } = api.user.getUsageQuota.useQuery(undefined, {
+    data: tokenData,
+    isLoading: isTokenLoading,
+    refetch: refetchTokens,
+  } = api.user.getTokenBalance.useQuery(undefined, {
     enabled: !!session?.user,
   });
 
@@ -81,13 +79,13 @@ export function AppContextProvider({
   const refetchSession = useCallback(async () => {
     await refetchAuth();
     // These will auto-refetch when session changes due to enabled condition
-    await Promise.all([refetchSubscription(), refetchUsage()]);
-  }, [refetchAuth, refetchSubscription, refetchUsage]);
+    await Promise.all([refetchSubscription(), refetchTokens()]);
+  }, [refetchAuth, refetchSubscription, refetchTokens]);
 
   const value = useMemo<AppContextValue>(() => {
     const user = session?.user ?? null;
     const subscription = subscriptionData?.data ?? null;
-    const usage = usageData?.data ?? null;
+    const tokenBalance = tokenData?.data?.tokenBalance ?? 0;
 
     return {
       // Auth
@@ -114,15 +112,13 @@ export function AppContextProvider({
       isSubscriptionLoading: !!session?.user && isSubscriptionLoading,
 
       // Tokens
-      tokensAvailable: usage ? usage.tokensLimit - usage.tokensUsed : 0,
-      tokensUsed: usage?.tokensUsed ?? 0,
-      tokensLimit: usage?.tokensLimit ?? 0,
-      isUsageLoading: !!session?.user && isUsageLoading,
+      tokensAvailable: tokenBalance,
+      isTokenLoading: !!session?.user && isTokenLoading,
 
       // Combined
       isLoading:
         isAuthLoading ||
-        (!!session?.user && (isSubscriptionLoading || isUsageLoading)),
+        (!!session?.user && (isSubscriptionLoading || isTokenLoading)),
 
       // Actions
       refetchSession,
@@ -132,8 +128,8 @@ export function AppContextProvider({
     isAuthLoading,
     subscriptionData,
     isSubscriptionLoading,
-    usageData,
-    isUsageLoading,
+    tokenData,
+    isTokenLoading,
     refetchSession,
   ]);
 

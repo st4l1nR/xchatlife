@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { tokenService } from "@/server/services/tokenService";
 
 export const userRouter = createTRPCRouter({
   getSubscription: protectedProcedure.query(async ({ ctx }) => {
@@ -8,15 +9,15 @@ export const userRouter = createTRPCRouter({
     return { success: true, data: subscription };
   }),
 
-  getUsageQuota: protectedProcedure.query(async ({ ctx }) => {
-    const now = new Date();
-    const usage = await ctx.db.usage_quota.findFirst({
-      where: {
-        userId: ctx.session.user.id,
-        periodStart: { lte: now },
-        periodEnd: { gte: now },
-      },
-    });
-    return { success: true, data: usage };
+  getTokenBalance: protectedProcedure.query(async ({ ctx }) => {
+    const tokenBalance = await tokenService.getBalance(ctx.session.user.id);
+    return { success: true, data: { tokenBalance } };
+  }),
+
+  getTokenTransactions: protectedProcedure.query(async ({ ctx }) => {
+    const transactions = await tokenService.getTransactionHistory(
+      ctx.session.user.id,
+    );
+    return { success: true, data: transactions };
   }),
 });

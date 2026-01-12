@@ -110,12 +110,7 @@ export function Dialog({
         style={containerBounds ? containerStyle : undefined}
       >
         <div
-          className={clsx(
-            "min-h-full sm:p-4",
-            containerBounds
-              ? "flex items-start justify-center"
-              : "grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
-          )}
+          className={clsx("flex min-h-full items-center justify-center sm:p-4")}
           style={
             containerBounds
               ? {

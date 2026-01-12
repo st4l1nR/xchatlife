@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X, Mail, Lock } from "lucide-react";
+import { X, Mail, Lock, Shield } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Dialog } from "@/app/_components/atoms/dialog";
@@ -15,12 +16,19 @@ import { Input, InputGroup } from "@/app/_components/atoms/input";
 import { Field, Label, ErrorMessage } from "@/app/_components/atoms/fieldset";
 import { authClient } from "@/server/better-auth/client";
 import { useApp } from "@/app/_contexts/AppContext";
+import { api } from "@/trpc/react";
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export type DialogAuthVariant = "sign-in" | "sign-up" | "reset-password";
+
+export type InvitationData = {
+  token: string;
+  email: string;
+  role: string;
+};
 
 export type DialogAuthProps = {
   className?: string;
@@ -29,6 +37,8 @@ export type DialogAuthProps = {
   variant: DialogAuthVariant;
   onVariantChange?: (variant: DialogAuthVariant) => void;
   backgroundImage?: string;
+  invitation?: InvitationData;
+  onSuccessRedirect?: string;
 };
 
 // ============================================================================
@@ -89,6 +99,15 @@ const XIcon = () => (
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
 );
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+const formatRole = (role: string) => {
+  if (role === "superadmin") return "Super Admin";
+  return role.charAt(0).toUpperCase() + role.slice(1);
+};
 
 // ============================================================================
 // Form Components
@@ -163,16 +182,34 @@ const SignInForm: React.FC<SignInFormProps> = ({
 type SignUpFormProps = {
   onSubmit: (data: SignUpFormData) => Promise<void>;
   isLoading: boolean;
+  initialEmail?: string;
+  emailReadOnly?: boolean;
 };
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({
+  onSubmit,
+  isLoading,
+  initialEmail,
+  emailReadOnly,
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: initialEmail ?? "",
+    },
   });
+
+  // Update email if initialEmail changes
+  useEffect(() => {
+    if (initialEmail) {
+      setValue("email", initialEmail);
+    }
+  }, [initialEmail, setValue]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -185,6 +222,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
             placeholder="E-mail"
             {...register("email")}
             data-invalid={errors.email ? true : undefined}
+            readOnly={emailReadOnly}
+            className={emailReadOnly ? "bg-muted cursor-not-allowed" : ""}
           />
         </InputGroup>
         {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
@@ -253,6 +292,34 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         Send Reset Link
       </Button>
     </form>
+  );
+};
+
+// ============================================================================
+// Invitation Banner
+// ============================================================================
+
+type InvitationBannerProps = {
+  email: string;
+  role: string;
+};
+
+const InvitationBanner: React.FC<InvitationBannerProps> = ({ email, role }) => {
+  return (
+    <div className="bg-primary/10 border-primary/20 mb-6 rounded-lg border p-4">
+      <div className="flex items-start gap-3">
+        <Shield className="text-primary mt-0.5 size-5 shrink-0" />
+        <div>
+          <p className="text-foreground text-sm font-medium">
+            You&apos;ve been invited!
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            Create your account for <strong>{email}</strong> with{" "}
+            <strong>{formatRole(role)}</strong> privileges.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -327,9 +394,51 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
   variant,
   onVariantChange,
   backgroundImage = "/images/girl-poster.webp",
+  invitation,
+  onSuccessRedirect,
 }) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { refetchSession } = useApp();
+
+  const markInvitationUsed = api.invitation.markUsed.useMutation();
+  const checkAndApplyRole = api.invitation.checkAndApplyRole.useMutation();
+
+  const handleSuccessfulAuth = async (userId?: string) => {
+    await refetchSession();
+
+    // If this is an invitation signup, mark the invitation as used
+    if (invitation && userId) {
+      try {
+        await markInvitationUsed.mutateAsync({
+          token: invitation.token,
+          userId,
+        });
+        toast.success(
+          `Account created with ${formatRole(invitation.role)} privileges!`,
+        );
+      } catch {
+        // Role assignment failed but user was created
+        toast.success("Account created successfully!");
+      }
+    } else {
+      toast.success(
+        variant === "sign-in"
+          ? "Signed in successfully!"
+          : "Account created successfully!",
+      );
+    }
+
+    onClose();
+
+    // Redirect after successful auth
+    if (onSuccessRedirect) {
+      router.push(onSuccessRedirect);
+    } else if (invitation) {
+      // Invited users go to dashboard
+      router.push("/dashboard");
+    }
+  };
 
   const handleSignIn = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -341,9 +450,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       if (result.error) {
         toast.error(result.error.message ?? "Sign in failed");
       } else {
-        await refetchSession();
-        toast.success("Signed in successfully!");
-        onClose();
+        await handleSuccessfulAuth();
       }
     } catch {
       toast.error("An error occurred. Please try again.");
@@ -363,9 +470,9 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       if (result.error) {
         toast.error(result.error.message ?? "Sign up failed");
       } else {
-        await refetchSession();
-        toast.success("Account created successfully!");
-        onClose();
+        // Get the user ID from the result
+        const userId = result.data?.user?.id;
+        await handleSuccessfulAuth(userId);
       }
     } catch {
       toast.error("An error occurred. Please try again.");
@@ -393,9 +500,18 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
   ) => {
     setIsLoading(true);
     try {
+      // Store invitation token in sessionStorage for OAuth callback
+      if (invitation) {
+        sessionStorage.setItem("pendingInviteToken", invitation.token);
+      }
+
+      const callbackURL = invitation
+        ? `/auth/callback?invite=${invitation.token}`
+        : (onSuccessRedirect ?? "/");
+
       await authClient.signIn.social({
         provider,
-        callbackURL: "/",
+        callbackURL,
       });
     } catch {
       toast.error("Social login failed. Please try again.");
@@ -405,7 +521,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
 
   const titles: Record<DialogAuthVariant, string> = {
     "sign-in": "Sign in",
-    "sign-up": "Create Account",
+    "sign-up": invitation ? "Accept Invitation" : "Create Account",
     "reset-password": "Reset Password",
   };
 
@@ -416,10 +532,10 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       onClose={onClose}
       size="3xl"
     >
-      <div className="flex min-h-125">
+      <div className="flex">
         {/* Left side - Background image */}
         <div
-          className="relative hidden w-1/2 md:block"
+          className="relative hidden min-h-[500px] w-1/2 md:block"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",
@@ -428,7 +544,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
         />
 
         {/* Right side - Form content */}
-        <div className="relative flex w-full flex-col p-8 md:w-1/2">
+        <div className="relative flex w-full flex-col p-6 sm:p-8 md:w-1/2">
           {/* Close button */}
           <button
             type="button"
@@ -442,6 +558,11 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
           <h2 className="text-foreground mb-6 text-center text-2xl font-bold">
             {titles[variant]}
           </h2>
+
+          {/* Invitation Banner */}
+          {invitation && variant === "sign-up" && (
+            <InvitationBanner email={invitation.email} role={invitation.role} />
+          )}
 
           {/* Form */}
           <div className="flex-1">
@@ -464,7 +585,12 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
 
             {variant === "sign-up" && (
               <>
-                <SignUpForm onSubmit={handleSignUp} isLoading={isLoading} />
+                <SignUpForm
+                  onSubmit={handleSignUp}
+                  isLoading={isLoading}
+                  initialEmail={invitation?.email}
+                  emailReadOnly={!!invitation}
+                />
                 <div className="mt-6">
                   <SocialButtons
                     mode="sign-up"
@@ -504,7 +630,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
               </p>
             )}
 
-            {variant === "sign-up" && (
+            {variant === "sign-up" && !invitation && (
               <p className="text-muted-foreground text-sm">
                 Already have an account?{" "}
                 <button

@@ -2,9 +2,9 @@
 
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
-import SidebarHome from "../organisms/SidebarHome";
-import NavbarHome from "../organisms/NavbarHome";
-import NavbarMobileHome from "../organisms/NavbarMobileHome";
+import SidebarDashboard from "../organisms/SidebarDashboard";
+import NavbarDashboard from "../organisms/NavbarDashboard";
+import NavbarMobileDashboard from "../organisms/NavbarMobileDashboard";
 
 export type TemplateDashboardProps = {
   /**
@@ -18,12 +18,12 @@ export type TemplateDashboardProps = {
 };
 
 /**
- * TemplateDashboard - Main dashboard layout template
+ * TemplateDashboard - Admin dashboard layout template
  *
  * A comprehensive dashboard layout combining:
- * - Collapsible sidebar navigation (SidebarHome) - Desktop only
- * - Mobile bottom navigation (NavbarMobileHome) - Mobile only
- * - Top navigation bar with user menu (NavbarHome) - Desktop only
+ * - Collapsible sidebar navigation (SidebarDashboard) - Desktop only
+ * - Mobile bottom navigation (NavbarMobileDashboard) - Mobile only
+ * - Top navigation bar with search and user menu (NavbarDashboard)
  * - Main content area for page content
  *
  * Fully self-contained - automatically fetches user information from better-auth session
@@ -41,19 +41,20 @@ export const TemplateDashboard = ({
   return (
     <div className={clsx("bg-background flex h-screen", className)}>
       {/* Sidebar - Desktop only */}
-      {!isMobile && <SidebarHome />}
+      {!isMobile && <SidebarDashboard />}
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Navbar */}
-        <NavbarHome />
+        <NavbarDashboard />
 
         {/* Page Content */}
         <main className="bg-background flex flex-1 flex-col overflow-auto">
           {children}
         </main>
-        {/* Mobile Bottom Navigation - Mobile only, sticky inside main */}
-        {isMobile && <NavbarMobileHome />}
+
+        {/* Mobile Bottom Navigation - Mobile only */}
+        {isMobile && <NavbarMobileDashboard />}
       </div>
     </div>
   );

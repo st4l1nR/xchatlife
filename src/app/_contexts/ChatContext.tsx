@@ -291,11 +291,11 @@ export function ChatContextProvider({
   );
 
   const handleTokensUpdated = useCallback(
-    (_data: { tokensUsed: number; tokensAvailable: number }) => {
-      // Invalidate usage query to refetch token data from server
-      void utils.user.getUsageQuota.invalidate();
+    (_data: { tokenBalance: number }) => {
+      // Invalidate token balance query to refetch token data from server
+      void utils.user.getTokenBalance.invalidate();
     },
-    [utils.user.getUsageQuota],
+    [utils.user.getTokenBalance],
   );
 
   const handleSocketError = useCallback(

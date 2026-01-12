@@ -18,13 +18,24 @@ export function Pagination({
 
 export function PaginationPrevious({
   href = null,
+  onClick,
+  disabled,
   className,
   children = "Previous",
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+}: React.PropsWithChildren<{
+  href?: string | null;
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+}>) {
   return (
     <span className={clsx(className, "grow basis-0")}>
       <Button
-        {...(href === null ? { disabled: true } : { href })}
+        {...(onClick
+          ? { onClick, disabled }
+          : href === null
+            ? { disabled: true }
+            : { href })}
         plain
         aria-label="Previous page"
       >
@@ -50,13 +61,24 @@ export function PaginationPrevious({
 
 export function PaginationNext({
   href = null,
+  onClick,
+  disabled,
   className,
   children = "Next",
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+}: React.PropsWithChildren<{
+  href?: string | null;
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+}>) {
   return (
     <span className={clsx(className, "flex grow basis-0 justify-end")}>
       <Button
-        {...(href === null ? { disabled: true } : { href })}
+        {...(onClick
+          ? { onClick, disabled }
+          : href === null
+            ? { disabled: true }
+            : { href })}
         plain
         aria-label="Next page"
       >
@@ -94,17 +116,19 @@ export function PaginationList({
 
 export function PaginationPage({
   href,
+  onClick,
   className,
   current = false,
   children,
 }: React.PropsWithChildren<{
-  href: string;
+  href?: string;
+  onClick?: () => void;
   className?: string;
   current?: boolean;
 }>) {
   return (
     <Button
-      href={href}
+      {...(onClick ? { onClick } : { href })}
       plain
       aria-label={`Page ${children}`}
       aria-current={current ? "page" : undefined}

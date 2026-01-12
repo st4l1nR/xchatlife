@@ -9,7 +9,7 @@ const meta = {
     nextjs: {
       appDirectory: true,
       navigation: {
-        pathname: "/",
+        pathname: "/dashboard",
       },
     },
   },
@@ -33,7 +33,7 @@ export const Default: Story = {
           Dashboard Content
         </h1>
         <p className="text-muted-foreground mt-2">
-          This is the main content area of the dashboard.
+          This is the main content area of the admin dashboard.
         </p>
       </div>
     ),
@@ -46,7 +46,7 @@ export const Mobile: Story = {
       <div className="p-4">
         <h1 className="text-foreground text-xl font-bold">Mobile Dashboard</h1>
         <p className="text-muted-foreground mt-2">
-          This is the mobile view of the dashboard.
+          This is the mobile view of the admin dashboard.
         </p>
       </div>
     ),
@@ -58,37 +58,37 @@ export const Mobile: Story = {
   },
 };
 
-export const ChatsPage: Story = {
+export const RolesPage: Story = {
   args: {
     children: (
       <div className="p-8">
-        <h1 className="text-foreground text-2xl font-bold">Chats</h1>
-        <p className="text-muted-foreground mt-2">Your conversations</p>
+        <h1 className="text-foreground text-2xl font-bold">Roles</h1>
+        <p className="text-muted-foreground mt-2">Manage user roles</p>
       </div>
     ),
   },
   parameters: {
     nextjs: {
       navigation: {
-        pathname: "/chats",
+        pathname: "/dashboard/roles",
       },
     },
   },
 };
 
-export const MatchesPage: Story = {
+export const UsersPage: Story = {
   args: {
     children: (
       <div className="p-8">
-        <h1 className="text-foreground text-2xl font-bold">Matches</h1>
-        <p className="text-muted-foreground mt-2">Your matches</p>
+        <h1 className="text-foreground text-2xl font-bold">Users</h1>
+        <p className="text-muted-foreground mt-2">Manage users</p>
       </div>
     ),
   },
   parameters: {
     nextjs: {
       navigation: {
-        pathname: "/matches",
+        pathname: "/dashboard/users",
       },
     },
   },
