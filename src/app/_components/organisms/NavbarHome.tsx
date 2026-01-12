@@ -4,6 +4,7 @@ import {
   forwardRef,
   useState,
   useEffect,
+  Suspense,
   type ComponentPropsWithoutRef,
 } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -62,10 +63,13 @@ export type NavbarHomeProps = {
  *
  * Uses semantic colors that automatically adapt to light/dark themes.
  */
-export const NavbarHome = forwardRef<
+const NavbarHomeContent = forwardRef<
   HTMLElement,
   NavbarHomeProps & Omit<ComponentPropsWithoutRef<"nav">, "children">
->(function NavbarHome({ className, showOnlineStatus = true, ...props }, ref) {
+>(function NavbarHomeContent(
+  { className, showOnlineStatus = true, ...props },
+  ref,
+) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -335,6 +339,24 @@ export const NavbarHome = forwardRef<
         </div>
       )}
     </nav>
+  );
+});
+
+export const NavbarHome = forwardRef<
+  HTMLElement,
+  NavbarHomeProps & Omit<ComponentPropsWithoutRef<"nav">, "children">
+>(function NavbarHome(props, ref) {
+  return (
+    <Suspense
+      fallback={
+        <nav className="border-border bg-sidebar flex h-[60px] items-center border-b px-4 sm:px-6">
+          <div className="flex-1" />
+          <div className="bg-muted h-9 w-9 animate-pulse rounded-full" />
+        </nav>
+      }
+    >
+      <NavbarHomeContent ref={ref} {...props} />
+    </Suspense>
   );
 });
 
