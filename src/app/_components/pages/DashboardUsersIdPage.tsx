@@ -76,7 +76,8 @@ function formatRelativeTime(date: Date): string {
   if (diffInSeconds < 60) return "Just now";
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  if (diffInSeconds < 604800)
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
 
   return formatDate(date);
 }
@@ -176,7 +177,9 @@ function DashboardUsersIdPageContent({
       (activity) => ({
         id: activity.id,
         category: getActivityCategory(activity.transactionType),
-        title: activity.description ?? `${capitalize(activity.transactionType)} transaction`,
+        title:
+          activity.description ??
+          `${capitalize(activity.transactionType)} transaction`,
         description:
           activity.amount !== 0
             ? `${activity.amount > 0 ? "+" : ""}${activity.amount} tokens`

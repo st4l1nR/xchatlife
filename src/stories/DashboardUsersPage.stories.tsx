@@ -33,7 +33,10 @@ const generateMockUsers = (count: number): TableUserItem[] => {
 
   return Array.from({ length: count }, (_, i) => {
     const name = names[i % names.length] ?? `User ${i + 1}`;
-    const username = name.toLowerCase().replace(/\s+/g, ".").replace(/mr\.\s*/i, "");
+    const username = name
+      .toLowerCase()
+      .replace(/\s+/g, ".")
+      .replace(/mr\.\s*/i, "");
 
     return {
       id: `user-${i + 1}`,

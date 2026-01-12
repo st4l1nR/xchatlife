@@ -179,8 +179,7 @@ export const Interactive: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Interactive example demonstrating selecting and removing tags.",
+        story: "Interactive example demonstrating selecting and removing tags.",
       },
     },
   },

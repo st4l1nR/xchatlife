@@ -295,7 +295,9 @@ export const characterRouter = createTRPCRouter({
         limit: z.number().min(1).max(100).default(10),
         search: z.string().optional(),
         style: z.nativeEnum(CharacterStyle).optional(),
-        sortBy: z.enum(["createdAt", "likeCount", "chatCount"]).default("createdAt"),
+        sortBy: z
+          .enum(["createdAt", "likeCount", "chatCount"])
+          .default("createdAt"),
         sortOrder: z.enum(["asc", "desc"]).default("desc"),
       }),
     )
@@ -344,7 +346,8 @@ export const characterRouter = createTRPCRouter({
             style: character.style.toLowerCase() as "anime" | "realistic",
             likes: character.likeCount,
             chats: character.chatCount,
-            status: character.isPublic && character.isActive ? "published" : "draft",
+            status:
+              character.isPublic && character.isActive ? "published" : "draft",
             createdAt: character.createdAt,
             createdBy: character.user.name ?? character.user.email,
           })),

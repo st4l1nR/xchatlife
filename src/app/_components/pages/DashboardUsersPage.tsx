@@ -10,11 +10,7 @@ import DialogCreateUpdateUser from "../organisms/DialogCreateUpdateUser";
 import DialogDeleteUser from "../organisms/DialogDeleteUser";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
-import {
-  Listbox,
-  ListboxOption,
-  ListboxLabel,
-} from "../atoms/listbox";
+import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
 import { api } from "@/trpc/react";
 import type {
   TableUserItem,
@@ -200,7 +196,9 @@ function DashboardUsersPageContent({
         filtered = filtered.filter((user) => user.role === roleParam);
       }
       if (subscriptionParam) {
-        filtered = filtered.filter((user) => user.subscription === subscriptionParam);
+        filtered = filtered.filter(
+          (user) => user.subscription === subscriptionParam,
+        );
       }
       if (statusParam) {
         filtered = filtered.filter((user) => user.status === statusParam);
@@ -237,7 +235,11 @@ function DashboardUsersPageContent({
         // Cast to access additional fields from API
         const userWithRelations = user as typeof user & {
           customRole?: { id: string; name: string } | null;
-          subscription?: { id: string; billingCycle: string; status: string } | null;
+          subscription?: {
+            id: string;
+            billingCycle: string;
+            status: string;
+          } | null;
         };
 
         // Map billingCycle to subscription type
@@ -266,7 +268,9 @@ function DashboardUsersPageContent({
     // Apply client-side filtering for subscription/status (role is filtered by API)
     let filtered = users;
     if (subscriptionParam) {
-      filtered = filtered.filter((user) => user.subscription === subscriptionParam);
+      filtered = filtered.filter(
+        (user) => user.subscription === subscriptionParam,
+      );
     }
     if (statusParam) {
       filtered = filtered.filter((user) => user.status === statusParam);
@@ -337,7 +341,10 @@ function DashboardUsersPageContent({
           </Listbox>
 
           {/* Subscription Filter */}
-          <Listbox value={subscriptionParam} onChange={handleSubscriptionChange}>
+          <Listbox
+            value={subscriptionParam}
+            onChange={handleSubscriptionChange}
+          >
             {SUBSCRIPTION_FILTER_OPTIONS.map((option) => (
               <ListboxOption key={option.value} value={option.value}>
                 <ListboxLabel>{option.label}</ListboxLabel>

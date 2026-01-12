@@ -18,9 +18,9 @@ export type SidebarCharactersCreateEditProps = {
   className?: string;
 };
 
-const SidebarCharactersCreateEdit: React.FC<SidebarCharactersCreateEditProps> = ({
-  className,
-}) => {
+const SidebarCharactersCreateEdit: React.FC<
+  SidebarCharactersCreateEditProps
+> = ({ className }) => {
   return (
     <div className={clsx("flex flex-col", className)}>
       <h3 className="text-muted-foreground mb-2 px-3 text-xs font-medium">
@@ -32,10 +32,10 @@ const SidebarCharactersCreateEdit: React.FC<SidebarCharactersCreateEditProps> = 
             key={tab.key}
             className={({ selected }) =>
               clsx(
-                "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium outline-none transition-colors",
+                "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors outline-none",
                 selected
                   ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
+                  : "text-foreground hover:bg-muted",
               )
             }
           >
@@ -44,7 +44,9 @@ const SidebarCharactersCreateEdit: React.FC<SidebarCharactersCreateEditProps> = 
                 <tab.icon
                   className={clsx(
                     "h-5 w-5 shrink-0",
-                    selected ? "text-primary-foreground" : "text-muted-foreground"
+                    selected
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span>{tab.label}</span>

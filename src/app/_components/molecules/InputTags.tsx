@@ -41,7 +41,7 @@ const InputTags: React.FC<InputTagsProps> = ({
   const filteredOptions = useMemo(() => {
     if (query === "") return availableOptions;
     return availableOptions.filter((option) =>
-      option.label.toLowerCase().includes(query.toLowerCase())
+      option.label.toLowerCase().includes(query.toLowerCase()),
     );
   }, [availableOptions, query]);
 
@@ -55,14 +55,14 @@ const InputTags: React.FC<InputTagsProps> = ({
       onChange([...value, optionValue]);
       setQuery("");
     },
-    [onChange, value, maxItems]
+    [onChange, value, maxItems],
   );
 
   const handleRemove = useCallback(
     (optionValue: string) => {
       onChange(value.filter((v) => v !== optionValue));
     },
-    [onChange, value]
+    [onChange, value],
   );
 
   const isMaxReached = value.length >= maxItems;
@@ -122,7 +122,7 @@ const InputTags: React.FC<InputTagsProps> = ({
                 className={clsx(
                   "size-5 sm:size-4",
                   "text-muted-foreground",
-                  disabled && "opacity-50"
+                  disabled && "opacity-50",
                 )}
               />
             </Headless.ComboboxButton>
@@ -145,7 +145,7 @@ const InputTags: React.FC<InputTagsProps> = ({
               // Shadows
               "ring-border shadow-lg ring-1",
               // Transitions
-              "transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none"
+              "transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none",
             )}
           >
             {filteredOptions.length === 0 ? (
@@ -165,7 +165,7 @@ const InputTags: React.FC<InputTagsProps> = ({
                     // Focus
                     "data-focus:bg-primary data-focus:text-primary-foreground outline-hidden",
                     // Disabled
-                    "data-disabled:opacity-50"
+                    "data-disabled:opacity-50",
                   )}
                 >
                   {option.label}
@@ -185,7 +185,7 @@ const InputTags: React.FC<InputTagsProps> = ({
               className={clsx(
                 "inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm",
                 "bg-primary/10 text-primary",
-                disabled && "opacity-50"
+                disabled && "opacity-50",
               )}
             >
               {option.label}

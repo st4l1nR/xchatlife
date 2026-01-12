@@ -10,11 +10,7 @@ import InputTags, { type TagOption } from "../molecules/InputTags";
 import { Input } from "../atoms/input";
 import { Textarea } from "../atoms/textarea";
 import { Field, Label, ErrorMessage } from "../atoms/fieldset";
-import {
-  Listbox,
-  ListboxOption,
-  ListboxLabel,
-} from "../atoms/listbox";
+import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
 
 export type SelectOption = {
   value: string;
@@ -97,7 +93,9 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               <CardMediaUpload
                 label="Poster image"
                 aspectRatio="3:4"
-                accept={{ "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"] }}
+                accept={{
+                  "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
+                }}
                 defaultMedia={defaultPosterImage}
                 defaultMediaType="image"
                 onChange={(file) => field.onChange(file)}
@@ -192,7 +190,9 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               data-invalid={errors.description ? true : undefined}
             />
             {errors.description && (
-              <ErrorMessage>{errors.description.message as string}</ErrorMessage>
+              <ErrorMessage>
+                {errors.description.message as string}
+              </ErrorMessage>
             )}
           </Field>
         </div>
@@ -200,7 +200,9 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
 
       {/* Attributes Section */}
       <div className="bg-card rounded-2xl p-6">
-        <h3 className="text-foreground mb-4 text-lg font-semibold">Attributes</h3>
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
+          Attributes
+        </h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Style */}
           <Field>
@@ -292,7 +294,9 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               )}
             />
             {errors.personality && (
-              <ErrorMessage>{errors.personality.message as string}</ErrorMessage>
+              <ErrorMessage>
+                {errors.personality.message as string}
+              </ErrorMessage>
             )}
           </Field>
 
@@ -467,7 +471,9 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               )}
             />
             {errors.relationship && (
-              <ErrorMessage>{errors.relationship.message as string}</ErrorMessage>
+              <ErrorMessage>
+                {errors.relationship.message as string}
+              </ErrorMessage>
             )}
           </Field>
         </div>
