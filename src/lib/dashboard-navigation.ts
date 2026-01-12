@@ -43,7 +43,7 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
     icon: ShieldCheck,
     children: [
       { name: "View All", href: "/dashboard/roles" },
-      { name: "Create", href: "/dashboard/roles/create" },
+      { name: "Create", href: "/dashboard/roles?create=true" },
     ],
   },
   {

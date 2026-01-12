@@ -234,6 +234,77 @@ export const adminRouter = createTRPCRouter({
     }),
 
   /**
+   * Get a single user by ID (for user detail page)
+   */
+  getUserById: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+          language: true,
+          tokenBalance: true,
+          createdAt: true,
+          customRole: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          subscription: {
+            select: {
+              id: true,
+              billingCycle: true,
+              status: true,
+            },
+          },
+          _count: {
+            select: {
+              character: true,
+              chat: true,
+              visual_novel: true,
+              collection: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // Fetch recent token transactions for activity timeline
+      const recentTransactions = await ctx.db.token_transaction.findMany({
+        where: { userId: input.id },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        select: {
+          id: true,
+          transactionType: true,
+          amount: true,
+          description: true,
+          createdAt: true,
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          user,
+          activities: recentTransactions,
+        },
+      };
+    }),
+
+  /**
    * Get all users (for user management)
    */
   getUsers: adminProcedure
@@ -242,11 +313,11 @@ export const adminRouter = createTRPCRouter({
         page: z.number().min(1).default(1),
         limit: z.number().min(1).max(100).default(20),
         search: z.string().optional(),
-        role: z.string().optional(),
+        customRoleId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, search, role } = input;
+      const { page, limit, search, customRoleId } = input;
       const skip = (page - 1) * limit;
 
       const where = {
@@ -256,7 +327,7 @@ export const adminRouter = createTRPCRouter({
             { email: { contains: search, mode: "insensitive" as const } },
           ],
         }),
-        ...(role && { role }),
+        ...(customRoleId && { customRoleId }),
       };
 
       const [users, total] = await Promise.all([
@@ -270,6 +341,19 @@ export const adminRouter = createTRPCRouter({
             role: true,
             createdAt: true,
             emailVerified: true,
+            customRole: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            subscription: {
+              select: {
+                id: true,
+                billingCycle: true,
+                status: true,
+              },
+            },
           },
           skip,
           take: limit,
@@ -345,6 +429,45 @@ export const adminRouter = createTRPCRouter({
       return {
         success: true,
         message: "User role updated successfully",
+      };
+    }),
+
+  /**
+   * Delete a user
+   */
+  deleteUser: adminProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = input;
+
+      // Prevent self-deletion
+      if (userId === ctx.session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You cannot delete your own account",
+        });
+      }
+
+      // Check if user exists
+      const existingUser = await ctx.db.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!existingUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // Delete the user
+      await ctx.db.user.delete({
+        where: { id: userId },
+      });
+
+      return {
+        success: true,
+        message: "User deleted successfully",
       };
     }),
 });

@@ -11,6 +11,25 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Find the CUSTOMER role and assign it to new users
+          const customerRole = await db.role_custom.findUnique({
+            where: { name: "CUSTOMER" },
+          });
+
+          if (customerRole) {
+            await db.user.update({
+              where: { id: user.id },
+              data: { customRoleId: customerRole.id },
+            });
+          }
+        },
+      },
+    },
+  },
   socialProviders: {
     ...(env.BETTER_AUTH_GITHUB_CLIENT_ID &&
       env.BETTER_AUTH_GITHUB_CLIENT_SECRET && {

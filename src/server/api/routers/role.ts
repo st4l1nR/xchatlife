@@ -2,25 +2,12 @@ import { z } from "zod";
 import { createTRPCRouter, adminProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
-// Permission categories matching the frontend dialog
-const PERMISSION_KEYS = [
-  "user",
-  "character",
-  "chat",
-  "media",
-  "content",
-  "visual_novel",
-  "ticket",
-  "subscription",
-  "affiliate",
-  "auth",
-] as const;
-
-// Zod schema for permission value
+// Zod schema for permission value (CRUD order)
 const permissionValueSchema = z.object({
-  read: z.boolean(),
-  write: z.boolean(),
   create: z.boolean(),
+  read: z.boolean(),
+  update: z.boolean(),
+  delete: z.boolean(),
 });
 
 // Zod schema for all permissions

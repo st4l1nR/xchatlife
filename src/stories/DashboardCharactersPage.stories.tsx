@@ -1,18 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import DashboardUsersPage from "@/app/_components/pages/DashboardUsersPage";
-import type { TableUserItem } from "@/app/_components/organisms/TableUser";
+import DashboardCharactersPage from "@/app/_components/pages/DashboardCharactersPage";
+import type { TableCharacterItem } from "@/app/_components/organisms/TableCharacter";
 
-// Generate mock users for testing
-const generateMockUsers = (count: number): TableUserItem[] => {
-  const roles = ["default", "admin", "superadmin"] as const;
-  const subscriptions = ["yearly", "monthly", "none"] as const;
-  const statuses = ["pending", "active", "inactive"] as const;
+// Generate mock characters for testing
+const generateMockCharacters = (count: number): TableCharacterItem[] => {
+  const styles = ["anime", "realistic"] as const;
+  const statuses = ["published", "draft"] as const;
 
   const names = [
     "Jordan Stevenson",
     "Richard Payne",
     "Jennifer Summers",
-    "Justin Richardson",
+    "Mr. Justin Richardson",
     "Nicholas Tanner",
     "Crystal Mays",
     "Mary Garcia",
@@ -31,29 +30,56 @@ const generateMockUsers = (count: number): TableUserItem[] => {
     "Ashley Thomas",
   ];
 
+  const usernames = [
+    "jordan.stevenson",
+    "richard247",
+    "summers.45",
+    "jr.3734",
+    "nicholas.t",
+    "mays.754",
+    "mary.garcia",
+    "roberts.3456",
+    "joseph.87",
+    "sarah.m",
+    "david.c",
+    "emily.w",
+    "michael.b",
+    "lisa.a",
+    "james.w",
+    "amanda.t",
+    "robert.m",
+    "jessica.l",
+    "william.d",
+    "ashley.t",
+  ];
+
+  const likesOptions = [13, 100, 1000, 3500, 1, 20, 30, 60, 80, 150, 500, 2000];
+  const chatsOptions = [12, 1000, 3000, 4000, 5000, 6000, 2000, 3000, 3000, 800, 1200, 900];
+
   return Array.from({ length: count }, (_, i) => {
-    const name = names[i % names.length] ?? `User ${i + 1}`;
-    const username = name.toLowerCase().replace(/\s+/g, ".").replace(/mr\.\s*/i, "");
+    const name = names[i % names.length] ?? `Character ${i + 1}`;
+    const username = usernames[i % usernames.length] ?? name.toLowerCase().replace(/\s+/g, ".").replace(/mr\.\s*/i, "");
 
     return {
-      id: `user-${i + 1}`,
+      id: `character-${i + 1}`,
       name,
       username,
       avatarSrc: `https://i.pravatar.cc/150?u=${username}-${i}`,
-      role: roles[i % roles.length]!,
-      subscription: subscriptions[i % subscriptions.length]!,
+      style: styles[i % styles.length]!,
+      likes: likesOptions[i % likesOptions.length]!,
+      chats: chatsOptions[i % chatsOptions.length]!,
       status: statuses[i % statuses.length]!,
     };
   });
 };
 
 // Mock data sets
-const mockUsers50 = generateMockUsers(50);
-const mockUsers10 = mockUsers50.slice(0, 10);
+const mockCharacters50 = generateMockCharacters(50);
+const mockCharacters10 = mockCharacters50.slice(0, 10);
 
-const meta: Meta<typeof DashboardUsersPage> = {
-  title: "Pages/DashboardUsersPage",
-  component: DashboardUsersPage,
+const meta: Meta<typeof DashboardCharactersPage> = {
+  title: "Pages/DashboardCharactersPage",
+  component: DashboardCharactersPage,
   parameters: {
     layout: "fullscreen",
     nextjs: {
@@ -71,18 +97,18 @@ const meta: Meta<typeof DashboardUsersPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof DashboardUsersPage>;
+type Story = StoryObj<typeof DashboardCharactersPage>;
 
 // ============================================================================
-// Default - populated with users
+// Default - populated with characters
 // ============================================================================
 export const Default: Story = {
   args: {
     mock: {
-      users: mockUsers10,
+      characters: mockCharacters10,
       pagination: {
         page: 1,
-        total: mockUsers10.length,
+        total: mockCharacters10.length,
         totalPage: 1,
         size: 10,
       },
@@ -96,7 +122,7 @@ export const Default: Story = {
 export const Loading: Story = {
   args: {
     mock: {
-      users: [],
+      characters: [],
       pagination: {
         page: 1,
         total: 0,
@@ -108,19 +134,19 @@ export const Loading: Story = {
   render: function Render() {
     return (
       <div className="bg-background min-h-screen p-6">
-        <DashboardUsersPage />
+        <DashboardCharactersPage />
       </div>
     );
   },
 };
 
 // ============================================================================
-// Empty - no users
+// Empty - no characters
 // ============================================================================
 export const Empty: Story = {
   args: {
     mock: {
-      users: [],
+      characters: [],
       pagination: {
         page: 1,
         total: 0,
@@ -137,7 +163,7 @@ export const Empty: Story = {
 export const WithPagination: Story = {
   args: {
     mock: {
-      users: mockUsers50,
+      characters: mockCharacters50,
       pagination: {
         page: 3,
         total: 50,
@@ -149,15 +175,66 @@ export const WithPagination: Story = {
 };
 
 // ============================================================================
-// FilteredByRole - showing only admins
+// FilteredByStyle - showing only anime characters
 // ============================================================================
-export const FilteredByRole: Story = {
+export const FilteredByStyleAnime: Story = {
   args: {
     mock: {
-      users: mockUsers50.filter((u) => u.role === "admin"),
+      characters: mockCharacters50.filter((c) => c.style === "anime"),
       pagination: {
         page: 1,
-        total: mockUsers50.filter((u) => u.role === "admin").length,
+        total: mockCharacters50.filter((c) => c.style === "anime").length,
+        totalPage: 3,
+        size: 10,
+      },
+    },
+  },
+};
+
+// ============================================================================
+// FilteredByStyle - showing only realistic characters
+// ============================================================================
+export const FilteredByStyleRealistic: Story = {
+  args: {
+    mock: {
+      characters: mockCharacters50.filter((c) => c.style === "realistic"),
+      pagination: {
+        page: 1,
+        total: mockCharacters50.filter((c) => c.style === "realistic").length,
+        totalPage: 3,
+        size: 10,
+      },
+    },
+  },
+};
+
+// ============================================================================
+// FilteredByStatus - showing only published characters
+// ============================================================================
+export const FilteredByStatusPublished: Story = {
+  args: {
+    mock: {
+      characters: mockCharacters50.filter((c) => c.status === "published"),
+      pagination: {
+        page: 1,
+        total: mockCharacters50.filter((c) => c.status === "published").length,
+        totalPage: 3,
+        size: 10,
+      },
+    },
+  },
+};
+
+// ============================================================================
+// SortedByLikes - sorted by most likes
+// ============================================================================
+export const SortedByLikes: Story = {
+  args: {
+    mock: {
+      characters: [...mockCharacters10].sort((a, b) => b.likes - a.likes),
+      pagination: {
+        page: 1,
+        total: mockCharacters10.length,
         totalPage: 1,
         size: 10,
       },
@@ -166,16 +243,16 @@ export const FilteredByRole: Story = {
 };
 
 // ============================================================================
-// FilteredByStatus - showing only active users
+// SortedByChats - sorted by most chats
 // ============================================================================
-export const FilteredByStatus: Story = {
+export const SortedByChats: Story = {
   args: {
     mock: {
-      users: mockUsers50.filter((u) => u.status === "active"),
+      characters: [...mockCharacters10].sort((a, b) => b.chats - a.chats),
       pagination: {
         page: 1,
-        total: mockUsers50.filter((u) => u.status === "active").length,
-        totalPage: 2,
+        total: mockCharacters10.length,
+        totalPage: 1,
         size: 10,
       },
     },
@@ -188,10 +265,10 @@ export const FilteredByStatus: Story = {
 export const MobileView: Story = {
   args: {
     mock: {
-      users: mockUsers10,
+      characters: mockCharacters10,
       pagination: {
         page: 1,
-        total: mockUsers10.length,
+        total: mockCharacters10.length,
         totalPage: 1,
         size: 10,
       },
@@ -210,10 +287,10 @@ export const MobileView: Story = {
 export const TabletView: Story = {
   args: {
     mock: {
-      users: mockUsers10,
+      characters: mockCharacters10,
       pagination: {
         page: 1,
-        total: mockUsers10.length,
+        total: mockCharacters10.length,
         totalPage: 1,
         size: 10,
       },
@@ -227,15 +304,15 @@ export const TabletView: Story = {
 };
 
 // ============================================================================
-// WithoutAvatars - users without avatar images
+// WithoutAvatars - characters without avatar images
 // ============================================================================
 export const WithoutAvatars: Story = {
   args: {
     mock: {
-      users: mockUsers10.map((user) => ({ ...user, avatarSrc: undefined })),
+      characters: mockCharacters10.map((character) => ({ ...character, avatarSrc: undefined })),
       pagination: {
         page: 1,
-        total: mockUsers10.length,
+        total: mockCharacters10.length,
         totalPage: 1,
         size: 10,
       },
@@ -244,12 +321,12 @@ export const WithoutAvatars: Story = {
 };
 
 // ============================================================================
-// ManyUsers - large dataset for stress testing
+// ManyCharacters - large dataset for stress testing
 // ============================================================================
-export const ManyUsers: Story = {
+export const ManyCharacters: Story = {
   args: {
     mock: {
-      users: mockUsers50,
+      characters: mockCharacters50,
       pagination: {
         page: 1,
         total: 50,

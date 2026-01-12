@@ -36,9 +36,10 @@ const PERMISSION_CATEGORIES = [
 type PermissionKey = (typeof PERMISSION_CATEGORIES)[number]["key"];
 
 type PermissionValue = {
-  read: boolean;
-  write: boolean;
   create: boolean;
+  read: boolean;
+  update: boolean;
+  delete: boolean;
 };
 
 export type RolePermissions = Record<PermissionKey, PermissionValue>;
@@ -63,15 +64,15 @@ export type DialogCreateUpdateRoleProps = {
   onSuccess?: () => void;
 };
 
-// Create default permissions object with all false
+// Create default permissions object with all false (CRUD order)
 const createDefaultPermissions = (): RolePermissions => {
   return PERMISSION_CATEGORIES.reduce((acc, category) => {
-    acc[category.key] = { read: false, write: false, create: false };
+    acc[category.key] = { create: false, read: false, update: false, delete: false };
     return acc;
   }, {} as RolePermissions);
 };
 
-// Zod schema for form validation
+// Zod schema for form validation (CRUD order)
 const roleSchema = z.object({
   name: z
     .string()
@@ -79,9 +80,10 @@ const roleSchema = z.object({
     .max(50, "Role name must be 50 characters or less"),
   permissions: z.record(
     z.object({
-      read: z.boolean(),
-      write: z.boolean(),
       create: z.boolean(),
+      read: z.boolean(),
+      update: z.boolean(),
+      delete: z.boolean(),
     }),
   ),
 });
@@ -154,12 +156,13 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
 
   const permissions = watch("permissions");
 
-  // Calculate select all state
+  // Calculate select all state (CRUD order)
   const selectAllState = useMemo(() => {
     const allPermissions = Object.values(permissions ?? {}).flatMap((p) => [
-      p.read,
-      p.write,
       p.create,
+      p.read,
+      p.update,
+      p.delete,
     ]);
     const allTrue = allPermissions.every(Boolean);
     const allFalse = allPermissions.every((v) => !v);
@@ -169,13 +172,14 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
     return { checked: true, indeterminate: true };
   }, [permissions]);
 
-  // Handle select all toggle
+  // Handle select all toggle (CRUD order)
   const handleSelectAll = (checked: boolean) => {
     PERMISSION_CATEGORIES.forEach((category) => {
       setValue(`permissions.${category.key}`, {
-        read: checked,
-        write: checked,
         create: checked,
+        read: checked,
+        update: checked,
+        delete: checked,
       });
     });
   };
@@ -263,6 +267,23 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
                   </span>
                   <div className="flex items-center gap-6">
                     <Controller
+                      name={`permissions.${category.key}.create`}
+                      control={control}
+                      render={({ field }) => (
+                        <CheckboxField className="flex items-center gap-2">
+                          <Checkbox
+                            checked={field.value}
+                            onChange={field.onChange}
+                            color="orange"
+                            disabled={loading}
+                          />
+                          <Label className="text-muted-foreground text-sm font-normal">
+                            Create
+                          </Label>
+                        </CheckboxField>
+                      )}
+                    />
+                    <Controller
                       name={`permissions.${category.key}.read`}
                       control={control}
                       render={({ field }) => (
@@ -280,7 +301,7 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
                       )}
                     />
                     <Controller
-                      name={`permissions.${category.key}.write`}
+                      name={`permissions.${category.key}.update`}
                       control={control}
                       render={({ field }) => (
                         <CheckboxField className="flex items-center gap-2">
@@ -291,13 +312,13 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
                             disabled={loading}
                           />
                           <Label className="text-muted-foreground text-sm font-normal">
-                            Write
+                            Update
                           </Label>
                         </CheckboxField>
                       )}
                     />
                     <Controller
-                      name={`permissions.${category.key}.create`}
+                      name={`permissions.${category.key}.delete`}
                       control={control}
                       render={({ field }) => (
                         <CheckboxField className="flex items-center gap-2">
@@ -308,7 +329,7 @@ const DialogCreateUpdateRole: React.FC<DialogCreateUpdateRoleProps> = ({
                             disabled={loading}
                           />
                           <Label className="text-muted-foreground text-sm font-normal">
-                            Create
+                            Delete
                           </Label>
                         </CheckboxField>
                       )}

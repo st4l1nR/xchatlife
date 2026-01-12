@@ -51,7 +51,11 @@
       "Bash(git -C:*)",
       "Bash(pnpm tsc:*)",
       "Bash(findstr:*)",
-      "Bash(Select-String -Pattern \"DashboardUsersPage\")"
+      "Bash(Select-String -Pattern \"DashboardUsersPage\")",
+      "Bash(pnpm prisma migrate:*)",
+      "Bash(pnpm prisma db seed:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

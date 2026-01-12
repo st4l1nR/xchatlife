@@ -3,25 +3,34 @@ import {
   CharacterGender,
   CharacterStyle,
   MediaType,
+  UserRole,
 } from "../generated/prisma";
-import * as crypto from "crypto";
 import * as dotenv from "dotenv";
+import { scryptAsync } from "@noble/hashes/scrypt.js";
+import { bytesToHex, randomBytes } from "@noble/hashes/utils.js";
 
 // Load environment variables from .env file
 dotenv.config();
 
-// Password hashing function compatible with Better Auth (uses scrypt)
+// Password hashing function compatible with Better Auth (uses @noble/hashes/scrypt)
+// Must match Better Auth's config: N: 16384, r: 16, p: 1, dkLen: 64
 async function hashPassword(password: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const salt = crypto.randomBytes(16).toString("hex");
-    crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-      if (err) reject(err);
-      resolve(`${salt}:${derivedKey.toString("hex")}`);
-    });
+  const salt = bytesToHex(randomBytes(16));
+  const key = await scryptAsync(password.normalize("NFKC"), salt, {
+    N: 16384,
+    r: 16,
+    p: 1,
+    dkLen: 64,
+    maxmem: 128 * 16384 * 16 * 2,
   });
+  return `${salt}:${bytesToHex(key)}`;
 }
 
 const prisma = new PrismaClient();
+
+// Admin user credentials
+const ADMIN_EMAIL = "admin@xchatlife.com";
+const ADMIN_PASSWORD = "1234567890aA";
 
 // Target user email
 const TARGET_USER_EMAIL = "stalinramosbw@gmail.com";
@@ -29,6 +38,34 @@ const TARGET_USER_EMAIL = "stalinramosbw@gmail.com";
 // Total characters to create
 const TOTAL_CHARACTERS = 21;
 const LIVE_CHARACTERS = 5;
+
+// All permissions set to true for SUPER ADMIN (CRUD order)
+const ALL_PERMISSIONS = {
+  user: { create: true, read: true, update: true, delete: true },
+  character: { create: true, read: true, update: true, delete: true },
+  chat: { create: true, read: true, update: true, delete: true },
+  media: { create: true, read: true, update: true, delete: true },
+  content: { create: true, read: true, update: true, delete: true },
+  visual_novel: { create: true, read: true, update: true, delete: true },
+  ticket: { create: true, read: true, update: true, delete: true },
+  subscription: { create: true, read: true, update: true, delete: true },
+  affiliate: { create: true, read: true, update: true, delete: true },
+  auth: { create: true, read: true, update: true, delete: true },
+};
+
+// Limited permissions for regular customers
+const CUSTOMER_PERMISSIONS = {
+  user: { create: false, read: true, update: true, delete: false },
+  character: { create: true, read: true, update: true, delete: true },
+  chat: { create: true, read: true, update: true, delete: true },
+  media: { create: true, read: true, update: true, delete: true },
+  content: { create: true, read: true, update: true, delete: true },
+  visual_novel: { create: true, read: true, update: true, delete: true },
+  ticket: { create: true, read: true, update: false, delete: false },
+  subscription: { create: false, read: true, update: true, delete: false },
+  affiliate: { create: false, read: true, update: false, delete: false },
+  auth: { create: false, read: false, update: false, delete: false },
+};
 
 // ============================================================================
 // R2 Base URL - All assets are stored in R2
@@ -1470,6 +1507,100 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
 async function main() {
   console.log("Starting character seed script...");
 
+  // ==========================================
+  // Step 0: Create SUPER ADMIN role and admin user
+  // ==========================================
+  console.log("\n=== Creating SUPER ADMIN role ===");
+
+  let superAdminRole = await prisma.role_custom.findUnique({
+    where: { name: "SUPER ADMIN" },
+  });
+
+  if (!superAdminRole) {
+    superAdminRole = await prisma.role_custom.create({
+      data: {
+        name: "SUPER ADMIN",
+        permissions: ALL_PERMISSIONS,
+      },
+    });
+    console.log(`Created SUPER ADMIN role (${superAdminRole.id})`);
+  } else {
+    // Update permissions in case they changed
+    superAdminRole = await prisma.role_custom.update({
+      where: { id: superAdminRole.id },
+      data: { permissions: ALL_PERMISSIONS },
+    });
+    console.log(`Found existing SUPER ADMIN role (${superAdminRole.id})`);
+  }
+
+  // Create CUSTOMER role for regular users
+  console.log("\n=== Creating CUSTOMER role ===");
+
+  let customerRole = await prisma.role_custom.findUnique({
+    where: { name: "CUSTOMER" },
+  });
+
+  if (!customerRole) {
+    customerRole = await prisma.role_custom.create({
+      data: {
+        name: "CUSTOMER",
+        permissions: CUSTOMER_PERMISSIONS,
+      },
+    });
+    console.log(`Created CUSTOMER role (${customerRole.id})`);
+  } else {
+    // Update permissions in case they changed
+    customerRole = await prisma.role_custom.update({
+      where: { id: customerRole.id },
+      data: { permissions: CUSTOMER_PERMISSIONS },
+    });
+    console.log(`Found existing CUSTOMER role (${customerRole.id})`);
+  }
+
+  // Create Admin user with SUPER ADMIN role
+  console.log("\n=== Creating Admin user ===");
+
+  let adminUser = await prisma.user.findUnique({
+    where: { email: ADMIN_EMAIL },
+  });
+
+  if (!adminUser) {
+    const hashedPassword = await hashPassword(ADMIN_PASSWORD);
+
+    adminUser = await prisma.user.create({
+      data: {
+        name: "Super Admin",
+        email: ADMIN_EMAIL,
+        emailVerified: true,
+        role: UserRole.superadmin,
+        customRoleId: superAdminRole.id,
+      },
+    });
+
+    // Create credential account with password
+    await prisma.account.create({
+      data: {
+        accountId: adminUser.id,
+        providerId: "credential",
+        userId: adminUser.id,
+        password: hashedPassword,
+      },
+    });
+
+    console.log(`Created admin user: ${adminUser.email} (${adminUser.id})`);
+    console.log(`Password: ${ADMIN_PASSWORD}`);
+  } else {
+    // Update to ensure superadmin role
+    adminUser = await prisma.user.update({
+      where: { id: adminUser.id },
+      data: {
+        role: UserRole.superadmin,
+        customRoleId: superAdminRole.id,
+      },
+    });
+    console.log(`Found existing admin user: ${adminUser.email} (${adminUser.id})`);
+  }
+
   // Step 1: Seed variants first
   const variantMap = await seedVariants();
 
@@ -1492,6 +1623,7 @@ async function main() {
         name: "Seed User",
         email: TARGET_USER_EMAIL,
         emailVerified: true,
+        customRoleId: customerRole.id,
       },
     });
 
@@ -1714,7 +1846,12 @@ async function main() {
   console.log(`Created ${totalReels} reels`);
 
   // Summary
-  console.log("\n=== Seed Summary ===");
+  console.log("\n========================================");
+  console.log("=== Seed Summary ===");
+  console.log("========================================");
+  console.log(`SUPER ADMIN Role ID: ${superAdminRole.id}`);
+  console.log(`CUSTOMER Role ID: ${customerRole.id}`);
+  console.log(`Admin User: ${adminUser.email} (Password: ${ADMIN_PASSWORD})`);
   console.log(`Total characters created: ${characters.length}`);
   console.log(`Live characters: ${characters.filter((c) => c.isLive).length}`);
   console.log(
@@ -1724,6 +1861,7 @@ async function main() {
   console.log(`Total reels created: ${totalReels}`);
   console.log(`Poster Media ID: ${posterMedia.id}`);
   console.log(`Video Media ID: ${videoMedia.id}`);
+  console.log("========================================");
   console.log("Seed completed successfully!");
 }
 

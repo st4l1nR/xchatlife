@@ -31,21 +31,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Sample existing role data for update mode
+// Sample existing role data for update mode (CRUD order)
 const sampleExistingRole: ExistingRole = {
   id: "role-1",
   name: "Editor",
   permissions: {
-    user: { read: true, write: false, create: false },
-    character: { read: true, write: true, create: true },
-    chat: { read: true, write: false, create: false },
-    media: { read: true, write: true, create: true },
-    content: { read: true, write: true, create: true },
-    visual_novel: { read: true, write: true, create: false },
-    ticket: { read: true, write: false, create: false },
-    subscription: { read: false, write: false, create: false },
-    affiliate: { read: false, write: false, create: false },
-    auth: { read: false, write: false, create: false },
+    user: { create: false, read: true, update: false, delete: false },
+    character: { create: true, read: true, update: true, delete: false },
+    chat: { create: false, read: true, update: false, delete: false },
+    media: { create: true, read: true, update: true, delete: false },
+    content: { create: true, read: true, update: true, delete: false },
+    visual_novel: { create: false, read: true, update: true, delete: false },
+    ticket: { create: false, read: true, update: false, delete: false },
+    subscription: { create: false, read: false, update: false, delete: false },
+    affiliate: { create: false, read: false, update: false, delete: false },
+    auth: { create: false, read: false, update: false, delete: false },
   },
 };
 
@@ -230,16 +230,16 @@ export const AdministratorRole: Story = {
       id: "admin-role",
       name: "Administrator",
       permissions: {
-        user: { read: true, write: true, create: true },
-        character: { read: true, write: true, create: true },
-        chat: { read: true, write: true, create: true },
-        media: { read: true, write: true, create: true },
-        content: { read: true, write: true, create: true },
-        visual_novel: { read: true, write: true, create: true },
-        ticket: { read: true, write: true, create: true },
-        subscription: { read: true, write: true, create: true },
-        affiliate: { read: true, write: true, create: true },
-        auth: { read: true, write: true, create: true },
+        user: { create: true, read: true, update: true, delete: true },
+        character: { create: true, read: true, update: true, delete: true },
+        chat: { create: true, read: true, update: true, delete: true },
+        media: { create: true, read: true, update: true, delete: true },
+        content: { create: true, read: true, update: true, delete: true },
+        visual_novel: { create: true, read: true, update: true, delete: true },
+        ticket: { create: true, read: true, update: true, delete: true },
+        subscription: { create: true, read: true, update: true, delete: true },
+        affiliate: { create: true, read: true, update: true, delete: true },
+        auth: { create: true, read: true, update: true, delete: true },
       },
     };
 

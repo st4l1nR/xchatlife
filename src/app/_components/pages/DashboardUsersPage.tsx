@@ -4,8 +4,10 @@ import React, { useState, useMemo, useCallback, Suspense } from "react";
 import clsx from "clsx";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 import TableUser from "../organisms/TableUser";
 import DialogCreateUpdateUser from "../organisms/DialogCreateUpdateUser";
+import DialogDeleteUser from "../organisms/DialogDeleteUser";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
 import {
@@ -17,28 +19,20 @@ import { api } from "@/trpc/react";
 import type {
   TableUserItem,
   UserRoleType,
-  UserPlanType,
+  UserSubscriptionType,
   UserStatusType,
 } from "../organisms/TableUser";
 
 // Filter options
-const ROLE_FILTER_OPTIONS = [
-  { value: "", label: "Select Role" },
-  { value: "default", label: "Default" },
-  { value: "admin", label: "Admin" },
-  { value: "superadmin", label: "Super Admin" },
-] as const;
-
-const PLAN_FILTER_OPTIONS = [
-  { value: "", label: "Select Plan" },
-  { value: "enterprise", label: "Enterprise" },
-  { value: "team", label: "Team" },
-  { value: "company", label: "Company" },
-  { value: "basic", label: "Basic" },
+const SUBSCRIPTION_FILTER_OPTIONS = [
+  { value: "", label: "All" },
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+  { value: "none", label: "None" },
 ] as const;
 
 const STATUS_FILTER_OPTIONS = [
-  { value: "", label: "Select Status" },
+  { value: "", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
@@ -74,9 +68,23 @@ function DashboardUsersPageContent({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Fetch roles for filter
+  const { data: rolesData } = api.role.getAll.useQuery();
+
+  // Build role filter options from fetched data
+  const roleFilterOptions = useMemo(() => {
+    const options = [{ value: "", label: "All" }];
+    if (rolesData?.data) {
+      rolesData.data.forEach((role) => {
+        options.push({ value: role.id, label: role.name });
+      });
+    }
+    return options;
+  }, [rolesData]);
+
   // Parse URL params
   const roleParam = searchParams.get("role") ?? "";
-  const planParam = searchParams.get("plan") ?? "";
+  const subscriptionParam = searchParams.get("subscription") ?? "";
   const statusParam = searchParams.get("status") ?? "";
   const searchParam = searchParams.get("search") ?? "";
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
@@ -84,6 +92,11 @@ function DashboardUsersPageContent({
 
   // Dialog state
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   // Update URL params helper
   const updateParams = useCallback(
@@ -109,9 +122,9 @@ function DashboardUsersPageContent({
     [updateParams],
   );
 
-  const handlePlanChange = useCallback(
+  const handleSubscriptionChange = useCallback(
     (value: string) => {
-      updateParams({ plan: value, page: "1" });
+      updateParams({ subscription: value, page: "1" });
     },
     [updateParams],
   );
@@ -150,6 +163,7 @@ function DashboardUsersPageContent({
       page: pageParam,
       limit: parseInt(sizeParam, 10),
       search: searchParam || undefined,
+      customRoleId: roleParam || undefined,
     },
     {
       enabled: !mock,
@@ -157,6 +171,19 @@ function DashboardUsersPageContent({
   );
 
   const utils = api.useUtils();
+
+  // Delete user mutation
+  const deleteUser = api.admin.deleteUser.useMutation({
+    onSuccess: () => {
+      toast.success("User deleted successfully");
+      void utils.admin.getUsers.invalidate();
+      setIsDeleteDialogOpen(false);
+      setUserToDelete(null);
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to delete user");
+    },
+  });
 
   // Handle invite success
   const handleInviteSuccess = useCallback(() => {
@@ -172,8 +199,8 @@ function DashboardUsersPageContent({
       if (roleParam) {
         filtered = filtered.filter((user) => user.role === roleParam);
       }
-      if (planParam) {
-        filtered = filtered.filter((user) => user.plan === planParam);
+      if (subscriptionParam) {
+        filtered = filtered.filter((user) => user.subscription === subscriptionParam);
       }
       if (statusParam) {
         filtered = filtered.filter((user) => user.status === statusParam);
@@ -206,24 +233,40 @@ function DashboardUsersPageContent({
 
     // Transform API data to match TableUserItem type
     const users: TableUserItem[] =
-      usersData?.data?.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-        username: user.email.split("@")[0] ?? user.email,
-        avatarSrc: user.image ?? undefined,
-        role: (user.role as UserRoleType) ?? "subscriber",
-        plan: "basic" as UserPlanType,
-        billing: "auto_debit" as const,
-        status: "active" as UserStatusType,
-      })) ?? [];
+      usersData?.data?.users.map((user) => {
+        // Cast to access additional fields from API
+        const userWithRelations = user as typeof user & {
+          customRole?: { id: string; name: string } | null;
+          subscription?: { id: string; billingCycle: string; status: string } | null;
+        };
 
-    // Apply client-side filtering for role/plan/status since API doesn't support it yet
+        // Map billingCycle to subscription type
+        let subscription: UserSubscriptionType = "none";
+        if (userWithRelations.subscription?.billingCycle) {
+          const cycle = userWithRelations.subscription.billingCycle;
+          if (cycle === "annually") {
+            subscription = "yearly";
+          } else if (cycle === "monthly") {
+            subscription = "monthly";
+          }
+        }
+
+        return {
+          id: user.id,
+          name: user.name,
+          username: user.email.split("@")[0] ?? user.email,
+          avatarSrc: user.image ?? undefined,
+          role: (user.role as UserRoleType) ?? "default",
+          customRoleName: userWithRelations.customRole?.name,
+          subscription,
+          status: "active" as UserStatusType,
+        };
+      }) ?? [];
+
+    // Apply client-side filtering for subscription/status (role is filtered by API)
     let filtered = users;
-    if (roleParam) {
-      filtered = filtered.filter((user) => user.role === roleParam);
-    }
-    if (planParam) {
-      filtered = filtered.filter((user) => user.plan === planParam);
+    if (subscriptionParam) {
+      filtered = filtered.filter((user) => user.subscription === subscriptionParam);
     }
     if (statusParam) {
       filtered = filtered.filter((user) => user.status === statusParam);
@@ -244,8 +287,7 @@ function DashboardUsersPageContent({
   }, [
     mock,
     usersData,
-    roleParam,
-    planParam,
+    subscriptionParam,
     statusParam,
     searchParam,
     pageParam,
@@ -253,13 +295,27 @@ function DashboardUsersPageContent({
   ]);
 
   // Action handlers
-  const handleDelete = useCallback((id: string) => {
-    console.log("Delete user:", id);
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      const user = processedData.users.find((u) => u.id === id);
+      setUserToDelete({ id, name: user?.name ?? "Unknown" });
+      setIsDeleteDialogOpen(true);
+    },
+    [processedData.users],
+  );
 
-  const handleView = useCallback((id: string) => {
-    console.log("View user:", id);
-  }, []);
+  const handleConfirmDelete = useCallback(() => {
+    if (userToDelete) {
+      deleteUser.mutate({ userId: userToDelete.id });
+    }
+  }, [userToDelete, deleteUser]);
+
+  const handleView = useCallback(
+    (id: string) => {
+      router.push(`/dashboard/users/${id}`);
+    },
+    [router],
+  );
 
   const handleMore = useCallback((id: string) => {
     console.log("More options:", id);
@@ -273,16 +329,16 @@ function DashboardUsersPageContent({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {/* Role Filter */}
           <Listbox value={roleParam} onChange={handleRoleChange}>
-            {ROLE_FILTER_OPTIONS.map((option) => (
+            {roleFilterOptions.map((option) => (
               <ListboxOption key={option.value} value={option.value}>
                 <ListboxLabel>{option.label}</ListboxLabel>
               </ListboxOption>
             ))}
           </Listbox>
 
-          {/* Plan Filter */}
-          <Listbox value={planParam} onChange={handlePlanChange}>
-            {PLAN_FILTER_OPTIONS.map((option) => (
+          {/* Subscription Filter */}
+          <Listbox value={subscriptionParam} onChange={handleSubscriptionChange}>
+            {SUBSCRIPTION_FILTER_OPTIONS.map((option) => (
               <ListboxOption key={option.value} value={option.value}>
                 <ListboxLabel>{option.label}</ListboxLabel>
               </ListboxOption>
@@ -361,6 +417,18 @@ function DashboardUsersPageContent({
         onClose={() => setIsInviteDialogOpen(false)}
         mode="create"
         onSuccess={handleInviteSuccess}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DialogDeleteUser
+        open={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setUserToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        loading={deleteUser.isPending}
+        userName={userToDelete?.name}
       />
     </div>
   );

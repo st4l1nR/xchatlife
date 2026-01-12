@@ -336,6 +336,10 @@ model character {
   isPublic       Boolean             @default(false)
   isActive       Boolean             @default(true)
   isLive         Boolean             @default(false)
+  chatCount      Int                 @default(0)
+  likeCount      Int                 @default(0)
+  messageCount   Int                 @default(0)
+  viewCount      Int                 @default(0)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   createdById    String

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import clsx from "clsx";
 import { Plus } from "lucide-react";
 import { Button } from "@/app/_components/atoms/button";
@@ -59,8 +60,16 @@ export const defaultMockData: DashboardRolesPageMockData = {
       roleName: "Editor",
       totalUsers: 7,
       users: [
-        { id: "5", name: "Charlie Davis", avatarSrc: "/images/girl-poster.webp" },
-        { id: "6", name: "Diana Miller", avatarSrc: "/images/girl-poster.webp" },
+        {
+          id: "5",
+          name: "Charlie Davis",
+          avatarSrc: "/images/girl-poster.webp",
+        },
+        {
+          id: "6",
+          name: "Diana Miller",
+          avatarSrc: "/images/girl-poster.webp",
+        },
         { id: "7", name: "Eve Johnson", avatarSrc: "/images/girl-poster.webp" },
       ],
     },
@@ -76,7 +85,11 @@ export const defaultMockData: DashboardRolesPageMockData = {
       roleName: "Support",
       totalUsers: 6,
       users: [
-        { id: "10", name: "Henry Taylor", avatarSrc: "/images/girl-poster.webp" },
+        {
+          id: "10",
+          name: "Henry Taylor",
+          avatarSrc: "/images/girl-poster.webp",
+        },
         { id: "11", name: "Ivy Clark", avatarSrc: "/images/girl-poster.webp" },
         { id: "12", name: "Jack Moore", avatarSrc: "/images/girl-poster.webp" },
       ],
@@ -85,8 +98,16 @@ export const defaultMockData: DashboardRolesPageMockData = {
       roleName: "Restricted User",
       totalUsers: 10,
       users: [
-        { id: "13", name: "Kate Anderson", avatarSrc: "/images/girl-poster.webp" },
-        { id: "14", name: "Leo Martinez", avatarSrc: "/images/girl-poster.webp" },
+        {
+          id: "13",
+          name: "Kate Anderson",
+          avatarSrc: "/images/girl-poster.webp",
+        },
+        {
+          id: "14",
+          name: "Leo Martinez",
+          avatarSrc: "/images/girl-poster.webp",
+        },
         { id: "15", name: "Mia Garcia", avatarSrc: "/images/girl-poster.webp" },
       ],
     },
@@ -98,8 +119,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "jordan.stevenson",
       avatarSrc: "/images/girl-poster.webp",
       role: "admin",
-      plan: "yearly",
-      billing: "auto_debit",
+      subscription: "yearly",
       status: "pending",
     },
     {
@@ -108,8 +128,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "richard247",
       avatarSrc: "/images/girl-poster.webp",
       role: "admin",
-      plan: "monthly",
-      billing: "auto_debit",
+      subscription: "monthly",
       status: "active",
     },
     {
@@ -118,8 +137,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "summers.45",
       avatarSrc: "/images/girl-poster.webp",
       role: "default",
-      plan: "yearly",
-      billing: "auto_debit",
+      subscription: "yearly",
       status: "active",
     },
     {
@@ -128,8 +146,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "jr.3734",
       avatarSrc: "/images/girl-poster.webp",
       role: "admin",
-      plan: "quarterly",
-      billing: "manual_paypal",
+      subscription: "monthly",
       status: "pending",
     },
     {
@@ -138,8 +155,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "nicholas.t",
       avatarSrc: "/images/girl-poster.webp",
       role: "superadmin",
-      plan: "yearly",
-      billing: "manual_cash",
+      subscription: "yearly",
       status: "active",
     },
     {
@@ -148,8 +164,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "mays.754",
       avatarSrc: "/images/girl-poster.webp",
       role: "admin",
-      plan: "none",
-      billing: "manual_cash",
+      subscription: "none",
       status: "pending",
     },
     {
@@ -158,8 +173,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "mary.garcia",
       avatarSrc: "/images/girl-poster.webp",
       role: "superadmin",
-      plan: "monthly",
-      billing: "auto_debit",
+      subscription: "monthly",
       status: "inactive",
     },
     {
@@ -168,8 +182,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "roberts.3456",
       avatarSrc: "/images/girl-poster.webp",
       role: "default",
-      plan: "yearly",
-      billing: "manual_paypal",
+      subscription: "yearly",
       status: "active",
     },
     {
@@ -178,8 +191,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       username: "joseph.87",
       avatarSrc: "/images/girl-poster.webp",
       role: "default",
-      plan: "none",
-      billing: "manual_cash",
+      subscription: "none",
       status: "pending",
     },
   ],
@@ -195,6 +207,9 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   className,
   mock,
 }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   // State for dialogs
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [userDialogOpen, setUserDialogOpen] = useState(false);
@@ -213,6 +228,17 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
 
+  // Open create role dialog if ?create=true is in URL
+  useEffect(() => {
+    if (searchParams.get("create") === "true") {
+      setSelectedRole(undefined);
+      setRoleDialogMode("create");
+      setRoleDialogOpen(true);
+      // Remove the query parameter from URL
+      router.replace("/dashboard/roles", { scroll: false });
+    }
+  }, [searchParams, router]);
+
   // API calls (disabled when mock is provided)
   const { data: rolesData, isLoading: rolesLoading } = api.role.getAll.useQuery(
     undefined,
@@ -222,10 +248,10 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   const { data: usersData, isLoading: usersLoading } =
     api.admin.getUsers.useQuery(
       {
-        page,
-        limit: pageSize,
+        page: pageSize === -1 ? 1 : page,
+        limit: pageSize === -1 ? 100 : pageSize,
         search: searchQuery || undefined,
-        role: roleFilter || undefined,
+        customRoleId: roleFilter || undefined,
       },
       { enabled: !mock },
     );
@@ -247,8 +273,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
       username: user.email,
       avatarSrc: user.image ?? undefined,
       role: user.role as UserRoleType,
-      plan: "none" as const,
-      billing: "manual_cash" as const,
+      subscription: "none" as const,
       status: user.emailVerified ? ("active" as const) : ("pending" as const),
     }));
 
@@ -322,7 +347,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   };
 
   return (
-    <div className={clsx("space-y-8 p-6", className)}>
+    <div className={clsx("space-y-8", className)}>
       {/* Roles Section */}
       <section>
         <div className="mb-6 flex items-start justify-between">
@@ -330,7 +355,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
             <h1 className="text-foreground text-2xl font-semibold">
               Roles List
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 max-w-3xl">
               A role provided access to predefined menus and features so that
               depending on assigned role an administrator can have access to
               what he need
@@ -366,6 +391,9 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Listbox value={pageSize} onChange={setPageSize}>
+              <ListboxOption value={-1}>
+                <ListboxLabel>All</ListboxLabel>
+              </ListboxOption>
               <ListboxOption value={10}>
                 <ListboxLabel>10</ListboxLabel>
               </ListboxOption>
@@ -387,16 +415,6 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
               <ListboxOption value={null}>
                 <ListboxLabel>All Roles</ListboxLabel>
               </ListboxOption>
-              <ListboxOption value="default">
-                <ListboxLabel>Default</ListboxLabel>
-              </ListboxOption>
-              <ListboxOption value="admin">
-                <ListboxLabel>Admin</ListboxLabel>
-              </ListboxOption>
-              <ListboxOption value="superadmin">
-                <ListboxLabel>Super Admin</ListboxLabel>
-              </ListboxOption>
-              {/* Custom roles from API */}
               {!mock &&
                 rolesData?.data?.map((role) => (
                   <ListboxOption key={role.id} value={role.name}>
@@ -413,7 +431,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button onClick={handleAddNewUser}>
+            <Button className="shrink-0" onClick={handleAddNewUser}>
               <Plus data-slot="icon" />
               Invite New User
             </Button>

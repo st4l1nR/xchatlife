@@ -28,8 +28,7 @@ const mockUsers: TableUserItem[] = [
     username: "jordan.stevenson",
     avatarSrc: "https://i.pravatar.cc/150?u=jordan",
     role: "admin",
-    plan: "yearly",
-    billing: "auto_debit",
+    subscription: "yearly",
     status: "pending",
   },
   {
@@ -38,8 +37,7 @@ const mockUsers: TableUserItem[] = [
     username: "richard247",
     avatarSrc: "https://i.pravatar.cc/150?u=richard",
     role: "admin",
-    plan: "monthly",
-    billing: "auto_debit",
+    subscription: "monthly",
     status: "active",
   },
   {
@@ -48,8 +46,7 @@ const mockUsers: TableUserItem[] = [
     username: "summers.45",
     avatarSrc: "https://i.pravatar.cc/150?u=jennifer",
     role: "default",
-    plan: "yearly",
-    billing: "auto_debit",
+    subscription: "yearly",
     status: "active",
   },
   {
@@ -58,8 +55,7 @@ const mockUsers: TableUserItem[] = [
     username: "jr.3734",
     avatarSrc: "https://i.pravatar.cc/150?u=justin",
     role: "admin",
-    plan: "quarterly",
-    billing: "manual_paypal",
+    subscription: "monthly",
     status: "pending",
   },
   {
@@ -68,8 +64,7 @@ const mockUsers: TableUserItem[] = [
     username: "nicholas.t",
     avatarSrc: "https://i.pravatar.cc/150?u=nicholas",
     role: "superadmin",
-    plan: "yearly",
-    billing: "manual_cash",
+    subscription: "yearly",
     status: "active",
   },
   {
@@ -78,8 +73,7 @@ const mockUsers: TableUserItem[] = [
     username: "mays.754",
     avatarSrc: "https://i.pravatar.cc/150?u=crystal",
     role: "admin",
-    plan: "none",
-    billing: "manual_cash",
+    subscription: "none",
     status: "pending",
   },
   {
@@ -88,8 +82,7 @@ const mockUsers: TableUserItem[] = [
     username: "mary.garcia",
     avatarSrc: "https://i.pravatar.cc/150?u=mary",
     role: "superadmin",
-    plan: "monthly",
-    billing: "auto_debit",
+    subscription: "monthly",
     status: "inactive",
   },
   {
@@ -98,8 +91,7 @@ const mockUsers: TableUserItem[] = [
     username: "roberts.3456",
     avatarSrc: "https://i.pravatar.cc/150?u=megan",
     role: "default",
-    plan: "yearly",
-    billing: "manual_paypal",
+    subscription: "yearly",
     status: "active",
   },
   {
@@ -108,8 +100,7 @@ const mockUsers: TableUserItem[] = [
     username: "joseph.87",
     avatarSrc: "https://i.pravatar.cc/150?u=joseph",
     role: "default",
-    plan: "none",
-    billing: "manual_cash",
+    subscription: "none",
     status: "pending",
   },
 ];

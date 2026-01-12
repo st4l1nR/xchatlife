@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
+  adminProcedure,
 } from "@/server/api/trpc";
 import { fetchAndUploadToR2 } from "@/server/r2";
 
@@ -282,5 +283,78 @@ export const characterRouter = createTRPCRouter({
       });
 
       return { success: true, characterId: character.id };
+    }),
+
+  /**
+   * Get characters for dashboard with pagination, filtering, and sorting (admin only)
+   */
+  getForDashboard: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        limit: z.number().min(1).max(100).default(10),
+        search: z.string().optional(),
+        style: z.nativeEnum(CharacterStyle).optional(),
+        sortBy: z.enum(["createdAt", "likeCount", "chatCount"]).default("createdAt"),
+        sortOrder: z.enum(["asc", "desc"]).default("desc"),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, search, style, sortBy, sortOrder } = input;
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where = {
+        ...(style && { style }),
+        ...(search && {
+          name: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        }),
+      };
+
+      // Get total count and characters in parallel
+      const [total, characters] = await Promise.all([
+        ctx.db.character.count({ where }),
+        ctx.db.character.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { [sortBy]: sortOrder },
+          include: {
+            poster: true,
+            user: {
+              select: { name: true, email: true },
+            },
+          },
+        }),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        success: true,
+        data: {
+          characters: characters.map((character) => ({
+            id: character.id,
+            name: character.name,
+            username: character.name.toLowerCase().replace(/\s+/g, "."),
+            avatarSrc: character.poster?.url,
+            style: character.style.toLowerCase() as "anime" | "realistic",
+            likes: character.likeCount,
+            chats: character.chatCount,
+            status: character.isPublic && character.isActive ? "published" : "draft",
+            createdAt: character.createdAt,
+            createdBy: character.user.name ?? character.user.email,
+          })),
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+          },
+        },
+      };
     }),
 });

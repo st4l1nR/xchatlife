@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Users, MapPin, Calendar } from "lucide-react";
 import { Avatar } from "../atoms/avatar";
 
-export type HeaderDashboardUserProps = {
+export type HeaderUserCharacterProps = {
   className?: string;
   name: string;
   avatarSrc?: string | null;
@@ -14,7 +14,7 @@ export type HeaderDashboardUserProps = {
   bannerSrc?: string;
 };
 
-const HeaderDashboardUser: React.FC<HeaderDashboardUserProps> = ({
+const HeaderUserCharacter: React.FC<HeaderUserCharacterProps> = ({
   className,
   name,
   avatarSrc,
@@ -79,4 +79,4 @@ const HeaderDashboardUser: React.FC<HeaderDashboardUserProps> = ({
   );
 };
 
-export default HeaderDashboardUser;
+export default HeaderUserCharacter;

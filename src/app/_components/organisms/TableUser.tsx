@@ -29,8 +29,7 @@ import {
 } from "lucide-react";
 
 export type UserRoleType = "default" | "admin" | "superadmin";
-export type UserPlanType = "yearly" | "monthly" | "quarterly" | "none";
-export type UserBillingType = "auto_debit" | "manual_paypal" | "manual_cash";
+export type UserSubscriptionType = "yearly" | "monthly" | "none";
 export type UserStatusType = "pending" | "active" | "inactive";
 
 export type TableUserItem = {
@@ -40,8 +39,7 @@ export type TableUserItem = {
   avatarSrc?: string;
   role: UserRoleType;
   customRoleName?: string;
-  plan: UserPlanType;
-  billing: UserBillingType;
+  subscription: UserSubscriptionType;
   status: UserStatusType;
 };
 
@@ -79,31 +77,16 @@ const getRoleIcon = (role: UserRoleType) => {
   }
 };
 
-const formatPlan = (plan: UserPlanType): string => {
-  switch (plan) {
+const formatSubscription = (subscription: UserSubscriptionType): string => {
+  switch (subscription) {
     case "yearly":
       return "Yearly";
     case "monthly":
       return "Monthly";
-    case "quarterly":
-      return "Quarterly";
     case "none":
       return "None";
     default:
-      return plan;
-  }
-};
-
-const formatBilling = (billing: UserBillingType): string => {
-  switch (billing) {
-    case "auto_debit":
-      return "Auto Debit";
-    case "manual_paypal":
-      return "Manual Paypal";
-    case "manual_cash":
-      return "Manual Cash";
-    default:
-      return billing;
+      return subscription;
   }
 };
 
@@ -178,18 +161,11 @@ const TableUser: React.FC<TableUserProps> = ({
       },
     }),
 
-    // PLAN Column - Subscription plan
-    columnHelper.accessor("plan", {
-      header: "Plan",
+    // SUBSCRIPTION Column
+    columnHelper.accessor("subscription", {
+      header: "Subscription",
       enableSorting: true,
-      cell: (info) => formatPlan(info.getValue()),
-    }),
-
-    // BILLING Column - Formatted text
-    columnHelper.accessor("billing", {
-      header: "Billing",
-      enableSorting: true,
-      cell: (info) => formatBilling(info.getValue()),
+      cell: (info) => formatSubscription(info.getValue()),
     }),
 
     // STATUS Column - Badge
