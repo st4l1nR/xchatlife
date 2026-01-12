@@ -54,11 +54,18 @@ const generateMockCharacters = (count: number): TableCharacterItem[] => {
   ];
 
   const likesOptions = [13, 100, 1000, 3500, 1, 20, 30, 60, 80, 150, 500, 2000];
-  const chatsOptions = [12, 1000, 3000, 4000, 5000, 6000, 2000, 3000, 3000, 800, 1200, 900];
+  const chatsOptions = [
+    12, 1000, 3000, 4000, 5000, 6000, 2000, 3000, 3000, 800, 1200, 900,
+  ];
 
   return Array.from({ length: count }, (_, i) => {
     const name = names[i % names.length] ?? `Character ${i + 1}`;
-    const username = usernames[i % usernames.length] ?? name.toLowerCase().replace(/\s+/g, ".").replace(/mr\.\s*/i, "");
+    const username =
+      usernames[i % usernames.length] ??
+      name
+        .toLowerCase()
+        .replace(/\s+/g, ".")
+        .replace(/mr\.\s*/i, "");
 
     return {
       id: `character-${i + 1}`,
@@ -309,7 +316,10 @@ export const TabletView: Story = {
 export const WithoutAvatars: Story = {
   args: {
     mock: {
-      characters: mockCharacters10.map((character) => ({ ...character, avatarSrc: undefined })),
+      characters: mockCharacters10.map((character) => ({
+        ...character,
+        avatarSrc: undefined,
+      })),
       pagination: {
         page: 1,
         total: mockCharacters10.length,

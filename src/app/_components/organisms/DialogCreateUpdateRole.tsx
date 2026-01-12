@@ -67,7 +67,12 @@ export type DialogCreateUpdateRoleProps = {
 // Create default permissions object with all false (CRUD order)
 const createDefaultPermissions = (): RolePermissions => {
   return PERMISSION_CATEGORIES.reduce((acc, category) => {
-    acc[category.key] = { create: false, read: false, update: false, delete: false };
+    acc[category.key] = {
+      create: false,
+      read: false,
+      update: false,
+      delete: false,
+    };
     return acc;
   }, {} as RolePermissions);
 };

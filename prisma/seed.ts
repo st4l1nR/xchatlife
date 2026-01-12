@@ -1598,7 +1598,9 @@ async function main() {
         customRoleId: superAdminRole.id,
       },
     });
-    console.log(`Found existing admin user: ${adminUser.email} (${adminUser.id})`);
+    console.log(
+      `Found existing admin user: ${adminUser.email} (${adminUser.id})`,
+    );
   }
 
   // Step 1: Seed variants first

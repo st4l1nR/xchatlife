@@ -7,11 +7,7 @@ import { Search, Plus } from "lucide-react";
 import TableCharacter from "../organisms/TableCharacter";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
-import {
-  Listbox,
-  ListboxOption,
-  ListboxLabel,
-} from "../atoms/listbox";
+import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
 import { api } from "@/trpc/react";
 import type {
   TableCharacterItem,
@@ -140,19 +136,20 @@ function DashboardCharactersPageContent({
   );
 
   // Fetch characters (disabled when using mock data)
-  const { data: charactersData, isLoading } = api.character.getForDashboard.useQuery(
-    {
-      page: pageParam,
-      limit: parseInt(sizeParam, 10),
-      search: searchParam || undefined,
-      style: styleParam ? (styleParam as "anime" | "realistic") : undefined,
-      sortBy: sortByParam as "createdAt" | "likeCount" | "chatCount",
-      sortOrder: sortOrderParam as "asc" | "desc",
-    },
-    {
-      enabled: !mock,
-    },
-  );
+  const { data: charactersData, isLoading } =
+    api.character.getForDashboard.useQuery(
+      {
+        page: pageParam,
+        limit: parseInt(sizeParam, 10),
+        search: searchParam || undefined,
+        style: styleParam ? (styleParam as "anime" | "realistic") : undefined,
+        sortBy: sortByParam as "createdAt" | "likeCount" | "chatCount",
+        sortOrder: sortOrderParam as "asc" | "desc",
+      },
+      {
+        enabled: !mock,
+      },
+    );
 
   // Process data - either from API or mock
   const processedData = useMemo(() => {
@@ -161,7 +158,9 @@ function DashboardCharactersPageContent({
       let filtered = mock.characters;
 
       if (styleParam) {
-        filtered = filtered.filter((character) => character.style === styleParam);
+        filtered = filtered.filter(
+          (character) => character.style === styleParam,
+        );
       }
       if (searchParam) {
         const searchLower = searchParam.toLowerCase();
@@ -175,11 +174,11 @@ function DashboardCharactersPageContent({
       // Apply sorting for mock data
       if (sortByParam === "likeCount") {
         filtered = [...filtered].sort((a, b) =>
-          sortOrderParam === "desc" ? b.likes - a.likes : a.likes - b.likes
+          sortOrderParam === "desc" ? b.likes - a.likes : a.likes - b.likes,
         );
       } else if (sortByParam === "chatCount") {
         filtered = [...filtered].sort((a, b) =>
-          sortOrderParam === "desc" ? b.chats - a.chats : a.chats - b.chats
+          sortOrderParam === "desc" ? b.chats - a.chats : a.chats - b.chats,
         );
       }
       // createdAt sorting is handled by default order in mock data
@@ -187,7 +186,10 @@ function DashboardCharactersPageContent({
       // Apply pagination
       const pageSize = parseInt(sizeParam, 10);
       const startIndex = (pageParam - 1) * pageSize;
-      const paginatedCharacters = filtered.slice(startIndex, startIndex + pageSize);
+      const paginatedCharacters = filtered.slice(
+        startIndex,
+        startIndex + pageSize,
+      );
 
       return {
         characters: paginatedCharacters,
@@ -343,7 +345,9 @@ function DashboardCharactersPageContent({
   );
 }
 
-const DashboardCharactersPage: React.FC<DashboardCharactersPageProps> = (props) => {
+const DashboardCharactersPage: React.FC<DashboardCharactersPageProps> = (
+  props,
+) => {
   return (
     <Suspense fallback={<div className="animate-pulse p-6">Loading...</div>}>
       <DashboardCharactersPageContent {...props} />

@@ -162,50 +162,46 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
                 : "opacity-100",
             )}
           >
-          <div
-            className={clsx(
-              "flex size-12 items-center justify-center rounded-lg",
-              isDragActive ? "bg-amber-100 dark:bg-amber-900" : "bg-muted",
-            )}
-          >
-            <Upload
+            <div
               className={clsx(
-                "size-6",
-                isDragActive
-                  ? "text-amber-500"
-                  : "text-muted-foreground",
+                "flex size-12 items-center justify-center rounded-lg",
+                isDragActive ? "bg-amber-100 dark:bg-amber-900" : "bg-muted",
               )}
-            />
-          </div>
+            >
+              <Upload
+                className={clsx(
+                  "size-6",
+                  isDragActive ? "text-amber-500" : "text-muted-foreground",
+                )}
+              />
+            </div>
 
-          <div className="text-center">
-            <p className="text-foreground text-base font-medium">
-              {isDragActive
-                ? "Drop your media here"
-                : "Drag and drop your media here"}
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm">or</p>
-          </div>
+            <div className="text-center">
+              <p className="text-foreground text-base font-medium">
+                {isDragActive
+                  ? "Drop your media here"
+                  : "Drag and drop your media here"}
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">or</p>
+            </div>
 
-          <button
-            type="button"
-            className={clsx(
-              "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
-              "border-amber-400 text-amber-500",
-              "hover:bg-amber-50 dark:hover:bg-amber-950",
-              "focus:ring-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2",
-            )}
-            onClick={(e) => e.stopPropagation()}
-          >
-            Browse Media
-          </button>
+            <button
+              type="button"
+              className={clsx(
+                "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
+                "border-amber-400 text-amber-500",
+                "hover:bg-amber-50 dark:hover:bg-amber-950",
+                "focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:outline-none",
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Browse Media
+            </button>
           </div>
         )}
       </div>
 
-      {error && (
-        <p className="text-destructive mt-2 text-sm">{error}</p>
-      )}
+      {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
     </div>
   );
 };

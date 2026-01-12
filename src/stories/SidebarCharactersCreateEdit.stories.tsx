@@ -12,7 +12,7 @@ const meta: Meta<typeof SidebarCharactersCreateEdit> = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <TabGroup vertical>
           <Story />
         </TabGroup>
@@ -31,7 +31,7 @@ export const Default: Story = {
   args: {},
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <TabGroup vertical defaultIndex={0}>
           <Story />
         </TabGroup>
@@ -47,7 +47,7 @@ export const ReelsSelected: Story = {
   args: {},
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <TabGroup vertical defaultIndex={1}>
           <Story />
         </TabGroup>
@@ -63,7 +63,7 @@ export const StoriesSelected: Story = {
   args: {},
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <TabGroup vertical defaultIndex={2}>
           <Story />
         </TabGroup>
@@ -79,7 +79,7 @@ export const PrivateContentSelected: Story = {
   args: {},
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <TabGroup vertical defaultIndex={3}>
           <Story />
         </TabGroup>
@@ -96,14 +96,18 @@ export const Interactive: Story = {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     return (
-      <TabGroup vertical selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+      <TabGroup
+        vertical
+        selectedIndex={selectedIndex}
+        onChange={setSelectedIndex}
+      >
         <SidebarCharactersCreateEdit />
       </TabGroup>
     );
   },
   decorators: [
     (Story) => (
-      <div className="bg-background w-64 rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-64 rounded-lg border p-4">
         <Story />
       </div>
     ),
@@ -122,7 +126,7 @@ export const MobileView: Story = {
   },
   decorators: [
     (Story) => (
-      <div className="bg-background w-full rounded-lg border border-border p-4">
+      <div className="bg-background border-border w-full rounded-lg border p-4">
         <TabGroup vertical defaultIndex={0}>
           <Story />
         </TabGroup>

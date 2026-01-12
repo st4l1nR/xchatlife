@@ -195,37 +195,21 @@ export const AllAspectRatios: Story = {
       <div className="flex flex-wrap items-start gap-6 p-4">
         <div className="w-48">
           <h3 className="text-foreground mb-2 text-sm font-semibold">16:9</h3>
-          <CardMediaUpload
-            label="Video"
-            aspectRatio="16:9"
-            onChange={fn()}
-          />
+          <CardMediaUpload label="Video" aspectRatio="16:9" onChange={fn()} />
         </div>
         <div className="w-48">
           <h3 className="text-foreground mb-2 text-sm font-semibold">4:3</h3>
-          <CardMediaUpload
-            label="Photo"
-            aspectRatio="4:3"
-            onChange={fn()}
-          />
+          <CardMediaUpload label="Photo" aspectRatio="4:3" onChange={fn()} />
         </div>
         <div className="w-48">
           <h3 className="text-foreground mb-2 text-sm font-semibold">
             1:1 (Default)
           </h3>
-          <CardMediaUpload
-            label="Square"
-            aspectRatio="1:1"
-            onChange={fn()}
-          />
+          <CardMediaUpload label="Square" aspectRatio="1:1" onChange={fn()} />
         </div>
         <div className="w-48">
           <h3 className="text-foreground mb-2 text-sm font-semibold">3:4</h3>
-          <CardMediaUpload
-            label="Portrait"
-            aspectRatio="3:4"
-            onChange={fn()}
-          />
+          <CardMediaUpload label="Portrait" aspectRatio="3:4" onChange={fn()} />
         </div>
         <div className="w-32">
           <h3 className="text-foreground mb-2 text-sm font-semibold">9:16</h3>

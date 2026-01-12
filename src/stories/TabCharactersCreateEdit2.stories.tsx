@@ -116,7 +116,8 @@ export const WithExistingReels: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Shows the component with pre-existing reels, useful for editing.",
+        story:
+          "Shows the component with pre-existing reels, useful for editing.",
       },
     },
   },
@@ -152,7 +153,8 @@ export const ManyReels: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Shows the component with many reels displaying the grid layout.",
+        story:
+          "Shows the component with many reels displaying the grid layout.",
       },
     },
   },
@@ -181,7 +183,8 @@ const InteractiveTemplate = () => {
     <FormProvider {...methods}>
       <div className="space-y-4">
         <p className="text-muted-foreground text-sm">
-          Drag and drop reels to reorder. Click the empty card to add new videos.
+          Drag and drop reels to reorder. Click the empty card to add new
+          videos.
         </p>
         <TabGroup>
           <TabPanels>
