@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TemplateApp } from "@/app/_components/templates/TemplateApp";
+import type TemplateDashboard from "@/app/_components/templates/TemplateDashboard";
 
 const meta = {
   title: "Templates/TemplateApp",

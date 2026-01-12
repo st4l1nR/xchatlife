@@ -11,18 +11,14 @@ import {
 } from "../atoms/dialog";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
-
-type KinkOption = {
-  value: string;
-  label: string;
-};
+import type { KinkOption } from "../pages/CreateCharacterPage";
 
 type DialogCreateCharacterKinksProps = {
   open: boolean;
   onClose: () => void;
   value: string[];
   onChange: (value: string[]) => void;
-  kinksList: readonly KinkOption[];
+  kinksList: KinkOption[];
   containerRef?: React.RefObject<HTMLElement | null>;
 };
 
@@ -61,22 +57,22 @@ const DialogCreateCharacterKinks: React.FC<DialogCreateCharacterKinksProps> = ({
     ? filteredKinks
     : filteredKinks.slice(0, INITIAL_SHOW_COUNT);
 
-  const handleToggleKink = (kinkValue: string) => {
-    if (localValue.includes(kinkValue)) {
-      setLocalValue(localValue.filter((k) => k !== kinkValue));
+  const handleToggleKink = (kinkId: string) => {
+    if (localValue.includes(kinkId)) {
+      setLocalValue(localValue.filter((k) => k !== kinkId));
     } else if (localValue.length < MAX_KINKS) {
-      setLocalValue([...localValue, kinkValue]);
+      setLocalValue([...localValue, kinkId]);
     }
   };
 
-  // Get label for a kink value
-  const getKinkLabel = (kinkValue: string) => {
-    const kink = kinksList.find((k) => k.value === kinkValue);
-    return kink?.label ?? kinkValue;
+  // Get label for a kink ID
+  const getKinkLabel = (kinkId: string) => {
+    const kink = kinksList.find((k) => k.id === kinkId);
+    return kink?.label ?? kinkId;
   };
 
-  const handleRemoveKink = (kink: string) => {
-    setLocalValue(localValue.filter((k) => k !== kink));
+  const handleRemoveKink = (kinkId: string) => {
+    setLocalValue(localValue.filter((k) => k !== kinkId));
   };
 
   const handleSave = () => {
@@ -122,15 +118,15 @@ const DialogCreateCharacterKinks: React.FC<DialogCreateCharacterKinksProps> = ({
         {/* Selected Kinks Tags */}
         {localValue.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
-            {localValue.map((kinkValue) => (
+            {localValue.map((kinkId) => (
               <span
-                key={kinkValue}
+                key={kinkId}
                 className="bg-muted text-foreground inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium"
               >
-                {getKinkLabel(kinkValue)}
+                {getKinkLabel(kinkId)}
                 <button
                   type="button"
-                  onClick={() => handleRemoveKink(kinkValue)}
+                  onClick={() => handleRemoveKink(kinkId)}
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
@@ -143,14 +139,14 @@ const DialogCreateCharacterKinks: React.FC<DialogCreateCharacterKinksProps> = ({
         {/* Kinks Grid */}
         <div className="flex flex-wrap gap-3">
           {visibleKinks.map((kink) => {
-            const isSelected = localValue.includes(kink.value);
+            const isSelected = localValue.includes(kink.id);
             const isDisabled = !isSelected && localValue.length >= MAX_KINKS;
 
             return (
               <button
-                key={kink.value}
+                key={kink.id}
                 type="button"
-                onClick={() => handleToggleKink(kink.value)}
+                onClick={() => handleToggleKink(kink.id)}
                 disabled={isDisabled}
                 className={clsx(
                   "rounded-full border px-4 py-2.5 text-sm font-medium transition-all",

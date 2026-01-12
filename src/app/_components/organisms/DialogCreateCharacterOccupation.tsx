@@ -10,14 +10,14 @@ import {
   DialogActions,
 } from "../atoms/dialog";
 import { Button } from "../atoms/button";
-import type { CharacterFormData } from "../pages/CreateCharacterPage";
+import type { OccupationOption } from "../pages/CreateCharacterPage";
 
 type DialogCreateCharacterOccupationProps = {
   open: boolean;
   onClose: () => void;
-  value: CharacterFormData["occupation"] | undefined;
-  onChange: (value: CharacterFormData["occupation"]) => void;
-  options: readonly { value: string; label: string; emoji: string }[];
+  value: string | undefined;
+  onChange: (value: string) => void;
+  options: OccupationOption[];
   containerRef?: React.RefObject<HTMLElement | null>;
 };
 
@@ -73,21 +73,19 @@ const DialogCreateCharacterOccupation: React.FC<
         <div className="flex flex-wrap justify-center gap-3">
           {visibleOptions.map((option) => (
             <button
-              key={option.value}
+              key={option.id}
               type="button"
-              onClick={() =>
-                setLocalValue(option.value as CharacterFormData["occupation"])
-              }
+              onClick={() => setLocalValue(option.id)}
               className={clsx(
                 "relative flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all",
-                localValue === option.value
+                localValue === option.id
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-muted text-foreground hover:border-muted-foreground",
               )}
             >
-              <span>{option.emoji}</span>
+              {option.emoji && <span>{option.emoji}</span>}
               <span>{option.label}</span>
-              {localValue === option.value && (
+              {localValue === option.id && (
                 <Check className="text-primary h-4 w-4" />
               )}
             </button>

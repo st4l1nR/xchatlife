@@ -214,8 +214,8 @@ export function ChatContextProvider({
       media,
       about: {
         age: char.age ?? undefined,
-        bodyType: char.bodyType ?? undefined,
-        ethnicity: char.ethnicity ?? undefined,
+        bodyType: char.bodyType?.name ?? undefined,
+        ethnicity: char.ethnicity?.name ?? undefined,
       },
     };
   }, [mock?.character, chatData]);
