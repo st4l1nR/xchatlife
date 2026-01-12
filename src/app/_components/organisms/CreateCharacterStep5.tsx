@@ -10,14 +10,14 @@ import type {
 import { RefreshCw, ChevronRight } from "lucide-react";
 import { Field, Label, Description } from "../atoms/fieldset";
 import { Checkbox, CheckboxField } from "../atoms/checkbox";
-import type { CharacterFormData } from "../pages/CreateCharacterPage";
-import {
-  PERSONALITY_OPTIONS,
-  RELATIONSHIP_OPTIONS,
-  OCCUPATION_OPTIONS,
-  VOICE_OPTIONS,
-  KINKS_LIST,
+import type {
+  CharacterFormData,
+  PersonalityOption,
+  RelationshipOption,
+  OccupationOption,
+  KinkOption,
 } from "../pages/CreateCharacterPage";
+import { VOICE_OPTIONS } from "../pages/CreateCharacterPage";
 import DialogCreateCharacterPersonality from "./DialogCreateCharacterPersonality";
 import DialogCreateCharacterRelationship from "./DialogCreateCharacterRelationship";
 import DialogCreateCharacterOccupation from "./DialogCreateCharacterOccupation";
@@ -30,6 +30,11 @@ type CreateCharacterStep5Props = {
   register: UseFormRegister<CharacterFormData>;
   errors: FieldErrors<CharacterFormData>;
   containerRef?: React.RefObject<HTMLElement | null>;
+  personalities: PersonalityOption[];
+  relationships: RelationshipOption[];
+  occupations: OccupationOption[];
+  kinks: KinkOption[];
+  loading: boolean;
 };
 
 const FIRST_NAMES = [
@@ -206,6 +211,11 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   register,
   errors,
   containerRef,
+  personalities,
+  relationships,
+  occupations,
+  kinks,
+  loading,
 }) => {
   const [showPersonalityDialog, setShowPersonalityDialog] = useState(false);
   const [showRelationshipDialog, setShowRelationshipDialog] = useState(false);
@@ -214,10 +224,10 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   const [showVoiceDialog, setShowVoiceDialog] = useState(false);
 
   const name = watch("name") ?? "";
-  const personality = watch("personality");
-  const relationship = watch("relationship");
-  const occupation = watch("occupation");
-  const kinks = watch("kinks") ?? [];
+  const personalityId = watch("personalityId");
+  const relationshipId = watch("relationshipId");
+  const occupationId = watch("occupationId");
+  const kinkIds = watch("kinkIds") ?? [];
   const voice = watch("voice");
   const isPublic = watch("isPublic") ?? false;
 
@@ -246,31 +256,31 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   };
 
   const getPersonalityLabel = () => {
-    const option = PERSONALITY_OPTIONS.find((o) => o.value === personality);
+    if (loading) return "Loading...";
+    const option = personalities.find((o) => o.id === personalityId);
     return option?.label ?? "Select...";
   };
 
   const getRelationshipLabel = () => {
-    const option = RELATIONSHIP_OPTIONS.find((o) => o.value === relationship);
+    if (loading) return "Loading...";
+    const option = relationships.find((o) => o.id === relationshipId);
     return option?.label ?? "Select...";
   };
 
   const getOccupationLabel = () => {
-    const option = OCCUPATION_OPTIONS.find((o) => o.value === occupation);
-    return option ? `${option.emoji} ${option.label}` : "Select...";
+    if (loading) return "Loading...";
+    const option = occupations.find((o) => o.id === occupationId);
+    return option ? `${option.emoji ?? ""} ${option.label}`.trim() : "Select...";
   };
 
   const getKinksLabel = () => {
-    if (kinks.length === 0) return "Select...";
-    // Format kink values: replace underscores, capitalize each word
-    return kinks
-      .map((kink) =>
-        kink
-          .replaceAll("_", " ")
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      )
+    if (loading) return "Loading...";
+    if (kinkIds.length === 0) return "Select...";
+    return kinkIds
+      .map((kinkId) => {
+        const kink = kinks.find((k) => k.id === kinkId);
+        return kink?.label ?? kinkId;
+      })
       .join(", ");
   };
 
@@ -327,7 +337,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
             <button
               type="button"
               onClick={() => setShowPersonalityDialog(true)}
-              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors"
+              disabled={loading}
+              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors disabled:opacity-50"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--color-primary)_0%,_transparent_70%)] opacity-15" />
               <div className="relative text-left">
@@ -340,9 +351,9 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
               </div>
               <ChevronRight className="text-muted-foreground relative h-5 w-5" />
             </button>
-            {errors.personality && (
+            {errors.personalityId && (
               <p className="text-destructive mt-1 text-base/6 sm:text-sm/6">
-                {errors.personality.message}
+                {errors.personalityId.message}
               </p>
             )}
           </div>
@@ -352,7 +363,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
             <button
               type="button"
               onClick={() => setShowRelationshipDialog(true)}
-              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors"
+              disabled={loading}
+              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors disabled:opacity-50"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--color-primary)_0%,_transparent_70%)] opacity-15" />
               <div className="relative text-left">
@@ -365,9 +377,9 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
               </div>
               <ChevronRight className="text-muted-foreground relative h-5 w-5" />
             </button>
-            {errors.relationship && (
+            {errors.relationshipId && (
               <p className="text-destructive mt-1 text-base/6 sm:text-sm/6">
-                {errors.relationship.message}
+                {errors.relationshipId.message}
               </p>
             )}
           </div>
@@ -377,7 +389,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
             <button
               type="button"
               onClick={() => setShowOccupationDialog(true)}
-              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors"
+              disabled={loading}
+              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors disabled:opacity-50"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--color-primary)_0%,_transparent_70%)] opacity-15" />
               <div className="relative text-left">
@@ -390,9 +403,9 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
               </div>
               <ChevronRight className="text-muted-foreground relative h-5 w-5" />
             </button>
-            {errors.occupation && (
+            {errors.occupationId && (
               <p className="text-destructive mt-1 text-base/6 sm:text-sm/6">
-                {errors.occupation.message}
+                {errors.occupationId.message}
               </p>
             )}
           </div>
@@ -402,7 +415,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
             <button
               type="button"
               onClick={() => setShowKinksDialog(true)}
-              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors"
+              disabled={loading}
+              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors disabled:opacity-50"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--color-primary)_0%,_transparent_70%)] opacity-15" />
               <div className="relative text-left">
@@ -415,9 +429,9 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
               </div>
               <ChevronRight className="text-muted-foreground relative h-5 w-5" />
             </button>
-            {errors.kinks && (
+            {errors.kinkIds && (
               <p className="text-destructive mt-1 text-base/6 sm:text-sm/6">
-                {errors.kinks.message}
+                {errors.kinkIds.message}
               </p>
             )}
           </div>
@@ -472,46 +486,44 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
       <DialogCreateCharacterPersonality
         open={showPersonalityDialog}
         onClose={() => setShowPersonalityDialog(false)}
-        value={personality}
+        value={personalityId}
         onChange={(value) =>
-          setValue("personality", value, { shouldValidate: true })
+          setValue("personalityId", value, { shouldValidate: true })
         }
-        options={PERSONALITY_OPTIONS}
+        options={personalities}
         containerRef={containerRef}
       />
 
       <DialogCreateCharacterRelationship
         open={showRelationshipDialog}
         onClose={() => setShowRelationshipDialog(false)}
-        value={relationship}
+        value={relationshipId}
         onChange={(value) =>
-          setValue("relationship", value, { shouldValidate: true })
+          setValue("relationshipId", value, { shouldValidate: true })
         }
-        options={RELATIONSHIP_OPTIONS}
+        options={relationships}
         containerRef={containerRef}
       />
 
       <DialogCreateCharacterOccupation
         open={showOccupationDialog}
         onClose={() => setShowOccupationDialog(false)}
-        value={occupation}
+        value={occupationId}
         onChange={(value) =>
-          setValue("occupation", value, { shouldValidate: true })
+          setValue("occupationId", value, { shouldValidate: true })
         }
-        options={OCCUPATION_OPTIONS}
+        options={occupations}
         containerRef={containerRef}
       />
 
       <DialogCreateCharacterKinks
         open={showKinksDialog}
         onClose={() => setShowKinksDialog(false)}
-        value={kinks as string[]}
+        value={kinkIds}
         onChange={(value) =>
-          setValue("kinks", value as CharacterFormData["kinks"], {
-            shouldValidate: true,
-          })
+          setValue("kinkIds", value, { shouldValidate: true })
         }
-        kinksList={KINKS_LIST}
+        kinksList={kinks}
         containerRef={containerRef}
       />
 

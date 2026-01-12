@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +13,10 @@ import CreateCharacterStep2 from "../organisms/CreateCharacterStep2";
 import CreateCharacterStep3 from "../organisms/CreateCharacterStep3";
 import CreateCharacterStep4 from "../organisms/CreateCharacterStep4";
 import CreateCharacterStep5 from "../organisms/CreateCharacterStep5";
+import DialogAuth, { type DialogAuthVariant } from "../organisms/DialogAuth";
 import { api } from "@/trpc/react";
+import { useApp } from "@/app/_contexts/AppContext";
+import type { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
 
 // ============================================================================
 // Schemas
@@ -25,170 +28,7 @@ export const characterTypeSchema = z.enum(["girl", "trans"]);
 // Step 1: Style
 export const styleSchema = z.enum(["realistic", "anime"]);
 
-// Step 2: Ethnicity & Age
-export const ethnicitySchema = z.enum([
-  "caucasian",
-  "asian",
-  "black",
-  "latina",
-  "arab",
-]);
-
-// Step 3: Hair & Eyes
-export const hairStyleSchema = z.enum([
-  "straight",
-  "bangs",
-  "curly",
-  "bun",
-  "short",
-  "ponytail",
-]);
-
-export const hairColorSchema = z.enum([
-  "brunette",
-  "blonde",
-  "black",
-  "redhead",
-  "pink",
-  // Anime-only colors
-  "blue",
-  "purple",
-  "white",
-  "multicolor",
-]);
-
-export const eyeColorSchema = z.enum([
-  "brown",
-  "blue",
-  "green",
-  // Anime-only colors
-  "red",
-  "yellow",
-]);
-
-// Step 4: Body
-export const bodyTypeSchema = z.enum([
-  "skinny",
-  "athletic",
-  "average",
-  "curvy",
-  "bbw",
-]);
-
-export const breastSizeSchema = z.enum([
-  "small",
-  "medium",
-  "large",
-  "extra_large",
-]);
-
-// Step 5: Personality
-export const personalitySchema = z.enum([
-  "nympho",
-  "lover",
-  "submissive",
-  "dominant",
-  "temptress",
-  "innocent",
-  "caregiver",
-  "experimenter",
-  "mean",
-  "confidant",
-  "shy",
-  "queen",
-]);
-
-export const relationshipSchema = z.enum([
-  "stranger",
-  "girlfriend",
-  "sex_friend",
-  "school_mate",
-  "work_colleague",
-  "wife",
-  "mistress",
-  "friend",
-  "step_sister",
-  "step_mom",
-  "step_daughter",
-  "landlord",
-  "sugar_baby",
-  "boss",
-  "teacher",
-  "student",
-  "neighbour",
-  "mother_in_law",
-  "sister_in_law",
-]);
-
-export const occupationSchema = z.enum([
-  "student",
-  "dancer",
-  "model",
-  "stripper",
-  "maid",
-  "cam_girl",
-  "boss",
-  "babysitter",
-  "pornstar",
-  "streamer",
-  "bartender",
-  "tech_engineer",
-  "lifeguard",
-  "cashier",
-  "massage_therapist",
-  "teacher",
-  "nurse",
-  "secretary",
-  "yoga_instructor",
-  "fitness_coach",
-]);
-
-export const voiceSchema = z.enum([
-  "voice-1",
-  "voice-2",
-  "voice-3",
-  "voice-4",
-  "voice-5",
-  "voice-6",
-  "voice-7",
-  "voice-8",
-  "voice-9",
-]);
-
-// Kinks enum - matches Prisma Kink enum
-export const kinkSchema = z.enum([
-  "daddy_dominance",
-  "bondage",
-  "spanking",
-  "collar_leash",
-  "punishment",
-  "humiliation",
-  "public_play",
-  "roleplay",
-  "anal_play",
-  "oral_play",
-  "cum_play",
-  "creampie",
-  "squirting",
-  "dirty_talk",
-  "breeding",
-  "edging",
-  "obedience",
-  "control",
-  "inexperienced",
-  "shy_flirting",
-  "playful_teasing",
-  "cuddling",
-  "slow_sensual",
-  "hair_pulling",
-]);
-
-export const kinksSchema = z
-  .array(kinkSchema)
-  .min(1, "Select at least 1 kink")
-  .max(3, "Maximum 3 kinks");
-
-// Full character form schema
+// Full character form schema - uses IDs for dynamic options
 export const characterFormSchema = z.object({
   // Character type (variant)
   characterType: characterTypeSchema,
@@ -199,29 +39,32 @@ export const characterFormSchema = z.object({
   posterUrl: z.string().optional(),
   videoUrl: z.string().optional(),
 
-  // Step 2
-  ethnicity: ethnicitySchema,
+  // Step 2 - ID-based
+  ethnicityId: z.string().min(1, "Please select an ethnicity"),
   age: z.number().min(18, "Must be at least 18").max(55, "Maximum age is 55"),
 
-  // Step 3
-  hairStyle: hairStyleSchema,
-  hairColor: hairColorSchema,
-  eyeColor: eyeColorSchema,
+  // Step 3 - ID-based
+  hairStyleId: z.string().min(1, "Please select a hair style"),
+  hairColorId: z.string().min(1, "Please select a hair color"),
+  eyeColorId: z.string().min(1, "Please select an eye color"),
 
-  // Step 4
-  bodyType: bodyTypeSchema,
-  breastSize: breastSizeSchema,
+  // Step 4 - ID-based
+  bodyTypeId: z.string().min(1, "Please select a body type"),
+  breastSizeId: z.string().min(1, "Please select a breast size"),
 
-  // Step 5
+  // Step 5 - ID-based for dynamic options
   name: z
     .string()
     .min(2, "Name must be at least 2 characters")
     .max(20, "Name must be at most 20 characters"),
-  personality: personalitySchema,
-  relationship: relationshipSchema,
-  occupation: occupationSchema,
-  kinks: kinksSchema,
-  voice: voiceSchema,
+  personalityId: z.string().min(1, "Please select a personality"),
+  relationshipId: z.string().min(1, "Please select a relationship"),
+  occupationId: z.string().min(1, "Please select an occupation"),
+  kinkIds: z
+    .array(z.string())
+    .min(1, "Select at least 1 kink")
+    .max(3, "Maximum 3 kinks"),
+  voice: z.string().min(1, "Please select a voice"),
 
   // Visibility
   isPublic: z.boolean(),
@@ -236,168 +79,84 @@ export const step1Schema = z.object({
 });
 
 export const step2Schema = z.object({
-  ethnicity: ethnicitySchema,
+  ethnicityId: z.string().min(1, "Please select an ethnicity"),
   age: z.number().min(18).max(55),
 });
 
 export const step3Schema = z.object({
-  hairStyle: hairStyleSchema,
-  hairColor: hairColorSchema,
-  eyeColor: eyeColorSchema,
+  hairStyleId: z.string().min(1, "Please select a hair style"),
+  hairColorId: z.string().min(1, "Please select a hair color"),
+  eyeColorId: z.string().min(1, "Please select an eye color"),
 });
 
 export const step4Schema = z.object({
-  bodyType: bodyTypeSchema,
-  breastSize: breastSizeSchema,
+  bodyTypeId: z.string().min(1, "Please select a body type"),
+  breastSizeId: z.string().min(1, "Please select a breast size"),
 });
 
 export const step5Schema = z.object({
   name: z.string().min(2).max(20),
-  personality: personalitySchema,
-  relationship: relationshipSchema,
-  occupation: occupationSchema,
-  kinks: kinksSchema,
-  voice: voiceSchema,
+  personalityId: z.string().min(1, "Please select a personality"),
+  relationshipId: z.string().min(1, "Please select a relationship"),
+  occupationId: z.string().min(1, "Please select an occupation"),
+  kinkIds: z.array(z.string()).min(1).max(3),
+  voice: z.string().min(1, "Please select a voice"),
 });
 
 // ============================================================================
-// Option Constants
+// Option Types
 // ============================================================================
 
-// Available kinks list with value (Prisma enum) and label (display)
-export const KINKS_LIST = [
-  { value: "daddy_dominance" as const, label: "Daddy Dominance" },
-  { value: "bondage" as const, label: "Bondage" },
-  { value: "spanking" as const, label: "Spanking" },
-  { value: "collar_leash" as const, label: "Collar & Leash" },
-  { value: "punishment" as const, label: "Punishment" },
-  { value: "humiliation" as const, label: "Humiliation" },
-  { value: "public_play" as const, label: "Public Play" },
-  { value: "roleplay" as const, label: "Roleplay" },
-  { value: "anal_play" as const, label: "Anal Play" },
-  { value: "oral_play" as const, label: "Oral Play" },
-  { value: "cum_play" as const, label: "Cum Play" },
-  { value: "creampie" as const, label: "Creampie" },
-  { value: "squirting" as const, label: "Squirting" },
-  { value: "dirty_talk" as const, label: "Dirty Talk" },
-  { value: "breeding" as const, label: "Breeding" },
-  { value: "edging" as const, label: "Edging" },
-  { value: "obedience" as const, label: "Obedience" },
-  { value: "control" as const, label: "Control" },
-  { value: "inexperienced" as const, label: "Inexperienced" },
-  { value: "shy_flirting" as const, label: "Shy Flirting" },
-  { value: "playful_teasing" as const, label: "Playful Teasing" },
-  { value: "cuddling" as const, label: "Cuddling" },
-  { value: "slow_sensual" as const, label: "Slow & Sensual" },
-  { value: "hair_pulling" as const, label: "Hair Pulling" },
-] as const;
+export type VariantOption = {
+  id: string;
+  name: string;
+  label: string;
+  imageSrc: string;
+  videoSrc?: string | null;
+};
 
-// Voice options with labels
+export type PersonalityOption = {
+  id: string;
+  name: string;
+  label: string;
+  imageSrc?: string | null;
+};
+
+export type RelationshipOption = {
+  id: string;
+  name: string;
+  label: string;
+  imageSrc?: string | null;
+};
+
+export type OccupationOption = {
+  id: string;
+  name: string;
+  label: string;
+  emoji?: string | null;
+};
+
+export type KinkOption = {
+  id: string;
+  name: string;
+  label: string;
+};
+
+// ============================================================================
+// Hardcoded Constants (Voice only - kept hardcoded per plan)
+// ============================================================================
+
+// Voice options with labels (kept hardcoded)
 export const VOICE_OPTIONS = [
-  { value: "voice-1" as const, label: "Voice 1", description: "Confident" },
-  { value: "voice-2" as const, label: "Voice 2", description: "Cheerful" },
-  { value: "voice-3" as const, label: "Voice 3", description: "Dominant" },
-  { value: "voice-4" as const, label: "Voice 4", description: "Innocent" },
-  { value: "voice-5" as const, label: "Voice 5", description: "Sweet" },
-  { value: "voice-6" as const, label: "Voice 6", description: "Sultry" },
-  { value: "voice-7" as const, label: "Voice 7", description: "Calm" },
-  { value: "voice-8" as const, label: "Voice 8", description: "Thoughtful" },
-  { value: "voice-9" as const, label: "Voice 9", description: "Whimsical" },
-] as const;
-
-// Personality options with emojis
-export const PERSONALITY_OPTIONS = [
-  { value: "nympho" as const, label: "Nympho", emoji: "\uD83D\uDD25" },
-  { value: "lover" as const, label: "Lover", emoji: "\uD83D\uDC96" },
-  { value: "submissive" as const, label: "Submissive", emoji: "\uD83E\uDD70" },
-  { value: "dominant" as const, label: "Dominant", emoji: "\uD83D\uDC60" },
-  { value: "temptress" as const, label: "Temptress", emoji: "\uD83C\uDF39" },
-  { value: "innocent" as const, label: "Innocent", emoji: "\uD83C\uDF1F" },
-  { value: "caregiver" as const, label: "Caregiver", emoji: "\uD83D\uDC9A" },
-  {
-    value: "experimenter" as const,
-    label: "Experimenter",
-    emoji: "\uD83C\uDFB0",
-  },
-  { value: "mean" as const, label: "Mean", emoji: "\uD83D\uDC99" },
-  { value: "confidant" as const, label: "Confidant", emoji: "\uD83E\uDD1D" },
-  { value: "shy" as const, label: "Shy", emoji: "\uD83E\uDD7A" },
-  { value: "queen" as const, label: "Queen", emoji: "\uD83D\uDC51" },
-] as const;
-
-// Relationship options with emojis (only values that exist in Prisma schema)
-export const RELATIONSHIP_OPTIONS = [
-  { value: "stranger" as const, label: "Stranger", emoji: "🕶️" },
-  { value: "girlfriend" as const, label: "Girlfriend", emoji: "💖" },
-  { value: "sex_friend" as const, label: "Sex Friend", emoji: "♀️" },
-  { value: "school_mate" as const, label: "School Mate", emoji: "📖" },
-  { value: "work_colleague" as const, label: "Work Colleague", emoji: "💼" },
-  { value: "wife" as const, label: "Wife", emoji: "💍" },
-  { value: "mistress" as const, label: "Mistress", emoji: "👑" },
-  { value: "friend" as const, label: "Friend", emoji: "🤝" },
-  { value: "step_sister" as const, label: "Step Sister", emoji: "💛" },
-  { value: "step_mom" as const, label: "Step Mom", emoji: "💛" },
-  { value: "step_daughter" as const, label: "Step Daughter", emoji: "💛" },
-  { value: "landlord" as const, label: "Landlord", emoji: "🏠" },
-  { value: "sugar_baby" as const, label: "Sugar Baby", emoji: "🍬" },
-  { value: "boss" as const, label: "Boss", emoji: "💼" },
-  { value: "teacher" as const, label: "Teacher", emoji: "📚" },
-  { value: "student" as const, label: "Student", emoji: "🎓" },
-  { value: "neighbour" as const, label: "Neighbour", emoji: "🏡" },
-  { value: "mother_in_law" as const, label: "Mother-In-Law", emoji: "👩‍👧" },
-  { value: "sister_in_law" as const, label: "Sister-In-Law", emoji: "👭" },
-] as const;
-
-// Occupation options with emojis (using Prisma enum values)
-export const OCCUPATION_OPTIONS = [
-  { value: "student" as const, label: "Student", emoji: "\uD83C\uDF93" },
-  { value: "dancer" as const, label: "Dancer", emoji: "\uD83D\uDC83" },
-  { value: "model" as const, label: "Model", emoji: "\uD83D\uDC57" },
-  { value: "stripper" as const, label: "Stripper", emoji: "\uD83E\uDE72" },
-  { value: "maid" as const, label: "Maid", emoji: "\uD83E\uDDF9" },
-  { value: "cam_girl" as const, label: "Cam Girl", emoji: "\uD83D\uDCF7" },
-  { value: "boss" as const, label: "Boss / CEO", emoji: "\uD83C\uDFE2" },
-  {
-    value: "babysitter" as const,
-    label: "Babysitter / Au Pair",
-    emoji: "\uD83C\uDF7C",
-  },
-  { value: "pornstar" as const, label: "Pornstar", emoji: "\uD83C\uDFA5" },
-  { value: "streamer" as const, label: "Streamer", emoji: "\uD83C\uDFAE" },
-  { value: "bartender" as const, label: "Bartender", emoji: "\uD83C\uDF78" },
-  {
-    value: "tech_engineer" as const,
-    label: "Tech Engineer",
-    emoji: "\uD83D\uDCBB",
-  },
-  {
-    value: "lifeguard" as const,
-    label: "Lifeguard",
-    emoji: "\uD83C\uDFD6\uFE0F",
-  },
-  { value: "cashier" as const, label: "Cashier", emoji: "\uD83D\uDCB5" },
-  {
-    value: "massage_therapist" as const,
-    label: "Massage Therapist",
-    emoji: "\uD83D\uDC86",
-  },
-  {
-    value: "teacher" as const,
-    label: "Teacher",
-    emoji: "\uD83D\uDC69\u200D\uD83C\uDFEB",
-  },
-  { value: "nurse" as const, label: "Nurse", emoji: "\uD83D\uDC89" },
-  { value: "secretary" as const, label: "Secretary", emoji: "\uD83D\uDCCB" },
-  {
-    value: "yoga_instructor" as const,
-    label: "Yoga Instructor",
-    emoji: "\uD83E\uDDD8",
-  },
-  {
-    value: "fitness_coach" as const,
-    label: "Fitness Coach",
-    emoji: "\uD83C\uDFCB\uFE0F",
-  },
+  { value: "voice-1", label: "Voice 1", description: "Confident" },
+  { value: "voice-2", label: "Voice 2", description: "Cheerful" },
+  { value: "voice-3", label: "Voice 3", description: "Dominant" },
+  { value: "voice-4", label: "Voice 4", description: "Innocent" },
+  { value: "voice-5", label: "Voice 5", description: "Sweet" },
+  { value: "voice-6", label: "Voice 6", description: "Sultry" },
+  { value: "voice-7", label: "Voice 7", description: "Calm" },
+  { value: "voice-8", label: "Voice 8", description: "Thoughtful" },
+  { value: "voice-9", label: "Voice 9", description: "Whimsical" },
 ] as const;
 
 // ============================================================================
@@ -414,11 +173,94 @@ const stepSchemas = {
   5: step5Schema,
 };
 
+// Helper to map form characterType to Prisma CharacterGender
+const mapCharacterTypeToGender = (
+  characterType: "girl" | "trans",
+): CharacterGender => {
+  return characterType as CharacterGender;
+};
+
+// Helper to map form style to Prisma CharacterStyle
+const mapStyleToCharacterStyle = (
+  style: "realistic" | "anime",
+): CharacterStyle => {
+  return style as CharacterStyle;
+};
+
 const CreateCharacterPage: React.FC = () => {
   const router = useRouter();
+  const { isAuthenticated } = useApp();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [step5Attempted, setStep5Attempted] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authDialogVariant, setAuthDialogVariant] =
+    useState<DialogAuthVariant>("sign-in");
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useForm<CharacterFormData>({
+    resolver: zodResolver(characterFormSchema),
+    defaultValues: {
+      characterType: "girl",
+      age: 21,
+      kinkIds: [],
+      isPublic: false,
+    },
+    mode: "onChange",
+  });
+
+  const characterType = watch("characterType");
+  const style = watch("style");
+
+  // Fetch character variants for Step 1
+  const { data: variantsData, isLoading: variantsLoading } =
+    api.options.getCharacterVariants.useQuery();
+
+  // Fetch variant-specific options (refetches when characterType or style changes)
+  const {
+    data: variantOptions,
+    isLoading: variantLoading,
+    isFetching: variantFetching,
+  } = api.options.getVariantOptions.useQuery(
+    {
+      gender: mapCharacterTypeToGender(characterType ?? "girl"),
+      style: mapStyleToCharacterStyle(style ?? "realistic"),
+    },
+    {
+      enabled: !!characterType && !!style,
+    },
+  );
+
+  // Fetch universal options once (personalities, relationships, occupations, kinks)
+  const { data: universalOptions, isLoading: universalLoading } =
+    api.options.getUniversalOptions.useQuery();
+
+  // Reset variant-specific form values when variant changes
+  useEffect(() => {
+    if (variantFetching) {
+      // Clear variant-specific selections when fetching new options
+      setValue("ethnicityId", "");
+      setValue("hairStyleId", "");
+      setValue("hairColorId", "");
+      setValue("eyeColorId", "");
+      setValue("bodyTypeId", "");
+      setValue("breastSizeId", "");
+    }
+  }, [variantFetching, setValue]);
+
+  // Proceed to step 5 when user authenticates while dialog is open
+  useEffect(() => {
+    if (isAuthenticated && authDialogOpen && currentStep === 4) {
+      setAuthDialogOpen(false);
+      setCurrentStep(5);
+    }
+  }, [isAuthenticated, authDialogOpen, currentStep]);
 
   const createCharacter = api.character.create.useMutation({
     onSuccess: (_, variables) => {
@@ -437,24 +279,6 @@ const CreateCharacterPage: React.FC = () => {
     onError: (error) => {
       toast.error(error.message || "Something went wrong. Please try again.");
     },
-  });
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    trigger,
-    formState: { errors },
-  } = useForm<CharacterFormData>({
-    resolver: zodResolver(characterFormSchema),
-    defaultValues: {
-      characterType: "girl",
-      age: 21,
-      kinks: [],
-      isPublic: false,
-    },
-    mode: "onChange",
   });
 
   const validateCurrentStep = async (): Promise<boolean> => {
@@ -476,7 +300,13 @@ const CreateCharacterPage: React.FC = () => {
 
     if (isValid) {
       if (currentStep < 5) {
-        setCurrentStep((prev) => (prev + 1) as Step);
+        const nextStep = currentStep + 1;
+        // Check if user is authenticated before allowing step 5
+        if (nextStep === 5 && !isAuthenticated) {
+          setAuthDialogOpen(true);
+          return;
+        }
+        setCurrentStep(nextStep as Step);
       }
     } else {
       toast.error("Please fill in all required fields");
@@ -510,27 +340,24 @@ const CreateCharacterPage: React.FC = () => {
     createCharacter.mutate({
       characterType: data.characterType,
       style: data.style,
-      ethnicity: data.ethnicity,
+      ethnicityId: data.ethnicityId,
       age: data.age,
-      hairStyle: data.hairStyle,
-      hairColor: data.hairColor,
-      eyeColor: data.eyeColor,
-      bodyType: data.bodyType,
-      breastSize: data.breastSize,
+      hairStyleId: data.hairStyleId,
+      hairColorId: data.hairColorId,
+      eyeColorId: data.eyeColorId,
+      bodyTypeId: data.bodyTypeId,
+      breastSizeId: data.breastSizeId,
       name: data.name,
-      personality: data.personality,
-      relationship: data.relationship,
-      occupation: data.occupation,
-      kinks: data.kinks,
+      personalityId: data.personalityId,
+      relationshipId: data.relationshipId,
+      occupationId: data.occupationId,
+      kinkIds: data.kinkIds,
       voice: data.voice,
       posterUrl: data.posterUrl,
       videoUrl: data.videoUrl,
       isPublic: data.isPublic,
     });
   };
-
-  const characterType = watch("characterType");
-  const style = watch("style");
 
   const renderStep = () => {
     switch (currentStep) {
@@ -540,6 +367,8 @@ const CreateCharacterPage: React.FC = () => {
             watch={watch}
             setValue={setValue}
             errors={errors}
+            variants={variantsData?.data?.variants ?? []}
+            loading={variantsLoading}
           />
         );
       case 2:
@@ -548,8 +377,8 @@ const CreateCharacterPage: React.FC = () => {
             watch={watch}
             setValue={setValue}
             errors={errors}
-            characterType={characterType}
-            style={style}
+            ethnicities={variantOptions?.data?.ethnicities ?? []}
+            loading={variantLoading || variantFetching}
           />
         );
       case 3:
@@ -558,8 +387,10 @@ const CreateCharacterPage: React.FC = () => {
             watch={watch}
             setValue={setValue}
             errors={errors}
-            characterType={characterType}
-            style={style}
+            hairStyles={variantOptions?.data?.hairStyles ?? []}
+            hairColors={variantOptions?.data?.hairColors ?? []}
+            eyeColors={variantOptions?.data?.eyeColors ?? []}
+            loading={variantLoading || variantFetching}
           />
         );
       case 4:
@@ -568,8 +399,9 @@ const CreateCharacterPage: React.FC = () => {
             watch={watch}
             setValue={setValue}
             errors={errors}
-            characterType={characterType}
-            style={style}
+            bodyTypes={variantOptions?.data?.bodyTypes ?? []}
+            breastSizes={variantOptions?.data?.breastSizes ?? []}
+            loading={variantLoading || variantFetching}
           />
         );
       case 5:
@@ -580,6 +412,11 @@ const CreateCharacterPage: React.FC = () => {
             register={register}
             errors={step5Attempted ? errors : {}}
             containerRef={containerRef}
+            personalities={universalOptions?.data?.personalities ?? []}
+            relationships={universalOptions?.data?.relationships ?? []}
+            occupations={universalOptions?.data?.occupations ?? []}
+            kinks={universalOptions?.data?.kinks ?? []}
+            loading={universalLoading}
           />
         );
       default:
@@ -634,6 +471,14 @@ const CreateCharacterPage: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {/* Auth Dialog */}
+      <DialogAuth
+        open={authDialogOpen}
+        onClose={() => setAuthDialogOpen(false)}
+        variant={authDialogVariant}
+        onVariantChange={setAuthDialogVariant}
+      />
     </div>
   );
 };

@@ -1,17 +1,5 @@
 import { z } from "zod";
 import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
-import type {
-  Ethnicity,
-  HairStyle,
-  HairColor,
-  EyeColor,
-  BodyType,
-  BreastSize,
-  Personality,
-  Relationship,
-  Occupation,
-  Kink,
-} from "../../../../generated/prisma";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -19,116 +7,25 @@ import {
 } from "@/server/api/trpc";
 import { fetchAndUploadToR2 } from "@/server/r2";
 
-// Input schema matching frontend form with Prisma enum values
+// Input schema matching frontend form with option IDs (directly from frontend)
 const createCharacterSchema = z.object({
   characterType: z.enum(["girl", "men", "trans"]),
   style: z.enum(["realistic", "anime"]),
-  ethnicity: z.enum(["caucasian", "asian", "black", "latina", "arab"]),
+  // Option IDs (variant-specific)
+  ethnicityId: z.string(),
+  hairStyleId: z.string(),
+  hairColorId: z.string(),
+  eyeColorId: z.string(),
+  bodyTypeId: z.string(),
+  breastSizeId: z.string(),
+  // Option IDs (universal)
+  personalityId: z.string(),
+  relationshipId: z.string(),
+  occupationId: z.string(),
+  kinkIds: z.array(z.string()).min(1).max(3),
+  // Other fields
   age: z.number().min(18).max(55),
-  hairStyle: z.enum(["straight", "bangs", "curly", "bun", "short", "ponytail"]),
-  hairColor: z.enum([
-    "brunette",
-    "blonde",
-    "black",
-    "redhead",
-    "pink",
-    "blue",
-    "purple",
-    "white",
-    "multicolor",
-  ]),
-  eyeColor: z.enum(["brown", "blue", "green", "red", "yellow"]),
-  bodyType: z.enum(["skinny", "athletic", "average", "curvy", "bbw"]),
-  breastSize: z.enum(["small", "medium", "large", "extra_large"]),
   name: z.string().min(2).max(20),
-  personality: z.enum([
-    "nympho",
-    "lover",
-    "submissive",
-    "dominant",
-    "temptress",
-    "innocent",
-    "caregiver",
-    "experimenter",
-    "mean",
-    "confidant",
-    "shy",
-    "queen",
-  ]),
-  relationship: z.enum([
-    "stranger",
-    "girlfriend",
-    "sex_friend",
-    "school_mate",
-    "work_colleague",
-    "wife",
-    "mistress",
-    "friend",
-    "step_sister",
-    "step_mom",
-    "step_daughter",
-    "landlord",
-    "sugar_baby",
-    "boss",
-    "teacher",
-    "student",
-    "neighbour",
-    "mother_in_law",
-    "sister_in_law",
-  ]),
-  occupation: z.enum([
-    "student",
-    "dancer",
-    "model",
-    "stripper",
-    "maid",
-    "cam_girl",
-    "boss",
-    "babysitter",
-    "pornstar",
-    "streamer",
-    "bartender",
-    "tech_engineer",
-    "lifeguard",
-    "cashier",
-    "massage_therapist",
-    "teacher",
-    "nurse",
-    "secretary",
-    "yoga_instructor",
-    "fitness_coach",
-  ]),
-  kinks: z
-    .array(
-      z.enum([
-        "daddy_dominance",
-        "bondage",
-        "spanking",
-        "collar_leash",
-        "punishment",
-        "humiliation",
-        "public_play",
-        "roleplay",
-        "anal_play",
-        "oral_play",
-        "cum_play",
-        "creampie",
-        "squirting",
-        "dirty_talk",
-        "breeding",
-        "edging",
-        "obedience",
-        "control",
-        "inexperienced",
-        "shy_flirting",
-        "playful_teasing",
-        "cuddling",
-        "slow_sensual",
-        "hair_pulling",
-      ]),
-    )
-    .min(1)
-    .max(3),
   voice: z.string(),
   // Media URLs (R2 URLs)
   posterUrl: z.string().url(),
@@ -284,7 +181,20 @@ export const characterRouter = createTRPCRouter({
         include: {
           poster: true,
           video: true,
-          character_kink: true,
+          ethnicity: true,
+          personality: true,
+          hairStyle: true,
+          hairColor: true,
+          eyeColor: true,
+          bodyType: true,
+          breastSize: true,
+          occupation: true,
+          relationship: true,
+          character_kink: {
+            include: {
+              kink: true,
+            },
+          },
         },
       });
 
@@ -300,6 +210,7 @@ export const characterRouter = createTRPCRouter({
 
   /**
    * Create a new character
+   * Accepts option IDs directly from frontend (no name lookup needed)
    */
   create: protectedProcedure
     .input(createCharacterSchema)
@@ -339,28 +250,30 @@ export const characterRouter = createTRPCRouter({
         });
 
         // Create the character with media relations
+        // IDs come directly from frontend - no lookup needed
         const newCharacter = await tx.character.create({
           data: {
             name: input.name,
             gender: input.characterType as CharacterGender,
             style: input.style as CharacterStyle,
-            ethnicity: input.ethnicity as Ethnicity,
             age: input.age,
-            hairStyle: input.hairStyle as HairStyle,
-            hairColor: input.hairColor as HairColor,
-            eyeColor: input.eyeColor as EyeColor,
-            bodyType: input.bodyType as BodyType,
-            breastSize: input.breastSize as BreastSize,
-            personality: input.personality as Personality,
-            relationship: input.relationship as Relationship,
-            occupation: input.occupation as Occupation,
             voice: input.voice,
             isPublic: input.isPublic,
             posterId: posterMedia.id,
             videoId: videoMedia.id,
             createdById: ctx.session.user.id,
+            // Foreign keys to option tables (IDs from frontend)
+            ethnicityId: input.ethnicityId,
+            personalityId: input.personalityId,
+            hairStyleId: input.hairStyleId,
+            hairColorId: input.hairColorId,
+            eyeColorId: input.eyeColorId,
+            bodyTypeId: input.bodyTypeId,
+            breastSizeId: input.breastSizeId,
+            occupationId: input.occupationId,
+            relationshipId: input.relationshipId,
             character_kink: {
-              create: input.kinks.map((kink) => ({ kink: kink as Kink })),
+              create: input.kinkIds.map((kinkId) => ({ kinkId })),
             },
           },
         });

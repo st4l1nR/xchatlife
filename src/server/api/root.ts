@@ -1,6 +1,7 @@
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
 import { chatRouter } from "@/server/api/routers/chat";
+import { optionsRouter } from "@/server/api/routers/options";
 import { postRouter } from "@/server/api/routers/post";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   character: characterRouter,
   chat: chatRouter,
+  options: optionsRouter,
   post: postRouter,
   story: storyRouter,
   reel: reelRouter,

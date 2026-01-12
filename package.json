@@ -81,6 +81,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-v8": "^4.0.16",
+    "dotenv": "^17.2.3",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.3",
     "eslint-plugin-storybook": "^10.1.11",

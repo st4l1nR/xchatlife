@@ -22,10 +22,8 @@ type DialogCreateCharacterVoiceProps = {
   containerRef?: React.RefObject<HTMLElement | null>;
 };
 
-const VOICE_IMAGE_PATH =
-  "/images/create-character/girls/realistic/step-5/voice/waveform-0a113678139bf59ba2eb1a743cf0f23b485eb2849d710171778b8225b0c7701e.png";
-const VOICE_VIDEO_PATH =
-  "/images/create-character/girls/realistic/step-5/voice/waveform-62d9d48b2ebc188830c3ffdaa8952afb53fa4c7a340cf0a05f063efe591c86f7.webm";
+const VOICE_IMAGE_PATH = "/audio/voice-waveform.png";
+const VOICE_VIDEO_PATH = "/audio/voice-waveform.webm";
 
 const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
   open,
