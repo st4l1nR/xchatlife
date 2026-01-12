@@ -2,11 +2,11 @@
 
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
-import SidebarDashboard from "../organisms/SidebarDashboard";
-import NavbarDashboard from "../organisms/NavbarDashboard";
-import NavbarMobileDashboard from "../organisms/NavbarMobileDashboard";
+import SidebarHome from "../organisms/SidebarHome";
+import NavbarHome from "../organisms/NavbarHome";
+import NavbarMobileHome from "../organisms/NavbarMobileHome";
 
-export type TemplateDashboardProps = {
+export type TemplateAppProps = {
   /**
    * Main content to display in the dashboard area
    */
@@ -18,12 +18,12 @@ export type TemplateDashboardProps = {
 };
 
 /**
- * TemplateDashboard - Admin dashboard layout template
+ * TemplateApp - Main app layout template
  *
- * A comprehensive dashboard layout combining:
- * - Collapsible sidebar navigation (SidebarDashboard) - Desktop only
- * - Mobile bottom navigation (NavbarMobileDashboard) - Mobile only
- * - Top navigation bar with search and user menu (NavbarDashboard)
+ * A comprehensive app layout combining:
+ * - Collapsible sidebar navigation (SidebarHome) - Desktop only
+ * - Mobile bottom navigation (NavbarMobileHome) - Mobile only
+ * - Top navigation bar with user menu (NavbarHome) - Desktop only
  * - Main content area for page content
  *
  * Fully self-contained - automatically fetches user information from better-auth session
@@ -31,33 +31,29 @@ export type TemplateDashboardProps = {
  * Responsive design: switches between desktop and mobile layouts at md breakpoint (768px).
  * Uses semantic colors that automatically adapt to light/dark themes.
  */
-export const TemplateDashboard = ({
-  children,
-  className,
-}: TemplateDashboardProps) => {
+export const TemplateApp = ({ children, className }: TemplateAppProps) => {
   // Detect mobile viewport (below md breakpoint: 768px)
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
     <div className={clsx("bg-background flex h-screen", className)}>
       {/* Sidebar - Desktop only */}
-      {!isMobile && <SidebarDashboard />}
+      {!isMobile && <SidebarHome />}
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Navbar */}
-        <NavbarDashboard />
+        <NavbarHome />
 
         {/* Page Content */}
         <main className="bg-background flex flex-1 flex-col overflow-auto">
           {children}
         </main>
-
-        {/* Mobile Bottom Navigation - Mobile only */}
-        {isMobile && <NavbarMobileDashboard />}
+        {/* Mobile Bottom Navigation - Mobile only, sticky inside main */}
+        {isMobile && <NavbarMobileHome />}
       </div>
     </div>
   );
 };
 
-export default TemplateDashboard;
+export default TemplateApp;

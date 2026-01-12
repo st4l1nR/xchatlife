@@ -31,6 +31,8 @@ export const env = createEnv({
     R2_PUBLIC_URL: z.string().optional(),
     // Socket.io
     SOCKET_JWT_SECRET: z.string().min(32).optional(),
+    // Email (Resend)
+    RESEND_API_KEY: z.string().optional(),
   },
 
   /**
@@ -41,6 +43,7 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_SOCKET_URL: z.string().url().optional(),
+    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   },
 
   /**
@@ -72,6 +75,9 @@ export const env = createEnv({
     // Socket.io
     SOCKET_JWT_SECRET: process.env.SOCKET_JWT_SECRET,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
+    // Email (Resend)
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

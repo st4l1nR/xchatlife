@@ -688,6 +688,19 @@ model usage_quota {
 }
 
 // ==========================================
+// ROLE MODEL
+// ==========================================
+
+model role_custom {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  permissions Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       user[]   @relation("UserCustomRole")
+}
+
+// ==========================================
 // USER MODEL
 // ==========================================
 
@@ -705,6 +718,8 @@ model user {
   language         Language       @default(english)
   notifications    Boolean        @default(true)
   role             UserRole       @default(default)
+  customRoleId     String?
+  customRole       role_custom?   @relation("UserCustomRole", fields: [customRoleId], references: [id])
   Post             Post[]
   account          account[]
   affiliate        affiliate?
@@ -717,12 +732,32 @@ model user {
   usage_quota      usage_quota[]
   media_folder     media_folder[]
   visual_novel     visual_novel[]
-  tickets_created  ticket[]       @relation("ticket_user")
-  tickets_assigned ticket[]       @relation("ticket_assigned")
-  ticket_reply     ticket_reply[]
+  tickets_created     ticket[]       @relation("ticket_user")
+  tickets_assigned    ticket[]       @relation("ticket_assigned")
+  ticket_reply        ticket_reply[]
+  invitations_created invitation[]   @relation("invitation_creator")
 
   @@index([language])
   @@index([role])
+}
+
+// ==========================================
+// INVITATION MODEL
+// ==========================================
+
+model invitation {
+  id        String    @id @default(cuid())
+  email     String
+  role      UserRole  @default(default)
+  token     String    @unique
+  usedAt    DateTime?
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  creator   user      @relation("invitation_creator", fields: [createdBy], references: [id])
+
+  @@index([token])
+  @@index([email])
 }
 
 model verification {

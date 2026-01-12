@@ -37,7 +37,9 @@
       "Bash(npx storybook:*)",
       "Bash(pnpm storybook:*)",
       "Bash(pnpm db:generate:*)",
-      "Bash(pnpm db:push:*)"
+      "Bash(pnpm db:push:*)",
+      "Bash(pnpm exec eslint:*)",
+      "Bash(pnpm prisma db push:*)"
     ],
     "deny": []
   }

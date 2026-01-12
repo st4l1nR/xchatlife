@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { TemplateDashboard } from "@/app/_components/templates/TemplateDashboard";
+import { TemplateApp } from "@/app/_components/templates/TemplateApp";
 
 const meta = {
-  title: "Templates/TemplateDashboard",
-  component: TemplateDashboard,
+  title: "Templates/TemplateApp",
+  component: TemplateApp,
   parameters: {
     layout: "fullscreen",
     nextjs: {
       appDirectory: true,
       navigation: {
-        pathname: "/dashboard",
+        pathname: "/",
       },
     },
   },
@@ -33,7 +33,7 @@ export const Default: Story = {
           Dashboard Content
         </h1>
         <p className="text-muted-foreground mt-2">
-          This is the main content area of the admin dashboard.
+          This is the main content area of the dashboard.
         </p>
       </div>
     ),
@@ -46,7 +46,7 @@ export const Mobile: Story = {
       <div className="p-4">
         <h1 className="text-foreground text-xl font-bold">Mobile Dashboard</h1>
         <p className="text-muted-foreground mt-2">
-          This is the mobile view of the admin dashboard.
+          This is the mobile view of the dashboard.
         </p>
       </div>
     ),
@@ -58,37 +58,37 @@ export const Mobile: Story = {
   },
 };
 
-export const RolesPage: Story = {
+export const ChatsPage: Story = {
   args: {
     children: (
       <div className="p-8">
-        <h1 className="text-foreground text-2xl font-bold">Roles</h1>
-        <p className="text-muted-foreground mt-2">Manage user roles</p>
+        <h1 className="text-foreground text-2xl font-bold">Chats</h1>
+        <p className="text-muted-foreground mt-2">Your conversations</p>
       </div>
     ),
   },
   parameters: {
     nextjs: {
       navigation: {
-        pathname: "/dashboard/roles",
+        pathname: "/chats",
       },
     },
   },
 };
 
-export const UsersPage: Story = {
+export const MatchesPage: Story = {
   args: {
     children: (
       <div className="p-8">
-        <h1 className="text-foreground text-2xl font-bold">Users</h1>
-        <p className="text-muted-foreground mt-2">Manage users</p>
+        <h1 className="text-foreground text-2xl font-bold">Matches</h1>
+        <p className="text-muted-foreground mt-2">Your matches</p>
       </div>
     ),
   },
   parameters: {
     nextjs: {
       navigation: {
-        pathname: "/dashboard/users",
+        pathname: "/matches",
       },
     },
   },
