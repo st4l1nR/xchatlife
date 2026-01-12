@@ -196,5 +196,6 @@ export const WithInteractivePagination: Story = {
   args: {
     loading: false,
     totalDocs: 50,
+    data: [], // Overridden by render function
   },
 };

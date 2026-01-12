@@ -75,7 +75,7 @@ export const chatRouter = createTRPCRouter({
             poster: true,
           },
         },
-        messages: {
+        message: {
           where: {
             isDeleted: false,
           },
@@ -92,7 +92,7 @@ export const chatRouter = createTRPCRouter({
 
     // Format for SnackChatProps
     const formattedChats = chats.map((chat) => {
-      const lastMessage = chat.messages[0];
+      const lastMessage = chat.message[0];
       return {
         id: chat.id,
         name: chat.character.name,
@@ -133,7 +133,13 @@ export const chatRouter = createTRPCRouter({
             include: {
               poster: true,
               video: true,
-              character_kink: true,
+              bodyType: true,
+              ethnicity: true,
+              character_kink: {
+                include: {
+                  kink: true,
+                },
+              },
             },
           },
         },

@@ -10,46 +10,19 @@ import {
   DialogActions,
 } from "../atoms/dialog";
 import { Button } from "../atoms/button";
-import type { CharacterFormData } from "../pages/CreateCharacterPage";
+import type { RelationshipOption } from "../pages/CreateCharacterPage";
 
 type DialogCreateCharacterRelationshipProps = {
   open: boolean;
   onClose: () => void;
-  value: CharacterFormData["relationship"] | undefined;
-  onChange: (value: CharacterFormData["relationship"]) => void;
-  options: readonly { value: string; label: string; emoji: string }[];
+  value: string | undefined;
+  onChange: (value: string) => void;
+  options: RelationshipOption[];
   containerRef?: React.RefObject<HTMLElement | null>;
 };
 
 // 5-column grid on desktop, 2-column on mobile: show 10 items (2 rows on desktop, 5 rows on mobile) initially
 const INITIAL_SHOW_COUNT = 10;
-
-// Map relationship values to image filenames (using underscore values to match Prisma enum)
-const getRelationshipImagePath = (value: string): string => {
-  const labelMap: Record<string, string> = {
-    stranger: "Stranger",
-    girlfriend: "Girlfriend",
-    sex_friend: "Sex Friend",
-    school_mate: "School Mate",
-    work_colleague: "Work Colleague",
-    wife: "Wife",
-    mistress: "Mistress",
-    friend: "Friend",
-    step_sister: "Step Sister",
-    step_mom: "Step Mom",
-    step_daughter: "Step Daughter",
-    landlord: "Landlord",
-    sugar_baby: "Sugar Baby",
-    boss: "Boss",
-    teacher: "Teacher",
-    student: "Student",
-    neighbour: "Neighbour",
-    mother_in_law: "Mother-In-Law",
-    sister_in_law: "Sister-In-Law",
-  };
-  const filename = labelMap[value] ?? value;
-  return `/images/create-character/girls/realistic/step-5/relationship/${filename}.png`;
-};
 
 const DialogCreateCharacterRelationship: React.FC<
   DialogCreateCharacterRelationshipProps
@@ -101,19 +74,17 @@ const DialogCreateCharacterRelationship: React.FC<
         <div className="mx-auto flex max-w-sm flex-wrap justify-center gap-4 sm:max-w-2xl">
           {visibleOptions.map((option) => (
             <button
-              key={option.value}
+              key={option.id}
               type="button"
-              onClick={() =>
-                setLocalValue(option.value as CharacterFormData["relationship"])
-              }
+              onClick={() => setLocalValue(option.id)}
               className={clsx(
                 "relative flex w-[calc(50%-0.5rem)] flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-3 transition-all sm:w-[calc(20%-0.8rem)]",
-                localValue === option.value
+                localValue === option.id
                   ? "border-primary bg-primary/10"
                   : "border-border bg-muted hover:border-muted-foreground",
               )}
             >
-              {localValue === option.value && (
+              {localValue === option.id && (
                 <div className="bg-primary absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
                   <svg
                     className="text-primary-foreground h-3 w-3"
@@ -130,21 +101,21 @@ const DialogCreateCharacterRelationship: React.FC<
                   </svg>
                 </div>
               )}
-              <div className="relative h-20 w-20 sm:h-24 sm:w-24">
-                <Image
-                  src={getRelationshipImagePath(option.value)}
-                  alt={option.label}
-                  fill
-                  className="object-contain"
-                  sizes="80px"
-                />
-              </div>
+              {option.imageSrc && (
+                <div className="relative h-20 w-20 sm:h-24 sm:w-24">
+                  <Image
+                    src={option.imageSrc}
+                    alt={option.label}
+                    fill
+                    className="object-contain"
+                    sizes="80px"
+                  />
+                </div>
+              )}
               <span
                 className={clsx(
                   "text-center text-sm font-medium",
-                  localValue === option.value
-                    ? "text-primary"
-                    : "text-foreground",
+                  localValue === option.id ? "text-primary" : "text-foreground",
                 )}
               >
                 {option.label}

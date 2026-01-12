@@ -10,35 +10,15 @@ import {
   DialogActions,
 } from "../atoms/dialog";
 import { Button } from "../atoms/button";
-import type { CharacterFormData } from "../pages/CreateCharacterPage";
+import type { PersonalityOption } from "../pages/CreateCharacterPage";
 
 type DialogCreateCharacterPersonalityProps = {
   open: boolean;
   onClose: () => void;
-  value: CharacterFormData["personality"] | undefined;
-  onChange: (value: CharacterFormData["personality"]) => void;
-  options: readonly { value: string; label: string; emoji: string }[];
+  value: string | undefined;
+  onChange: (value: string) => void;
+  options: PersonalityOption[];
   containerRef?: React.RefObject<HTMLElement | null>;
-};
-
-// Map personality values to image filenames
-const getPersonalityImagePath = (value: string): string => {
-  const labelMap: Record<string, string> = {
-    nympho: "Nympho",
-    lover: "Lover",
-    submissive: "Submissive",
-    dominant: "Dominant",
-    temptress: "Temptress",
-    innocent: "Innocent",
-    caregiver: "Caregiver",
-    experimenter: "Experimenter",
-    mean: "Mean",
-    confidant: "Confidant",
-    shy: "Shy",
-    queen: "Queen",
-  };
-  const filename = labelMap[value] ?? value;
-  return `/images/create-character/girls/realistic/step-5/personality/${filename}.png`;
 };
 
 const DialogCreateCharacterPersonality: React.FC<
@@ -85,33 +65,31 @@ const DialogCreateCharacterPersonality: React.FC<
         <div className="mx-auto grid max-w-sm grid-cols-1 gap-3 sm:flex sm:max-w-2xl sm:flex-wrap sm:justify-center">
           {options.map((option) => (
             <button
-              key={option.value}
+              key={option.id}
               type="button"
-              onClick={() =>
-                setLocalValue(option.value as CharacterFormData["personality"])
-              }
+              onClick={() => setLocalValue(option.id)}
               className={clsx(
                 "flex w-full items-center gap-2 rounded-xl border py-3 pr-4 pl-3 transition-all sm:w-fit",
-                localValue === option.value
+                localValue === option.id
                   ? "border-primary bg-primary/10"
                   : "border-border bg-muted hover:border-muted-foreground",
               )}
             >
-              <div className="relative h-8 w-8 shrink-0">
-                <Image
-                  src={getPersonalityImagePath(option.value)}
-                  alt={option.label}
-                  fill
-                  className="object-contain"
-                  sizes="32px"
-                />
-              </div>
+              {option.imageSrc && (
+                <div className="relative h-8 w-8 shrink-0">
+                  <Image
+                    src={option.imageSrc}
+                    alt={option.label}
+                    fill
+                    className="object-contain"
+                    sizes="32px"
+                  />
+                </div>
+              )}
               <span
                 className={clsx(
                   "font-medium",
-                  localValue === option.value
-                    ? "text-primary"
-                    : "text-foreground",
+                  localValue === option.id ? "text-primary" : "text-foreground",
                 )}
               >
                 {option.label}
