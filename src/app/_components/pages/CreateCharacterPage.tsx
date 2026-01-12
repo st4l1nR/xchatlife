@@ -16,7 +16,10 @@ import CreateCharacterStep5 from "../organisms/CreateCharacterStep5";
 import DialogAuth, { type DialogAuthVariant } from "../organisms/DialogAuth";
 import { api } from "@/trpc/react";
 import { useApp } from "@/app/_contexts/AppContext";
-import type { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
+import type {
+  CharacterGender,
+  CharacterStyle,
+} from "../../../../generated/prisma";
 
 // ============================================================================
 // Schemas

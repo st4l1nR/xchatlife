@@ -104,7 +104,7 @@ const DialogCreateCharacterVoice: React.FC<DialogCreateCharacterVoiceProps> = ({
       }
       setPlayingVoice(null);
     }
-    setLocalValue(voiceId as CharacterFormData["voice"]);
+    setLocalValue(voiceId);
   };
 
   return (

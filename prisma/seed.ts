@@ -102,7 +102,12 @@ const VARIANT_DEFINITIONS = [
 // Helper function to get or create Media record
 // ============================================================================
 
-async function getOrCreateMedia(key: string, url: string, type: MediaType, mimeType: string): Promise<string> {
+async function getOrCreateMedia(
+  key: string,
+  url: string,
+  type: MediaType,
+  mimeType: string,
+): Promise<string> {
   const media = await prisma.media.upsert({
     where: { key },
     update: { url, mimeType },
@@ -113,12 +118,12 @@ async function getOrCreateMedia(key: string, url: string, type: MediaType, mimeT
 
 // Helper to determine mime type from URL
 function getMimeType(url: string): string {
-  if (url.endsWith('.png')) return 'image/png';
-  if (url.endsWith('.jpg') || url.endsWith('.jpeg')) return 'image/jpeg';
-  if (url.endsWith('.webp')) return 'image/webp';
-  if (url.endsWith('.mp4')) return 'video/mp4';
-  if (url.endsWith('.webm')) return 'video/webm';
-  return 'application/octet-stream';
+  if (url.endsWith(".png")) return "image/png";
+  if (url.endsWith(".jpg") || url.endsWith(".jpeg")) return "image/jpeg";
+  if (url.endsWith(".webp")) return "image/webp";
+  if (url.endsWith(".mp4")) return "video/mp4";
+  if (url.endsWith(".webm")) return "video/webm";
+  return "application/octet-stream";
 }
 
 // Helper to extract key from URL
@@ -135,41 +140,165 @@ function getKeyFromUrl(url: string): string {
 
 // Personality options - with images from R2
 const PERSONALITY_DATA = [
-  { name: "nympho", label: "Nympho", imageUrl: `${R2_BASE_URL}/seed/options/personality/nympho.png` },
-  { name: "lover", label: "Lover", imageUrl: `${R2_BASE_URL}/seed/options/personality/lover.png` },
-  { name: "submissive", label: "Submissive", imageUrl: `${R2_BASE_URL}/seed/options/personality/submissive.png` },
-  { name: "dominant", label: "Dominant", imageUrl: `${R2_BASE_URL}/seed/options/personality/dominant.png` },
-  { name: "temptress", label: "Temptress", imageUrl: `${R2_BASE_URL}/seed/options/personality/temptress.png` },
-  { name: "innocent", label: "Innocent", imageUrl: `${R2_BASE_URL}/seed/options/personality/innocent.png` },
-  { name: "caregiver", label: "Caregiver", imageUrl: `${R2_BASE_URL}/seed/options/personality/caregiver.png` },
-  { name: "experimenter", label: "Experimenter", imageUrl: `${R2_BASE_URL}/seed/options/personality/experimenter.png` },
-  { name: "mean", label: "Mean", imageUrl: `${R2_BASE_URL}/seed/options/personality/mean.png` },
-  { name: "confidant", label: "Confidant", imageUrl: `${R2_BASE_URL}/seed/options/personality/confidant.png` },
-  { name: "shy", label: "Shy", imageUrl: `${R2_BASE_URL}/seed/options/personality/shy.png` },
-  { name: "queen", label: "Queen", imageUrl: `${R2_BASE_URL}/seed/options/personality/queen.png` },
+  {
+    name: "nympho",
+    label: "Nympho",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/nympho.png`,
+  },
+  {
+    name: "lover",
+    label: "Lover",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/lover.png`,
+  },
+  {
+    name: "submissive",
+    label: "Submissive",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/submissive.png`,
+  },
+  {
+    name: "dominant",
+    label: "Dominant",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/dominant.png`,
+  },
+  {
+    name: "temptress",
+    label: "Temptress",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/temptress.png`,
+  },
+  {
+    name: "innocent",
+    label: "Innocent",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/innocent.png`,
+  },
+  {
+    name: "caregiver",
+    label: "Caregiver",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/caregiver.png`,
+  },
+  {
+    name: "experimenter",
+    label: "Experimenter",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/experimenter.png`,
+  },
+  {
+    name: "mean",
+    label: "Mean",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/mean.png`,
+  },
+  {
+    name: "confidant",
+    label: "Confidant",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/confidant.png`,
+  },
+  {
+    name: "shy",
+    label: "Shy",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/shy.png`,
+  },
+  {
+    name: "queen",
+    label: "Queen",
+    imageUrl: `${R2_BASE_URL}/seed/options/personality/queen.png`,
+  },
 ];
 
 // Relationship options - with images from R2
 const RELATIONSHIP_DATA = [
-  { name: "stranger", label: "Stranger", imageUrl: `${R2_BASE_URL}/seed/options/relationship/stranger.png` },
-  { name: "girlfriend", label: "Girlfriend", imageUrl: `${R2_BASE_URL}/seed/options/relationship/girlfriend.png` },
-  { name: "sex_friend", label: "Sex Friend", imageUrl: `${R2_BASE_URL}/seed/options/relationship/sex_friend.png` },
-  { name: "school_mate", label: "School Mate", imageUrl: `${R2_BASE_URL}/seed/options/relationship/school_mate.png` },
-  { name: "work_colleague", label: "Work Colleague", imageUrl: `${R2_BASE_URL}/seed/options/relationship/work_colleague.png` },
-  { name: "wife", label: "Wife", imageUrl: `${R2_BASE_URL}/seed/options/relationship/wife.png` },
-  { name: "mistress", label: "Mistress", imageUrl: `${R2_BASE_URL}/seed/options/relationship/mistress.png` },
-  { name: "friend", label: "Friend", imageUrl: `${R2_BASE_URL}/seed/options/relationship/friend.png` },
-  { name: "step_sister", label: "Step Sister", imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_sister.png` },
-  { name: "step_mom", label: "Step Mom", imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_mom.png` },
-  { name: "step_daughter", label: "Step Daughter", imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_daughter.png` },
-  { name: "landlord", label: "Landlord", imageUrl: `${R2_BASE_URL}/seed/options/relationship/landlord.png` },
-  { name: "sugar_baby", label: "Sugar Baby", imageUrl: `${R2_BASE_URL}/seed/options/relationship/sugar_baby.png` },
-  { name: "boss", label: "Boss", imageUrl: `${R2_BASE_URL}/seed/options/relationship/boss.png` },
-  { name: "teacher", label: "Teacher", imageUrl: `${R2_BASE_URL}/seed/options/relationship/teacher.png` },
-  { name: "student", label: "Student", imageUrl: `${R2_BASE_URL}/seed/options/relationship/student.png` },
-  { name: "neighbour", label: "Neighbour", imageUrl: `${R2_BASE_URL}/seed/options/relationship/neighbour.png` },
-  { name: "mother_in_law", label: "Mother-In-Law", imageUrl: `${R2_BASE_URL}/seed/options/relationship/mother_in_law.png` },
-  { name: "sister_in_law", label: "Sister-In-Law", imageUrl: `${R2_BASE_URL}/seed/options/relationship/sister_in_law.png` },
+  {
+    name: "stranger",
+    label: "Stranger",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/stranger.png`,
+  },
+  {
+    name: "girlfriend",
+    label: "Girlfriend",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/girlfriend.png`,
+  },
+  {
+    name: "sex_friend",
+    label: "Sex Friend",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/sex_friend.png`,
+  },
+  {
+    name: "school_mate",
+    label: "School Mate",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/school_mate.png`,
+  },
+  {
+    name: "work_colleague",
+    label: "Work Colleague",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/work_colleague.png`,
+  },
+  {
+    name: "wife",
+    label: "Wife",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/wife.png`,
+  },
+  {
+    name: "mistress",
+    label: "Mistress",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/mistress.png`,
+  },
+  {
+    name: "friend",
+    label: "Friend",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/friend.png`,
+  },
+  {
+    name: "step_sister",
+    label: "Step Sister",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_sister.png`,
+  },
+  {
+    name: "step_mom",
+    label: "Step Mom",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_mom.png`,
+  },
+  {
+    name: "step_daughter",
+    label: "Step Daughter",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/step_daughter.png`,
+  },
+  {
+    name: "landlord",
+    label: "Landlord",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/landlord.png`,
+  },
+  {
+    name: "sugar_baby",
+    label: "Sugar Baby",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/sugar_baby.png`,
+  },
+  {
+    name: "boss",
+    label: "Boss",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/boss.png`,
+  },
+  {
+    name: "teacher",
+    label: "Teacher",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/teacher.png`,
+  },
+  {
+    name: "student",
+    label: "Student",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/student.png`,
+  },
+  {
+    name: "neighbour",
+    label: "Neighbour",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/neighbour.png`,
+  },
+  {
+    name: "mother_in_law",
+    label: "Mother-In-Law",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/mother_in_law.png`,
+  },
+  {
+    name: "sister_in_law",
+    label: "Sister-In-Law",
+    imageUrl: `${R2_BASE_URL}/seed/options/relationship/sister_in_law.png`,
+  },
 ];
 
 // Occupation options - with emojis
@@ -229,129 +358,611 @@ const KINK_DATA = [
 // ============================================================================
 
 // Ethnicity options per variant
-const ETHNICITY_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const ETHNICITY_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "caucasian", label: "Caucasian", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.mp4` },
-  { name: "asian", label: "Asian", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.mp4` },
-  { name: "black", label: "Black / Afro", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.mp4` },
-  { name: "latina", label: "Latina", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.mp4` },
-  { name: "arab", label: "Arab", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.jpg`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.mp4` },
+  {
+    name: "caucasian",
+    label: "Caucasian",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.mp4`,
+  },
+  {
+    name: "asian",
+    label: "Asian",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.mp4`,
+  },
+  {
+    name: "black",
+    label: "Black / Afro",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.mp4`,
+  },
+  {
+    name: "latina",
+    label: "Latina",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.mp4`,
+  },
+  {
+    name: "arab",
+    label: "Arab",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.jpg`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.mp4`,
+  },
   // girl-anime
-  { name: "caucasian", label: "Caucasian", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.mp4` },
-  { name: "asian", label: "Asian", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.mp4` },
-  { name: "latina", label: "Latina", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.mp4` },
+  {
+    name: "caucasian",
+    label: "Caucasian",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.mp4`,
+  },
+  {
+    name: "asian",
+    label: "Asian",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.mp4`,
+  },
+  {
+    name: "latina",
+    label: "Latina",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.mp4`,
+  },
   // trans-realistic
-  { name: "caucasian", label: "Caucasian", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/caucasian.png` },
-  { name: "asian", label: "Asian", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/asian.png` },
-  { name: "latina", label: "Latina", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/latina.png` },
+  {
+    name: "caucasian",
+    label: "Caucasian",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/caucasian.png`,
+  },
+  {
+    name: "asian",
+    label: "Asian",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/asian.png`,
+  },
+  {
+    name: "latina",
+    label: "Latina",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/latina.png`,
+  },
 ];
 
 // Hair Style options per variant
-const HAIR_STYLE_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const HAIR_STYLE_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "straight", label: "Straight", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4` },
-  { name: "bangs", label: "Bangs", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4` },
-  { name: "curly", label: "Curly", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4` },
-  { name: "bun", label: "Bun", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4` },
-  { name: "short", label: "Short", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4` },
-  { name: "ponytail", label: "Ponytail", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4` },
+  {
+    name: "straight",
+    label: "Straight",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4`,
+  },
+  {
+    name: "bangs",
+    label: "Bangs",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4`,
+  },
+  {
+    name: "curly",
+    label: "Curly",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4`,
+  },
+  {
+    name: "bun",
+    label: "Bun",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4`,
+  },
+  {
+    name: "short",
+    label: "Short",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4`,
+  },
+  {
+    name: "ponytail",
+    label: "Ponytail",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4`,
+  },
   // girl-anime
-  { name: "straight", label: "Straight", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.mp4` },
-  { name: "bangs", label: "Bangs", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.mp4` },
-  { name: "curly", label: "Curly", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.mp4` },
-  { name: "bun", label: "Bun", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.mp4` },
-  { name: "short", label: "Short", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.mp4` },
-  { name: "ponytail", label: "Ponytail", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.webp`, videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.mp4` },
+  {
+    name: "straight",
+    label: "Straight",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.mp4`,
+  },
+  {
+    name: "bangs",
+    label: "Bangs",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.mp4`,
+  },
+  {
+    name: "curly",
+    label: "Curly",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.mp4`,
+  },
+  {
+    name: "bun",
+    label: "Bun",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.mp4`,
+  },
+  {
+    name: "short",
+    label: "Short",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.mp4`,
+  },
+  {
+    name: "ponytail",
+    label: "Ponytail",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.webp`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.mp4`,
+  },
   // trans-realistic (reuses girl-realistic URLs)
-  { name: "straight", label: "Straight", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4` },
-  { name: "bangs", label: "Bangs", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4` },
-  { name: "curly", label: "Curly", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4` },
-  { name: "bun", label: "Bun", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4` },
-  { name: "short", label: "Short", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4` },
-  { name: "ponytail", label: "Ponytail", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`, videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4` },
+  {
+    name: "straight",
+    label: "Straight",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4`,
+  },
+  {
+    name: "bangs",
+    label: "Bangs",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4`,
+  },
+  {
+    name: "curly",
+    label: "Curly",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4`,
+  },
+  {
+    name: "bun",
+    label: "Bun",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4`,
+  },
+  {
+    name: "short",
+    label: "Short",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4`,
+  },
+  {
+    name: "ponytail",
+    label: "Ponytail",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`,
+    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4`,
+  },
 ];
 
 // Hair Color options per variant
-const HAIR_COLOR_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const HAIR_COLOR_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "brunette", label: "Brunette", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png` },
-  { name: "blonde", label: "Blonde", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png` },
-  { name: "black", label: "Black", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png` },
-  { name: "redhead", label: "Redhead", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png` },
-  { name: "pink", label: "Pink", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png` },
+  {
+    name: "brunette",
+    label: "Brunette",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png`,
+  },
+  {
+    name: "blonde",
+    label: "Blonde",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png`,
+  },
+  {
+    name: "black",
+    label: "Black",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png`,
+  },
+  {
+    name: "redhead",
+    label: "Redhead",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png`,
+  },
+  {
+    name: "pink",
+    label: "Pink",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png`,
+  },
   // girl-anime
-  { name: "black", label: "Black", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/black.webp` },
-  { name: "blonde", label: "Blonde", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blonde.webp` },
-  { name: "blue", label: "Blue", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blue.webp` },
-  { name: "multicolor", label: "Multicolor", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/multicolor.webp` },
-  { name: "pink", label: "Pink", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/pink.webp` },
-  { name: "purple", label: "Purple", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/purple.webp` },
-  { name: "redhead", label: "Redhead", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/redhead.webp` },
-  { name: "white", label: "White", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/white.webp` },
+  {
+    name: "black",
+    label: "Black",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/black.webp`,
+  },
+  {
+    name: "blonde",
+    label: "Blonde",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blonde.webp`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blue.webp`,
+  },
+  {
+    name: "multicolor",
+    label: "Multicolor",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/multicolor.webp`,
+  },
+  {
+    name: "pink",
+    label: "Pink",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/pink.webp`,
+  },
+  {
+    name: "purple",
+    label: "Purple",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/purple.webp`,
+  },
+  {
+    name: "redhead",
+    label: "Redhead",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/redhead.webp`,
+  },
+  {
+    name: "white",
+    label: "White",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/white.webp`,
+  },
   // trans-realistic (reuses girl-realistic URLs)
-  { name: "brunette", label: "Brunette", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png` },
-  { name: "blonde", label: "Blonde", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png` },
-  { name: "black", label: "Black", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png` },
-  { name: "redhead", label: "Redhead", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png` },
-  { name: "pink", label: "Pink", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png` },
+  {
+    name: "brunette",
+    label: "Brunette",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png`,
+  },
+  {
+    name: "blonde",
+    label: "Blonde",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png`,
+  },
+  {
+    name: "black",
+    label: "Black",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png`,
+  },
+  {
+    name: "redhead",
+    label: "Redhead",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png`,
+  },
+  {
+    name: "pink",
+    label: "Pink",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png`,
+  },
 ];
 
 // Eye Color options per variant
-const EYE_COLOR_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const EYE_COLOR_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "brown", label: "Brown", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png` },
-  { name: "blue", label: "Blue", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png` },
-  { name: "green", label: "Green", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png` },
+  {
+    name: "brown",
+    label: "Brown",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png`,
+  },
+  {
+    name: "green",
+    label: "Green",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png`,
+  },
   // girl-anime
-  { name: "brown", label: "Brown", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/brown.webp` },
-  { name: "blue", label: "Blue", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/blue.webp` },
-  { name: "green", label: "Green", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/green.webp` },
-  { name: "red", label: "Red", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/red.webp` },
-  { name: "yellow", label: "Yellow", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/yellow.webp` },
+  {
+    name: "brown",
+    label: "Brown",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/brown.webp`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/blue.webp`,
+  },
+  {
+    name: "green",
+    label: "Green",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/green.webp`,
+  },
+  {
+    name: "red",
+    label: "Red",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/red.webp`,
+  },
+  {
+    name: "yellow",
+    label: "Yellow",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/yellow.webp`,
+  },
   // trans-realistic (reuses girl-realistic URLs)
-  { name: "brown", label: "Brown", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png` },
-  { name: "blue", label: "Blue", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png` },
-  { name: "green", label: "Green", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png` },
+  {
+    name: "brown",
+    label: "Brown",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png`,
+  },
+  {
+    name: "green",
+    label: "Green",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png`,
+  },
 ];
 
 // Body Type options per variant
-const BODY_TYPE_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const BODY_TYPE_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "skinny", label: "Skinny", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/skinny.png` },
-  { name: "athletic", label: "Athletic", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/athletic.png` },
-  { name: "average", label: "Average", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/average.png` },
-  { name: "curvy", label: "Curvy", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/curvy.png` },
-  { name: "bbw", label: "BBW", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/bbw.png` },
+  {
+    name: "skinny",
+    label: "Skinny",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/skinny.png`,
+  },
+  {
+    name: "athletic",
+    label: "Athletic",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/athletic.png`,
+  },
+  {
+    name: "average",
+    label: "Average",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/average.png`,
+  },
+  {
+    name: "curvy",
+    label: "Curvy",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/curvy.png`,
+  },
+  {
+    name: "bbw",
+    label: "BBW",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/bbw.png`,
+  },
   // girl-anime (no BBW)
-  { name: "skinny", label: "Skinny", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/skinny.webp` },
-  { name: "athletic", label: "Athletic", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/athletic.webp` },
-  { name: "average", label: "Average", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/average.webp` },
-  { name: "curvy", label: "Curvy", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/curvy.webp` },
+  {
+    name: "skinny",
+    label: "Skinny",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/skinny.webp`,
+  },
+  {
+    name: "athletic",
+    label: "Athletic",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/athletic.webp`,
+  },
+  {
+    name: "average",
+    label: "Average",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/average.webp`,
+  },
+  {
+    name: "curvy",
+    label: "Curvy",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/curvy.webp`,
+  },
   // trans-realistic
-  { name: "skinny", label: "Skinny", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/skinny.png` },
-  { name: "athletic", label: "Athletic", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/athletic.png` },
-  { name: "average", label: "Average", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/average.png` },
-  { name: "curvy", label: "Curvy", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/curvy.png` },
-  { name: "bbw", label: "BBW", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/bbw.png` },
+  {
+    name: "skinny",
+    label: "Skinny",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/skinny.png`,
+  },
+  {
+    name: "athletic",
+    label: "Athletic",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/athletic.png`,
+  },
+  {
+    name: "average",
+    label: "Average",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/average.png`,
+  },
+  {
+    name: "curvy",
+    label: "Curvy",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/curvy.png`,
+  },
+  {
+    name: "bbw",
+    label: "BBW",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/bbw.png`,
+  },
 ];
 
 // Breast Size options per variant
-const BREAST_SIZE_DATA: { name: string; label: string; variantName: string; imageUrl: string; videoUrl?: string }[] = [
+const BREAST_SIZE_DATA: {
+  name: string;
+  label: string;
+  variantName: string;
+  imageUrl: string;
+  videoUrl?: string;
+}[] = [
   // girl-realistic
-  { name: "small", label: "Small", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png` },
-  { name: "medium", label: "Medium", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png` },
-  { name: "large", label: "Large", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png` },
-  { name: "extra_large", label: "Extra Large", variantName: "girl-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png` },
+  {
+    name: "small",
+    label: "Small",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png`,
+  },
+  {
+    name: "medium",
+    label: "Medium",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png`,
+  },
+  {
+    name: "large",
+    label: "Large",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png`,
+  },
+  {
+    name: "extra_large",
+    label: "Extra Large",
+    variantName: "girl-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png`,
+  },
   // girl-anime
-  { name: "small", label: "Small", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/small.webp` },
-  { name: "medium", label: "Medium", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/medium.webp` },
-  { name: "large", label: "Large", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/large.webp` },
-  { name: "extra_large", label: "Extra Large", variantName: "girl-anime", imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/extra_large.webp` },
+  {
+    name: "small",
+    label: "Small",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/small.webp`,
+  },
+  {
+    name: "medium",
+    label: "Medium",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/medium.webp`,
+  },
+  {
+    name: "large",
+    label: "Large",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/large.webp`,
+  },
+  {
+    name: "extra_large",
+    label: "Extra Large",
+    variantName: "girl-anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/extra_large.webp`,
+  },
   // trans-realistic (reuses girl-realistic URLs)
-  { name: "small", label: "Small", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png` },
-  { name: "medium", label: "Medium", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png` },
-  { name: "large", label: "Large", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png` },
-  { name: "extra_large", label: "Extra Large", variantName: "trans-realistic", imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png` },
+  {
+    name: "small",
+    label: "Small",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png`,
+  },
+  {
+    name: "medium",
+    label: "Medium",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png`,
+  },
+  {
+    name: "large",
+    label: "Large",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png`,
+  },
+  {
+    name: "extra_large",
+    label: "Extra Large",
+    variantName: "trans-realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png`,
+  },
 ];
 
 // ============================================================================
@@ -483,7 +1094,9 @@ async function seedVariants(): Promise<Map<string, string>> {
       },
     });
     variantMap.set(v.name, variant.id);
-    console.log(`  - Created variant ${v.name} with image (${imageMedia.id}) and video (${videoMedia.id})`);
+    console.log(
+      `  - Created variant ${v.name} with image (${imageMedia.id}) and video (${videoMedia.id})`,
+    );
   }
 
   console.log(`  - Created ${variantMap.size} character variants`);
@@ -517,7 +1130,7 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const option = await prisma.personality_option.upsert({
       where: { name: data.name },
@@ -537,7 +1150,7 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const option = await prisma.relationship_option.upsert({
       where: { name: data.name },
@@ -555,7 +1168,12 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const option = await prisma.occupation_option.upsert({
       where: { name: data.name },
       update: { label: data.label, emoji: data.emoji, sortOrder: i },
-      create: { name: data.name, label: data.label, emoji: data.emoji, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        emoji: data.emoji,
+        sortOrder: i,
+      },
     });
     occupations.set(data.name, option.id);
   }
@@ -584,7 +1202,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = ETHNICITY_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping ethnicity ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping ethnicity ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -592,20 +1212,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.ethnicity_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     // Store with variant prefix for lookup
     ethnicities.set(`${data.variantName}:${data.name}`, option.id);
@@ -618,7 +1245,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = HAIR_STYLE_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping hair style ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping hair style ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -626,20 +1255,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.hair_style_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     hairStyles.set(`${data.variantName}:${data.name}`, option.id);
   }
@@ -651,7 +1287,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = HAIR_COLOR_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping hair color ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping hair color ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -659,20 +1297,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.hair_color_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     hairColors.set(`${data.variantName}:${data.name}`, option.id);
   }
@@ -684,7 +1329,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = EYE_COLOR_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping eye color ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping eye color ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -692,20 +1339,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.eye_color_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     eyeColors.set(`${data.variantName}:${data.name}`, option.id);
   }
@@ -717,7 +1371,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = BODY_TYPE_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping body type ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping body type ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -725,20 +1381,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.body_type_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     bodyTypes.set(`${data.variantName}:${data.name}`, option.id);
   }
@@ -750,7 +1413,9 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     const data = BREAST_SIZE_DATA[i]!;
     const variantId = variantMap.get(data.variantName);
     if (!variantId) {
-      console.warn(`  - Skipping breast size ${data.name} for unknown variant ${data.variantName}`);
+      console.warn(
+        `  - Skipping breast size ${data.name} for unknown variant ${data.variantName}`,
+      );
       continue;
     }
     // Create media records for image and video
@@ -758,20 +1423,27 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
       getKeyFromUrl(data.imageUrl),
       data.imageUrl,
       MediaType.image,
-      getMimeType(data.imageUrl)
+      getMimeType(data.imageUrl),
     );
     const videoId = data.videoUrl
       ? await getOrCreateMedia(
           getKeyFromUrl(data.videoUrl),
           data.videoUrl,
           MediaType.video,
-          getMimeType(data.videoUrl)
+          getMimeType(data.videoUrl),
         )
       : undefined;
     const option = await prisma.breast_size_option.upsert({
       where: { name_variantId: { name: data.name, variantId } },
       update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: { name: data.name, label: data.label, variantId, imageId, videoId, sortOrder: i },
+      create: {
+        name: data.name,
+        label: data.label,
+        variantId,
+        imageId,
+        videoId,
+        sortOrder: i,
+      },
     });
     breastSizes.set(`${data.variantName}:${data.name}`, option.id);
   }
@@ -887,16 +1559,32 @@ async function main() {
     // Pick a random variant for this character
     const variantName = getRandomItem(availableVariants);
     const [genderStr, styleStr] = variantName.split("-") as [string, string];
-    const gender = genderStr === "girl" ? CharacterGender.girl : CharacterGender.trans;
-    const style = styleStr === "realistic" ? CharacterStyle.realistic : CharacterStyle.anime;
+    const gender =
+      genderStr === "girl" ? CharacterGender.girl : CharacterGender.trans;
+    const style =
+      styleStr === "realistic"
+        ? CharacterStyle.realistic
+        : CharacterStyle.anime;
 
     // Get available options for this variant
-    const variantEthnicities = ETHNICITY_DATA.filter(e => e.variantName === variantName);
-    const variantHairStyles = HAIR_STYLE_DATA.filter(h => h.variantName === variantName);
-    const variantHairColors = HAIR_COLOR_DATA.filter(h => h.variantName === variantName);
-    const variantEyeColors = EYE_COLOR_DATA.filter(e => e.variantName === variantName);
-    const variantBodyTypes = BODY_TYPE_DATA.filter(b => b.variantName === variantName);
-    const variantBreastSizes = BREAST_SIZE_DATA.filter(b => b.variantName === variantName);
+    const variantEthnicities = ETHNICITY_DATA.filter(
+      (e) => e.variantName === variantName,
+    );
+    const variantHairStyles = HAIR_STYLE_DATA.filter(
+      (h) => h.variantName === variantName,
+    );
+    const variantHairColors = HAIR_COLOR_DATA.filter(
+      (h) => h.variantName === variantName,
+    );
+    const variantEyeColors = EYE_COLOR_DATA.filter(
+      (e) => e.variantName === variantName,
+    );
+    const variantBodyTypes = BODY_TYPE_DATA.filter(
+      (b) => b.variantName === variantName,
+    );
+    const variantBreastSizes = BREAST_SIZE_DATA.filter(
+      (b) => b.variantName === variantName,
+    );
 
     // Get random option values for variant-specific options
     const ethnicity = getRandomItem(variantEthnicities);
@@ -928,12 +1616,20 @@ async function main() {
       isLive,
       createdById: user.id,
       // Foreign keys to option tables (variant-specific use "variantName:optionName" key format)
-      ethnicityId: optionMaps.ethnicities.get(`${variantName}:${ethnicity.name}`)!,
-      hairStyleId: optionMaps.hairStyles.get(`${variantName}:${hairStyle.name}`)!,
-      hairColorId: optionMaps.hairColors.get(`${variantName}:${hairColor.name}`)!,
+      ethnicityId: optionMaps.ethnicities.get(
+        `${variantName}:${ethnicity.name}`,
+      )!,
+      hairStyleId: optionMaps.hairStyles.get(
+        `${variantName}:${hairStyle.name}`,
+      )!,
+      hairColorId: optionMaps.hairColors.get(
+        `${variantName}:${hairColor.name}`,
+      )!,
       eyeColorId: optionMaps.eyeColors.get(`${variantName}:${eyeColor.name}`)!,
       bodyTypeId: optionMaps.bodyTypes.get(`${variantName}:${bodyType.name}`)!,
-      breastSizeId: optionMaps.breastSizes.get(`${variantName}:${breastSize.name}`)!,
+      breastSizeId: optionMaps.breastSizes.get(
+        `${variantName}:${breastSize.name}`,
+      )!,
       // Universal options use just the name as key
       personalityId: optionMaps.personalities.get(personality.name)!,
       relationshipId: optionMaps.relationships.get(relationship.name)!,

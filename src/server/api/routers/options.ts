@@ -173,7 +173,13 @@ export const optionsRouter = createTRPCRouter({
       ]);
 
       // Transform all options to include imageSrc and videoSrc
-      const transformOption = (opt: { id: string; name: string; label: string; image: { url: string } | null; video: { url: string } | null }) => ({
+      const transformOption = (opt: {
+        id: string;
+        name: string;
+        label: string;
+        image: { url: string } | null;
+        video: { url: string } | null;
+      }) => ({
         id: opt.id,
         name: opt.name,
         label: opt.label,

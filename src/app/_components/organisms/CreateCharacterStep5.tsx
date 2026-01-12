@@ -270,7 +270,9 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   const getOccupationLabel = () => {
     if (loading) return "Loading...";
     const option = occupations.find((o) => o.id === occupationId);
-    return option ? `${option.emoji ?? ""} ${option.label}`.trim() : "Select...";
+    return option
+      ? `${option.emoji ?? ""} ${option.label}`.trim()
+      : "Select...";
   };
 
   const getKinksLabel = () => {

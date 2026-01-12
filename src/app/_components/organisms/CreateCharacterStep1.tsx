@@ -10,7 +10,10 @@ import clsx from "clsx";
 import CardSelectable from "../molecules/CardSelectable";
 import CardSelectableSkeleton from "../atoms/CardSelectableSkeleton";
 import type { CharacterFormData } from "../pages/CreateCharacterPage";
-import type { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
+import type {
+  CharacterGender,
+  CharacterStyle,
+} from "../../../../generated/prisma";
 
 type CharacterVariant = {
   id: string;
@@ -78,12 +81,16 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({
     const newTypeVariants = variants.filter((v) => v.gender === newType);
 
     // Reset style when changing character type if current style is not available or inactive
-    const currentStyleVariant = newTypeVariants.find((v) => v.style === selectedStyle);
+    const currentStyleVariant = newTypeVariants.find(
+      (v) => v.style === selectedStyle,
+    );
     if (!currentStyleVariant || !currentStyleVariant.isActive) {
       // Find first active variant for new type
       const firstActive = newTypeVariants.find((v) => v.isActive);
       if (firstActive) {
-        setValue("style", firstActive.style as CharacterFormData["style"], { shouldValidate: true });
+        setValue("style", firstActive.style as CharacterFormData["style"], {
+          shouldValidate: true,
+        });
         setValue("posterUrl", firstActive.imageSrc ?? undefined);
         setValue("videoUrl", firstActive.videoSrc ?? undefined);
       }
@@ -96,7 +103,9 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({
   const handleStyleChange = (variant: CharacterVariant) => {
     if (variant.style === selectedStyle) return;
 
-    setValue("style", variant.style as CharacterFormData["style"], { shouldValidate: true });
+    setValue("style", variant.style as CharacterFormData["style"], {
+      shouldValidate: true,
+    });
 
     // Set posterUrl and videoUrl from the selected variant (R2 URLs for database)
     setValue("posterUrl", variant.imageSrc ?? undefined);
