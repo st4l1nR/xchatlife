@@ -21,9 +21,6 @@ import {
 } from "../atoms/dropdown";
 import {
   ShieldCheck,
-  PencilLine,
-  Monitor,
-  Wrench,
   User,
   Trash2,
   Eye,
@@ -31,14 +28,8 @@ import {
   CircleUser,
 } from "lucide-react";
 
-export type UserRoleType =
-  | "admin"
-  | "editor"
-  | "author"
-  | "maintainer"
-  | "subscriber";
-export type UserPlanType = "enterprise" | "team" | "company" | "basic";
-export type UserBillingType = "auto_debit" | "manual_paypal" | "manual_cash";
+export type UserRoleType = "default" | "admin" | "superadmin";
+export type UserSubscriptionType = "yearly" | "monthly" | "none";
 export type UserStatusType = "pending" | "active" | "inactive";
 
 export type TableUserItem = {
@@ -47,8 +38,8 @@ export type TableUserItem = {
   username: string;
   avatarSrc?: string;
   role: UserRoleType;
-  plan: UserPlanType;
-  billing: UserBillingType;
+  customRoleName?: string;
+  subscription: UserSubscriptionType;
   status: UserStatusType;
 };
 
@@ -75,31 +66,27 @@ export type TableUserProps = {
 const getRoleIcon = (role: UserRoleType) => {
   const iconClass = "text-muted-foreground size-4";
   switch (role) {
+    case "superadmin":
+      return <ShieldCheck className={iconClass} />;
     case "admin":
       return <ShieldCheck className={iconClass} />;
-    case "editor":
-      return <PencilLine className={iconClass} />;
-    case "author":
-      return <Monitor className={iconClass} />;
-    case "maintainer":
-      return <Wrench className={iconClass} />;
-    case "subscriber":
+    case "default":
       return <User className={iconClass} />;
     default:
       return <CircleUser className={iconClass} />;
   }
 };
 
-const formatBilling = (billing: UserBillingType): string => {
-  switch (billing) {
-    case "auto_debit":
-      return "Auto Debit";
-    case "manual_paypal":
-      return "Manual Paypal";
-    case "manual_cash":
-      return "Manual Cash";
+const formatSubscription = (subscription: UserSubscriptionType): string => {
+  switch (subscription) {
+    case "yearly":
+      return "Yearly";
+    case "monthly":
+      return "Monthly";
+    case "none":
+      return "None";
     default:
-      return billing;
+      return subscription;
   }
 };
 
@@ -163,27 +150,22 @@ const TableUser: React.FC<TableUserProps> = ({
       enableSorting: true,
       cell: (info) => {
         const role = info.getValue();
+        const customRoleName = info.row.original.customRoleName;
+        const displayRole = customRoleName ?? role;
         return (
           <div className="flex items-center gap-2">
             {getRoleIcon(role)}
-            <span className="capitalize">{role}</span>
+            <span className="capitalize">{displayRole}</span>
           </div>
         );
       },
     }),
 
-    // PLAN Column - Capitalized text
-    columnHelper.accessor("plan", {
-      header: "Plan",
+    // SUBSCRIPTION Column
+    columnHelper.accessor("subscription", {
+      header: "Subscription",
       enableSorting: true,
-      cell: (info) => <span className="capitalize">{info.getValue()}</span>,
-    }),
-
-    // BILLING Column - Formatted text
-    columnHelper.accessor("billing", {
-      header: "Billing",
-      enableSorting: true,
-      cell: (info) => formatBilling(info.getValue()),
+      cell: (info) => formatSubscription(info.getValue()),
     }),
 
     // STATUS Column - Badge

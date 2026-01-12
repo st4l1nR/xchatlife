@@ -126,6 +126,78 @@ src/
 | Affiliate | Referral program accounts |
 | Referral | Referred user tracking |
 
+## Role & Permission System
+
+This application uses a granular role-based permission system for access control.
+
+### Built-in Roles
+
+| Role | Description |
+|------|-------------|
+| `superadmin` | Full system access, bypasses all permission checks |
+| `admin` | Administrative access, bypasses all permission checks |
+| `default` | Base role for users without a custom role assigned |
+
+### Custom Roles
+
+Custom roles are stored in the `role_custom` table with granular CRUD permissions per module:
+
+```typescript
+// Permission structure for each module
+{
+  user: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  character: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  chat: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  media: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  content: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  visual_novel: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  ticket: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  subscription: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  affiliate: { create: boolean, read: boolean, update: boolean, delete: boolean },
+  auth: { create: boolean, read: boolean, update: boolean, delete: boolean },
+}
+```
+
+### Seeded Roles
+
+The seed script creates two custom roles:
+
+| Role | Description |
+|------|-------------|
+| `SUPER ADMIN` | All permissions enabled |
+| `CUSTOMER` | Regular user permissions (can create/manage their own content, limited admin access) |
+
+### Permission Enforcement
+
+tRPC procedures enforce permissions at different levels:
+
+| Procedure | Auth | Permission Check | Use Case |
+|-----------|------|------------------|----------|
+| `publicProcedure` | No | No | Public endpoints (signup, public reads) |
+| `protectedProcedure` | Yes | No | Ownership-based endpoints (my chats, my profile) |
+| `permissionProcedure(module, action)` | Yes | Yes | Granular permission check |
+| `adminProcedure` | Yes | Admin role only | Admin-only endpoints |
+
+### Usage Example
+
+```typescript
+// In a tRPC router:
+import { permissionProcedure } from "@/server/api/trpc";
+
+export const characterRouter = createTRPCRouter({
+  // Requires character.create permission
+  create: permissionProcedure("character", "create")
+    .input(createCharacterSchema)
+    .mutation(async ({ ctx, input }) => {
+      // ... implementation
+    }),
+});
+```
+
+### Auto-assignment on Signup
+
+New users are automatically assigned the `CUSTOMER` role via Better Auth's `databaseHooks`. This happens for both email/password and OAuth signups.
+
 ## Environment Variables
 
 ```env

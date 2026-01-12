@@ -155,3 +155,75 @@ export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
 
   return next({ ctx });
 });
+
+/**
+ * Permission types for granular access control
+ */
+type PermissionModule =
+  | "user"
+  | "character"
+  | "chat"
+  | "media"
+  | "content"
+  | "visual_novel"
+  | "ticket"
+  | "subscription"
+  | "affiliate"
+  | "auth";
+
+type PermissionAction = "create" | "read" | "update" | "delete";
+
+type PermissionValue = {
+  create: boolean;
+  read: boolean;
+  update: boolean;
+  delete: boolean;
+};
+
+type Permissions = Record<PermissionModule, PermissionValue>;
+
+/**
+ * Permission procedure factory
+ *
+ * Creates a procedure that checks if the user has the required permission
+ * for the specified module and action. Admins/superadmins bypass permission checks.
+ *
+ * @param module - The resource module (e.g., "character", "user", "chat")
+ * @param action - The CRUD action ("create", "read", "update", "delete")
+ *
+ * @example
+ * // In a router:
+ * create: permissionProcedure("character", "create")
+ *   .input(createCharacterSchema)
+ *   .mutation(async ({ ctx, input }) => { ... })
+ */
+export const permissionProcedure = (
+  module: PermissionModule,
+  action: PermissionAction,
+) =>
+  protectedProcedure.use(async ({ ctx, next }) => {
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: {
+        role: true,
+        customRole: { select: { permissions: true } },
+      },
+    });
+
+    // Admins/superadmins bypass all permission checks
+    if (user?.role === "admin" || user?.role === "superadmin") {
+      return next({ ctx });
+    }
+
+    // Check custom role permissions
+    const permissions = user?.customRole?.permissions as Permissions | null;
+
+    if (!permissions?.[module]?.[action]) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `You don't have permission to ${action} ${module}`,
+      });
+    }
+
+    return next({ ctx });
+  });

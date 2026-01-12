@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { TRPCReactProvider } from "@/trpc/react";
 import ProviderTheme from "./_components/organisms/ProviderTheme";
 import SkeletonTheme from "./_components/organisms/SkeletonTheme";
-import TemplateApp from "./_components/templates/TemplateApp";
+import TemplateAppConditional from "./_components/templates/TemplateAppConditional";
 import { AppContextProvider } from "./_contexts/AppContext";
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function RootLayout({
           <SkeletonTheme>
             <TRPCReactProvider>
               <AppContextProvider>
-                <TemplateApp>{children}</TemplateApp>
+                <TemplateAppConditional>{children}</TemplateAppConditional>
                 <Toaster
                   position="top-center"
                   toastOptions={{

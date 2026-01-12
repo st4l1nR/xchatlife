@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import HeaderDashboardUser from "@/app/_components/organisms/HeaderDashboardUser";
+import HeaderUserCharacter from "@/app/_components/organisms/HeaderUserCharacter";
 
 const meta = {
-  title: "Organisms/HeaderDashboardUser",
-  component: HeaderDashboardUser,
+  title: "Organisms/HeaderUserCharacter",
+  component: HeaderUserCharacter,
   parameters: {
     layout: "fullscreen",
   },
@@ -46,7 +46,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof HeaderDashboardUser>;
+} satisfies Meta<typeof HeaderUserCharacter>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

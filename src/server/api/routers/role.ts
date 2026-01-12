@@ -2,25 +2,12 @@ import { z } from "zod";
 import { createTRPCRouter, adminProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
-// Permission categories matching the frontend dialog
-const PERMISSION_KEYS = [
-  "user",
-  "character",
-  "chat",
-  "media",
-  "content",
-  "visual_novel",
-  "ticket",
-  "subscription",
-  "affiliate",
-  "auth",
-] as const;
-
-// Zod schema for permission value
+// Zod schema for permission value (CRUD order)
 const permissionValueSchema = z.object({
-  read: z.boolean(),
-  write: z.boolean(),
   create: z.boolean(),
+  read: z.boolean(),
+  update: z.boolean(),
+  delete: z.boolean(),
 });
 
 // Zod schema for all permissions
@@ -64,6 +51,14 @@ export const roleRouter = createTRPCRouter({
     const roles = await ctx.db.role_custom.findMany({
       orderBy: { createdAt: "desc" },
       include: {
+        users: {
+          take: 4,
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
         _count: {
           select: { users: true },
         },
@@ -77,6 +72,11 @@ export const roleRouter = createTRPCRouter({
         name: role.name,
         permissions: role.permissions as z.infer<typeof permissionsSchema>,
         userCount: role._count.users,
+        users: role.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatarSrc: user.image ?? undefined,
+        })),
         createdAt: role.createdAt,
         updatedAt: role.updatedAt,
       })),
