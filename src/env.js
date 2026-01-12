@@ -31,6 +31,8 @@ export const env = createEnv({
     R2_PUBLIC_URL: z.string().optional(),
     // Socket.io
     SOCKET_JWT_SECRET: z.string().min(32).optional(),
+    // Email (Resend)
+    RESEND_API_KEY: z.string().optional(),
     // xAI
     XAI_API_KEY: z.string().min(1).optional(),
   },
@@ -43,6 +45,7 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_SOCKET_URL: z.string().url().optional(),
+    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   },
 
   /**
@@ -74,6 +77,9 @@ export const env = createEnv({
     // Socket.io
     SOCKET_JWT_SECRET: process.env.SOCKET_JWT_SECRET,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
+    // Email (Resend)
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     // xAI
     XAI_API_KEY: process.env.XAI_API_KEY,
   },

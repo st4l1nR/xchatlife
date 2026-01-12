@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "../src/trpc/react";
 import SkeletonTheme from "../src/app/_components/organisms/SkeletonTheme";
 import { AppContextProvider } from "../src/app/_contexts/AppContext";
 import { ChatContextProvider } from "../src/app/_contexts/ChatContext";
+import ProviderTheme from "../src/app/_components/organisms/ProviderTheme";
 
 // Mock session for Storybook
 const mockSession = {
@@ -48,6 +49,13 @@ const preview: Preview = {
     nextauth: {
       session: mockSession,
     },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: "/",
+        query: {},
+      },
+    },
   },
   decorators: [
     withThemeByClassName({
@@ -58,17 +66,19 @@ const preview: Preview = {
       defaultTheme: "light",
       parentSelector: "html",
     }),
-    // Providers wrapper (TRPCReactProvider + AppContextProvider + ChatContextProvider + SkeletonTheme)
+    // Providers wrapper (TRPCReactProvider + AppContextProvider + ChatContextProvider + SkeletonTheme + ProviderTheme)
     (Story) => {
       return (
         <TRPCReactProvider>
-          <AppContextProvider>
-            <ChatContextProvider>
-              <SkeletonTheme>
-                <Story />
-              </SkeletonTheme>
-            </ChatContextProvider>
-          </AppContextProvider>
+          <ProviderTheme>
+            <AppContextProvider>
+              <ChatContextProvider>
+                <SkeletonTheme>
+                  <Story />
+                </SkeletonTheme>
+              </ChatContextProvider>
+            </AppContextProvider>
+          </ProviderTheme>
         </TRPCReactProvider>
       );
     },

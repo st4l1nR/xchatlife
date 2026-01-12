@@ -9,10 +9,10 @@ datasource db {
 }
 
 model Post {
-  id          String   @id
+  id          String   @id @default(cuid())
   name        String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime @updatedAt
   createdById String
   user        user     @relation(fields: [createdById], references: [id])
 
@@ -20,7 +20,7 @@ model Post {
 }
 
 model account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
   userId                String
@@ -32,19 +32,19 @@ model account {
   scope                 String?
   password              String?
   createdAt             DateTime  @default(now())
-  updatedAt             DateTime
+  updatedAt             DateTime  @updatedAt
   user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model affiliate {
-  id             String     @id
+  id             String     @id @default(cuid())
   userId         String     @unique
   referralCode   String     @unique
   commissionRate Decimal    @db.Decimal(5, 4)
   totalEarned    Decimal    @default(0) @db.Decimal(10, 2)
   isActive       Boolean    @default(true)
   createdAt      DateTime   @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime   @updatedAt
   user           user       @relation(fields: [userId], references: [id], onDelete: Cascade)
   referral       referral[]
 
@@ -52,45 +52,236 @@ model affiliate {
   @@index([referralCode])
 }
 
+// ==========================================
+// OPTION TABLES (Dynamic Enums for Admin)
+// ==========================================
+
+model kink_option {
+  id             String           @id @default(cuid())
+  name           String           @unique
+  description    String?
+  icon           String?
+  color          String?
+  sortOrder      Int              @default(0)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  character_kink character_kink[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model ethnicity_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model personality_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model hair_style_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model hair_color_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model eye_color_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model body_type_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model breast_size_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model occupation_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model relationship_option {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  character   character[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// ==========================================
+// CHARACTER MODELS
+// ==========================================
+
 model character {
-  id                              String           @id
-  name                            String
-  posterId                        String?
-  videoId                         String?
-  gender                          CharacterGender
-  style                           CharacterStyle
-  ethnicity                       Ethnicity
-  age                             Int
-  hairStyle                       HairStyle
-  hairColor                       HairColor
-  eyeColor                        EyeColor
-  bodyType                        BodyType
-  breastSize                      BreastSize
-  personality                     Personality
-  relationship                    Relationship
-  occupation                      Occupation
-  voice                           String
-  isPublic                        Boolean          @default(false)
-  isActive                        Boolean          @default(true)
-  isLive                          Boolean          @default(false)
-  createdAt                       DateTime         @default(now())
-  updatedAt                       DateTime
-  createdById                     String
-  user            user              @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  poster          media?            @relation("character_poster", fields: [posterId], references: [id])
-  video           media?            @relation("character_video", fields: [videoId], references: [id])
-  character_kink  character_kink[]
-  character_image character_image[]
-  chat            chat[]
-  reel            reel[]
-  story           story[]
+  id             String              @id @default(cuid())
+  name           String
+  posterId       String?
+  videoId        String?
+  gender         CharacterGender
+  style          CharacterStyle
+  age            Int
+  voice          String
+  isPublic       Boolean             @default(false)
+  isActive       Boolean             @default(true)
+  isLive         Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  createdById    String
+  // Foreign keys for option tables
+  ethnicityId    String
+  personalityId  String
+  hairStyleId    String
+  hairColorId    String
+  eyeColorId     String
+  bodyTypeId     String
+  breastSizeId   String
+  occupationId   String
+  relationshipId String
+
+  // Relations
+  user                           user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  poster                         media?                   @relation("character_posterIdTomedia", fields: [posterId], references: [id])
+  video                          media?                   @relation("character_videoIdTomedia", fields: [videoId], references: [id])
+  ethnicity                      ethnicity_option         @relation(fields: [ethnicityId], references: [id])
+  personality                    personality_option       @relation(fields: [personalityId], references: [id])
+  hairStyle                      hair_style_option        @relation(fields: [hairStyleId], references: [id])
+  hairColor                      hair_color_option        @relation(fields: [hairColorId], references: [id])
+  eyeColor                       eye_color_option         @relation(fields: [eyeColorId], references: [id])
+  bodyType                       body_type_option         @relation(fields: [bodyTypeId], references: [id])
+  breastSize                     breast_size_option       @relation(fields: [breastSizeId], references: [id])
+  occupation                     occupation_option        @relation(fields: [occupationId], references: [id])
+  relationship                   relationship_option      @relation(fields: [relationshipId], references: [id])
+  character_kink                 character_kink[]
+  character_image                character_image[]
+  chat                           chat[]
+  reel                           reel[]
+  story                          story[]
+  media                          media[]                  @relation("media_characterId")
+  visual_novel_character         visual_novel_character[]
+  visual_novel_node              visual_novel_node[]
 
   @@index([createdById])
   @@index([gender])
   @@index([isActive])
   @@index([isPublic])
-  @@index([personality])
   @@index([style])
+  @@index([ethnicityId])
+  @@index([personalityId])
+  @@index([hairStyleId])
+  @@index([hairColorId])
+  @@index([eyeColorId])
+  @@index([bodyTypeId])
+  @@index([breastSizeId])
+  @@index([occupationId])
+  @@index([relationshipId])
 }
 
 model character_image {
@@ -112,25 +303,30 @@ model character_image {
 }
 
 model character_kink {
-  id          String    @id
+  id          String      @id @default(cuid())
   characterId String
-  kink        Kink
-  createdAt   DateTime  @default(now())
-  character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  kinkId      String
+  createdAt   DateTime    @default(now())
+  character   character   @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  kink        kink_option @relation(fields: [kinkId], references: [id])
 
-  @@unique([characterId, kink])
+  @@unique([characterId, kinkId])
   @@index([characterId])
-  @@index([kink])
+  @@index([kinkId])
 }
 
+// ==========================================
+// CHAT & MESSAGING MODELS
+// ==========================================
+
 model chat {
-  id                String              @id
+  id                String              @id @default(cuid())
   userId            String
   characterId       String
   isArchived        Boolean             @default(false)
   lastMessageAt     DateTime?
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime
+  updatedAt         DateTime            @updatedAt
   character         character           @relation(fields: [characterId], references: [id], onDelete: Cascade)
   user              user                @relation(fields: [userId], references: [id], onDelete: Cascade)
   message           message[]
@@ -144,7 +340,7 @@ model chat {
 }
 
 model collection {
-  id        String   @id
+  id        String   @id @default(cuid())
   userId    String
   messageId String?  @unique
   mediaId   String
@@ -158,32 +354,8 @@ model collection {
   @@index([userId])
 }
 
-model media {
-  id                   String            @id @default(cuid())
-  type                 MediaType
-  key                  String            @unique
-  url                  String
-  mimeType             String?
-  size                 Int?
-  width                Int?
-  height               Int?
-  duration             Int?
-  createdAt            DateTime          @default(now())
-  character_as_poster  character[]       @relation("character_poster")
-  character_as_video   character[]       @relation("character_video")
-  character_image      character_image[]
-  collection           collection[]
-  reel_as_thumbnail    reel[]            @relation("reel_thumbnail")
-  reel_as_video        reel[]            @relation("reel_video")
-  story_as_media       story[]           @relation("story_media")
-  story_as_thumbnail   story[]           @relation("story_thumbnail")
-
-  @@index([createdAt])
-  @@index([type])
-}
-
 model message {
-  id                String             @id
+  id                String             @id @default(cuid())
   chatId            String
   type              MessageType
   content           String
@@ -211,20 +383,80 @@ model message_embedding {
   @@index([chatId])
 }
 
+// ==========================================
+// MEDIA LIBRARY SYSTEM
+// ==========================================
+
+model media_folder {
+  id                 String               @id @default(cuid())
+  name               String
+  description        String?
+  createdById        String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  createdBy          user                 @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  media              media[]
+  visual_novel_media visual_novel_media[]
+
+  @@index([createdById])
+  @@index([name])
+}
+
+model media {
+  id                                  String                @id @default(cuid())
+  type                                MediaType
+  key                                 String                @unique
+  url                                 String
+  mimeType                            String?
+  size                                Int?
+  width                               Int?
+  height                              Int?
+  duration                            Int?
+  category                            MediaCategory         @default(other)
+  folderId                            String?
+  characterId                         String?
+  createdAt                           DateTime              @default(now())
+  folder                              media_folder?         @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  character                           character?            @relation("media_characterId", fields: [characterId], references: [id], onDelete: SetNull)
+  character_character_posterIdTomedia character[]           @relation("character_posterIdTomedia")
+  character_character_videoIdTomedia  character[]           @relation("character_videoIdTomedia")
+  character_image                     character_image[]
+  collection                          collection[]
+  reel_reel_thumbnailIdTomedia        reel[]                @relation("reel_thumbnailIdTomedia")
+  reel_reel_videoIdTomedia            reel[]                @relation("reel_videoIdTomedia")
+  story_story_mediaIdTomedia          story[]               @relation("story_mediaIdTomedia")
+  story_story_thumbnailIdTomedia      story[]               @relation("story_thumbnailIdTomedia")
+  visual_novel_thumbnail              visual_novel[]        @relation("visual_novel_thumbnail")
+  node_scenery                        visual_novel_node[]   @relation("node_scenery")
+  node_character_image                visual_novel_node[]   @relation("node_character_image")
+  node_music                          visual_novel_node[]   @relation("node_music")
+  visual_novel_media                  visual_novel_media[]
+
+  @@index([createdAt])
+  @@index([type])
+  @@index([folderId])
+  @@index([characterId])
+  @@index([category])
+}
+
+// ==========================================
+// CONTENT MODELS (Reels, Stories)
+// ==========================================
+
 model reel {
-  id                            String    @id
-  characterId                   String
-  videoId                       String
-  thumbnailId                   String?
-  title                         String?
-  description                   String?
-  viewCount                     Int       @default(0)
-  isActive                      Boolean   @default(true)
-  createdAt                     DateTime  @default(now())
-  updatedAt                     DateTime
-  character                     character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  media_reel_thumbnailIdTomedia media?    @relation("reel_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
-  media_reel_videoIdTomedia     media     @relation("reel_videoIdTomedia", fields: [videoId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  characterId String
+  videoId     String
+  thumbnailId String?
+  title       String?
+  description String?
+  viewCount   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  thumbnail   media?    @relation("reel_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
+  video       media     @relation("reel_videoIdTomedia", fields: [videoId], references: [id], onDelete: Cascade)
 
   @@index([characterId])
   @@index([createdAt])
@@ -232,8 +464,184 @@ model reel {
   @@index([videoId])
 }
 
+model story {
+  id          String    @id @default(cuid())
+  characterId String
+  mediaId     String
+  thumbnailId String?
+  expiresAt   DateTime
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  media       media     @relation("story_mediaIdTomedia", fields: [mediaId], references: [id], onDelete: Cascade)
+  thumbnail   media?    @relation("story_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
+
+  @@index([characterId])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@index([mediaId])
+}
+
+// ==========================================
+// VISUAL NOVEL SYSTEM
+// ==========================================
+
+model visual_novel {
+  id          String                   @id @default(cuid())
+  title       String
+  description String?
+  thumbnailId String?
+  isPublished Boolean                  @default(false)
+  createdById String
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  thumbnail   media?                   @relation("visual_novel_thumbnail", fields: [thumbnailId], references: [id])
+  createdBy   user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  characters  visual_novel_character[]
+  nodes       visual_novel_node[]
+  edges       visual_novel_edge[]
+  media_links visual_novel_media[]
+
+  @@index([createdById])
+  @@index([isPublished])
+}
+
+model visual_novel_character {
+  id            String       @id @default(cuid())
+  visualNovelId String
+  characterId   String
+  createdAt     DateTime     @default(now())
+  visualNovel   visual_novel @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
+  character     character    @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([visualNovelId, characterId])
+  @@index([visualNovelId])
+  @@index([characterId])
+}
+
+model visual_novel_node {
+  id                String                       @id @default(cuid())
+  visualNovelId     String
+  type              VisualNovelNodeType
+  positionX         Float
+  positionY         Float
+  // Scene node fields
+  characterId       String?
+  dialogue          String?
+  sceneryImageId    String?
+  characterImageId  String?
+  backgroundMusicId String?
+  // Choice node fields
+  promptText        String?
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+  visualNovel       visual_novel                 @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
+  character         character?                   @relation(fields: [characterId], references: [id])
+  sceneryImage      media?                       @relation("node_scenery", fields: [sceneryImageId], references: [id])
+  characterImage    media?                       @relation("node_character_image", fields: [characterImageId], references: [id])
+  backgroundMusic   media?                       @relation("node_music", fields: [backgroundMusicId], references: [id])
+  choiceOptions     visual_novel_choice_option[]
+  edgesFrom         visual_novel_edge[]          @relation("edge_source")
+  edgesTo           visual_novel_edge[]          @relation("edge_target")
+
+  @@index([visualNovelId])
+  @@index([type])
+}
+
+model visual_novel_choice_option {
+  id        String              @id @default(cuid())
+  nodeId    String
+  text      String
+  sortOrder Int                 @default(0)
+  createdAt DateTime            @default(now())
+  node      visual_novel_node   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  edges     visual_novel_edge[]
+
+  @@index([nodeId])
+  @@index([sortOrder])
+}
+
+model visual_novel_edge {
+  id             String                      @id @default(cuid())
+  visualNovelId  String
+  sourceNodeId   String
+  targetNodeId   String
+  choiceOptionId String?
+  createdAt      DateTime                    @default(now())
+  visualNovel    visual_novel                @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
+  sourceNode     visual_novel_node           @relation("edge_source", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNode     visual_novel_node           @relation("edge_target", fields: [targetNodeId], references: [id], onDelete: Cascade)
+  choiceOption   visual_novel_choice_option? @relation(fields: [choiceOptionId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceNodeId, targetNodeId, choiceOptionId])
+  @@index([visualNovelId])
+  @@index([sourceNodeId])
+  @@index([targetNodeId])
+}
+
+model visual_novel_media {
+  id            String        @id @default(cuid())
+  visualNovelId String
+  mediaId       String?
+  folderId      String?
+  createdAt     DateTime      @default(now())
+  visualNovel   visual_novel  @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
+  media         media?        @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  folder        media_folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@index([visualNovelId])
+  @@index([mediaId])
+  @@index([folderId])
+}
+
+// ==========================================
+// SUPPORT TICKETS SYSTEM
+// ==========================================
+
+model ticket {
+  id           String         @id @default(cuid())
+  userId       String
+  assignedToId String?
+  subject      String
+  description  String
+  status       TicketStatus   @default(open)
+  priority     TicketPriority @default(normal)
+  category     TicketCategory @default(other)
+  resolvedAt   DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         user           @relation("ticket_user", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo   user?          @relation("ticket_assigned", fields: [assignedToId], references: [id], onDelete: SetNull)
+  replies      ticket_reply[]
+
+  @@index([userId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model ticket_reply {
+  id        String   @id @default(cuid())
+  ticketId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  ticket    ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ==========================================
+// BILLING & SUBSCRIPTIONS
+// ==========================================
+
 model referral {
-  id             String         @id
+  id             String         @id @default(cuid())
   affiliateId    String
   referredUserId String         @unique
   status         ReferralStatus @default(pending)
@@ -241,7 +649,7 @@ model referral {
   convertedAt    DateTime?
   paidAt         DateTime?
   createdAt      DateTime       @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime       @updatedAt
   affiliate      affiliate      @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   user           user           @relation(fields: [referredUserId], references: [id], onDelete: Cascade)
 
@@ -250,37 +658,19 @@ model referral {
 }
 
 model session {
-  id        String   @id
+  id        String   @id @default(cuid())
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model story {
-  id                             String    @id
-  characterId                    String
-  mediaId                        String
-  thumbnailId                    String?
-  expiresAt                      DateTime
-  isActive                       Boolean   @default(true)
-  createdAt                      DateTime  @default(now())
-  character                      character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  media_story_mediaIdTomedia     media     @relation("story_mediaIdTomedia", fields: [mediaId], references: [id], onDelete: Cascade)
-  media_story_thumbnailIdTomedia media?    @relation("story_thumbnailIdTomedia", fields: [thumbnailId], references: [id])
-
-  @@index([characterId])
-  @@index([expiresAt])
-  @@index([isActive])
-  @@index([mediaId])
-}
-
 model subscription {
-  id                 String             @id
+  id                 String             @id @default(cuid())
   userId             String             @unique
   billingCycle       BillingCycle
   status             SubscriptionStatus
@@ -289,7 +679,7 @@ model subscription {
   coinGateOrderId    String?
   cancelledAt        DateTime?
   createdAt          DateTime           @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime           @updatedAt
   user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([coinGateOrderId])
@@ -313,65 +703,98 @@ model token_transaction {
   @@index([createdAt])
 }
 
+// ==========================================
+// ROLE MODEL
+// ==========================================
+
+model role_custom {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  permissions Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       user[]   @relation("UserCustomRole")
+}
+
+// ==========================================
+// USER MODEL
+// ==========================================
+
 model user {
-  id                String              @id @default(cuid())
-  name              String
-  email             String              @unique
-  emailVerified     Boolean             @default(false)
-  image             String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @default(now()) @updatedAt
-  avatar            String?
-  nickname          String?
-  gender            String?
-  language          Language            @default(english)
-  notifications     Boolean             @default(true)
-  role              UserRole            @default(default)
-  tokenBalance      Int                 @default(0)
-  Post              Post[]
-  account           account[]
-  affiliate         affiliate?
-  character         character[]
-  character_image   character_image[]
-  chat              chat[]
-  collection        collection[]
-  referral          referral?
-  session           session[]
-  subscription      subscription?
-  token_transaction token_transaction[]
+  id                  String              @id @default(cuid())
+  name                String
+  email               String              @unique
+  emailVerified       Boolean             @default(false)
+  image               String?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @default(now()) @updatedAt
+  avatar              String?
+  nickname            String?
+  gender              String?
+  language            Language            @default(english)
+  notifications       Boolean             @default(true)
+  role                UserRole            @default(default)
+  customRoleId        String?
+  tokenBalance        Int                 @default(0)
+  customRole          role_custom?        @relation("UserCustomRole", fields: [customRoleId], references: [id])
+  Post                Post[]
+  account             account[]
+  affiliate           affiliate?
+  character           character[]
+  character_image     character_image[]
+  chat                chat[]
+  collection          collection[]
+  referral            referral?
+  session             session[]
+  subscription        subscription?
+  token_transaction   token_transaction[]
+  media_folder        media_folder[]
+  visual_novel        visual_novel[]
+  tickets_created     ticket[]            @relation("ticket_user")
+  tickets_assigned    ticket[]            @relation("ticket_assigned")
+  ticket_reply        ticket_reply[]
+  invitations_created invitation[]        @relation("invitation_creator")
 
   @@index([language])
   @@index([role])
 }
 
+// ==========================================
+// INVITATION MODEL
+// ==========================================
+
+model invitation {
+  id        String    @id @default(cuid())
+  email     String
+  role      UserRole  @default(default)
+  token     String    @unique
+  usedAt    DateTime?
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  creator   user      @relation("invitation_creator", fields: [createdBy], references: [id])
+
+  @@index([token])
+  @@index([email])
+}
+
 model verification {
-  id         String   @id
+  id         String   @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
+
+// ==========================================
+// ENUMS
+// ==========================================
 
 enum BillingCycle {
   monthly
   quarterly
   annually
-}
-
-enum BodyType {
-  skinny
-  athletic
-  average
-  curvy
-  bbw
-}
-
-enum BreastSize {
-  small
-  medium
-  large
-  extra_large
 }
 
 enum CharacterGender {
@@ -383,70 +806,6 @@ enum CharacterGender {
 enum CharacterStyle {
   realistic
   anime
-}
-
-enum Ethnicity {
-  caucasian
-  asian
-  black
-  latina
-  arab
-}
-
-enum EyeColor {
-  brown
-  blue
-  green
-  red
-  yellow
-}
-
-enum HairColor {
-  brunette
-  blonde
-  black
-  redhead
-  pink
-  blue
-  purple
-  white
-  multicolor
-}
-
-enum HairStyle {
-  straight
-  bangs
-  curly
-  bun
-  short
-  ponytail
-}
-
-enum Kink {
-  daddy_dominance
-  bondage
-  spanking
-  collar_leash
-  punishment
-  humiliation
-  public_play
-  roleplay
-  anal_play
-  oral_play
-  cum_play
-  creampie
-  squirting
-  dirty_talk
-  breeding
-  edging
-  obedience
-  control
-  inexperienced
-  shy_flirting
-  playful_teasing
-  cuddling
-  slow_sensual
-  hair_pulling
 }
 
 enum Language {
@@ -461,6 +820,13 @@ enum MediaType {
   video
 }
 
+enum MediaCategory {
+  scenery
+  character_image
+  audio
+  other
+}
+
 enum MessageType {
   text
   image
@@ -468,70 +834,10 @@ enum MessageType {
   audio
 }
 
-enum Occupation {
-  student
-  dancer
-  model
-  stripper
-  maid
-  cam_girl
-  boss
-  babysitter
-  pornstar
-  streamer
-  bartender
-  tech_engineer
-  lifeguard
-  cashier
-  massage_therapist
-  teacher
-  nurse
-  secretary
-  yoga_instructor
-  fitness_coach
-}
-
-enum Personality {
-  nympho
-  lover
-  submissive
-  dominant
-  temptress
-  innocent
-  caregiver
-  experimenter
-  mean
-  confidant
-  shy
-  queen
-}
-
 enum ReferralStatus {
   pending
   converted
   paid
-}
-
-enum Relationship {
-  stranger
-  girlfriend
-  sex_friend
-  school_mate
-  work_colleague
-  wife
-  mistress
-  friend
-  step_sister
-  step_mom
-  step_daughter
-  landlord
-  sugar_baby
-  boss
-  teacher
-  student
-  neighbour
-  mother_in_law
-  sister_in_law
 }
 
 enum SubscriptionStatus {
@@ -545,6 +851,36 @@ enum UserRole {
   default
   admin
   superadmin
+}
+
+enum VisualNovelNodeType {
+  scene
+  choice
+  condition
+  start
+  end
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+enum TicketPriority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum TicketCategory {
+  billing
+  technical
+  account
+  content
+  other
 }
 
 enum TokenTransactionType {

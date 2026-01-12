@@ -47,6 +47,7 @@ export type TableReactProps<T = any> = {
   pagination?: PaginationInput;
   columnFilters?: ColumnFilter[];
   onSortingChange?: OnChangeFn<SortingState> | undefined;
+  onPageChange?: (page: number) => void;
   rows?: number;
 } & React.HTMLAttributes<HTMLDivElement>;
 
@@ -59,10 +60,11 @@ const TablelReact: React.FC<TableReactProps> = ({
   columnFilters,
   sorting,
   onSortingChange,
+  onPageChange,
   rows: _rows,
 }) => {
   const searchParams = useSearchParams();
-  const params = qs.parse(searchParams.toString());
+  const params = qs.parse(searchParams?.toString() ?? "");
   const table = useReactTable({
     data,
     columns,
@@ -84,11 +86,30 @@ const TablelReact: React.FC<TableReactProps> = ({
       })
     : [];
 
+  // Handle page change: update URL without redirect + call external callback
+  const handlePageChange = (newPage: number) => {
+    // Update URL without page redirect using replaceState
+    if (typeof window !== "undefined") {
+      const newParams = qs.stringify(
+        { ...params, page: newPage },
+        { skipEmptyString: true, skipNull: true },
+      );
+      window.history.replaceState(
+        { ...window.history.state },
+        "",
+        `?${newParams}${id ? `#${id}` : ""}`,
+      );
+    }
+
+    // Call external callback if provided
+    onPageChange?.(newPage);
+  };
+
   return (
     <div>
       <div>
         <Table bleed id={id}>
-          <TableHead>
+          <TableHead className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -146,20 +167,8 @@ const TablelReact: React.FC<TableReactProps> = ({
       {pagination && (
         <Pagination className="mt-10 overflow-x-auto">
           <PaginationPrevious
-            href={
-              pagination.page == 1
-                ? "#"
-                : `?${qs.stringify(
-                    {
-                      ...params,
-                      page: pagination.page - 1,
-                    },
-                    {
-                      skipEmptyString: true,
-                      skipNull: true,
-                    },
-                  )}${id ? `#${id}` : ""}`
-            }
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
           />
           <PaginationList>
             {paginationArray.map((page, idx) => {
@@ -169,16 +178,7 @@ const TablelReact: React.FC<TableReactProps> = ({
               return (
                 <PaginationPage
                   key={idx}
-                  href={`?${qs.stringify(
-                    {
-                      ...params,
-                      page,
-                    },
-                    {
-                      skipEmptyString: true,
-                      skipNull: true,
-                    },
-                  )}${id ? `#${id}` : ""}`}
+                  onClick={() => handlePageChange(page as number)}
                   current={page == pagination.page}
                 >
                   {page as any}
@@ -187,20 +187,8 @@ const TablelReact: React.FC<TableReactProps> = ({
             })}
           </PaginationList>
           <PaginationNext
-            href={
-              pagination.page == pagination.totalPage
-                ? "#"
-                : `?${qs.stringify(
-                    {
-                      ...params,
-                      page: pagination.page + 1,
-                    },
-                    {
-                      skipEmptyString: true,
-                      skipNull: true,
-                    },
-                  )}${id ? `#${id}` : ""}`
-            }
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPage}
           />
         </Pagination>
       )}

@@ -110,13 +110,11 @@ async function main() {
 
   if (!user) {
     console.log(`User not found. Creating new user...`);
-    const userId = crypto.randomUUID();
     const password = "12345690";
     const hashedPassword = await hashPassword(password);
 
     user = await prisma.user.create({
       data: {
-        id: userId,
         name: "Seed User",
         email: TARGET_USER_EMAIL,
         emailVerified: true,
@@ -126,12 +124,10 @@ async function main() {
     // Create credential account with password
     await prisma.account.create({
       data: {
-        id: crypto.randomUUID(),
-        accountId: userId,
+        accountId: user.id,
         providerId: "credential",
-        userId: userId,
+        userId: user.id,
         password: hashedPassword,
-        updatedAt: new Date(),
       },
     });
 
