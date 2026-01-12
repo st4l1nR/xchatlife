@@ -95,6 +95,8 @@ export const mobileNavigation: NavigationItem[] = [
 ];
 
 // Token Economics
+export const IMAGE_GENERATION_COST = 4; // tokens per image
+
 export type TokenPricingItem = {
   label: string;
   cost: string | number;

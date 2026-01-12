@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   ArrowLeft,
   Sparkles,
@@ -13,12 +14,17 @@ import {
   Layers,
   LayoutGrid,
   Gem,
+  Dices,
+  Coins,
 } from "lucide-react";
+import { IMAGE_GENERATION_COST } from "@/lib/constants";
 import { Button } from "../atoms/button";
 import CardSuggestion from "../molecules/CardSuggestion";
 import CardGeneratedImage from "../molecules/CardGeneratedImage";
 import DialogAuth, { type DialogAuthVariant } from "./DialogAuth";
+import DialogUpgrade from "./DialogUpgrade";
 import { useApp } from "@/app/_contexts/AppContext";
+import { api } from "@/trpc/react";
 import type { SelectedCharacter } from "./GenerateImageStep1";
 
 // Mock suggestion data
@@ -264,7 +270,7 @@ const SUGGESTIONS: Record<SuggestionCategoryId, Suggestion[]> = {
 
 const IMAGE_COUNT_OPTIONS = [
   { value: 1 as const, icon: Circle, premium: false },
-  { value: 4 as const, icon: Grid2X2, premium: false },
+  { value: 4 as const, icon: Grid2X2, premium: true },
   { value: 16 as const, icon: Layers, premium: true },
   { value: 32 as const, icon: Layers, premium: true },
   { value: 64 as const, icon: LayoutGrid, premium: true },
@@ -297,13 +303,15 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   const [prompt, setPrompt] = useState(
     "Sitting on a leather sofa, wearing a fur jacket, wearing lace underwear, gazing seductively at the viewer.",
   );
-  const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [showHighlightVideo, setShowHighlightVideo] = useState(true);
 
   // Auth dialog state
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-in");
+
+  // Upgrade dialog state
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
 
   const currentSuggestions = SUGGESTIONS[activeCategory];
 
@@ -317,7 +325,48 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
     });
   };
 
-  // Mock generate function
+  const generateRandomPrompt = () => {
+    const categories = Object.keys(SUGGESTIONS) as SuggestionCategoryId[];
+
+    // Shuffle and pick 3-5 random categories (prefer longer prompts)
+    const shuffled = [...categories].sort(() => Math.random() - 0.5);
+    const count = Math.floor(Math.random() * 3) + 3; // 3-5 categories
+    const selected = shuffled.slice(0, count);
+
+    // Pick one random suggestion from each category
+    const parts = selected.map((category) => {
+      const suggestions = SUGGESTIONS[category];
+      const random =
+        suggestions[Math.floor(Math.random() * suggestions.length)]!;
+      return random.prompt;
+    });
+
+    // Combine with proper grammar
+    const combined = parts.join(", ");
+    return combined.charAt(0).toUpperCase() + combined.slice(1) + ".";
+  };
+
+  const handleRandomPrompt = () => {
+    setPrompt(generateRandomPrompt());
+  };
+
+  // tRPC mutation for image generation
+  const generateMutation = api.image.generate.useMutation({
+    onSuccess: (result) => {
+      // Map API response to display format
+      const newImages: GeneratedImage[] = result.data.map((img) => ({
+        id: img.id,
+        src: img.media.url,
+        canBeVideo: img.canConvertToVideo,
+      }));
+      setGeneratedImages((prev) => [...newImages, ...prev]);
+      toast.success(`Generated ${newImages.length} image(s) successfully!`);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleGenerate = async () => {
     // Check auth
     if (!isAuthenticated) {
@@ -325,27 +374,25 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
       return;
     }
 
-    setIsGenerating(true);
+    // Check subscription for multiple images (4+)
+    if (numberOfImages > 1 && !hasActiveSubscription) {
+      setUpgradeDialogOpen(true);
+      return;
+    }
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Generate mock images
-    const newImages: GeneratedImage[] = Array.from(
-      { length: numberOfImages },
-      (_, i) => ({
-        id: `generated-${Date.now()}-${i}`,
-        src: "/images/girl-poster.webp",
-        canBeVideo: Math.random() > 0.5,
-      }),
-    );
-
-    setGeneratedImages((prev) => [...newImages, ...prev]);
-    setIsGenerating(false);
+    // Call the API
+    generateMutation.mutate({
+      prompt,
+      numberOfImages,
+      characterId: character.id,
+    });
   };
 
+  // Use mutation pending state for loading
+  const isGenerating = generateMutation.isPending;
+
   // Calculate token cost based on number of images
-  const tokenCost = numberOfImages;
+  const tokenCost = numberOfImages * IMAGE_GENERATION_COST;
 
   return (
     <div className={clsx("flex min-h-screen flex-col", className)}>
@@ -406,11 +453,32 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
             <div className="relative h-full">
               <textarea
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="bg-muted text-foreground placeholder:text-muted-foreground border-border focus:ring-primary h-full min-h-64 w-full resize-none rounded-xl border p-4 pr-10 text-sm focus:ring-2 focus:outline-none"
+                onChange={(e) => setPrompt(e.target.value.slice(0, 2000))}
+                maxLength={2000}
+                className="bg-muted text-foreground placeholder:text-muted-foreground border-border focus:ring-primary h-full min-h-64 w-full resize-none rounded-xl border p-4 pr-10 pb-10 text-sm focus:ring-2 focus:outline-none"
                 placeholder="Describe the image you want to generate..."
               />
               <Edit3 className="text-muted-foreground absolute top-4 right-4 size-4" />
+              <div className="absolute right-4 bottom-4 flex items-center gap-3">
+                <span
+                  className={clsx(
+                    "text-xs",
+                    prompt.length >= 2000
+                      ? "text-destructive"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  {prompt.length}/2000
+                </span>
+                <button
+                  type="button"
+                  onClick={handleRandomPrompt}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  title="Generate random prompt"
+                >
+                  <Dices className="size-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -502,9 +570,9 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         >
           <Sparkles className="size-4" data-slot="icon" />
           Generate Image
-          <span className="bg-primary-foreground/20 ml-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
-            <span className="text-amber-400">*</span>
-            {tokenCost}
+          <span className="ml-2 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-amber-600">
+            <Coins className="size-3.5" />
+            <span>{tokenCost}</span>
           </span>
         </Button>
 
@@ -517,7 +585,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
               </h2>
 
               {/* Toggle for video-capable images */}
-              <label className="flex cursor-pointer items-center gap-2">
+              <label className="relative flex cursor-pointer items-center gap-2">
                 <span className="text-muted-foreground text-sm">
                   Show images you can turn into video
                 </span>
@@ -583,6 +651,12 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
         onClose={() => setAuthDialogOpen(false)}
         variant={authVariant}
         onVariantChange={setAuthVariant}
+      />
+
+      {/* Upgrade dialog */}
+      <DialogUpgrade
+        open={upgradeDialogOpen}
+        onClose={() => setUpgradeDialogOpen(false)}
       />
     </div>
   );

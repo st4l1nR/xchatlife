@@ -3,6 +3,7 @@ import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
 import { chatRouter } from "@/server/api/routers/chat";
 import { invitationRouter } from "@/server/api/routers/invitation";
+import { imageRouter } from "@/server/api/routers/image";
 import { postRouter } from "@/server/api/routers/post";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
@@ -20,7 +21,11 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   character: characterRouter,
   chat: chatRouter,
+<<<<<<< HEAD
   invitation: invitationRouter,
+=======
+  image: imageRouter,
+>>>>>>> 2cb53a16a15585a96d713054242d89c3780495d9
   post: postRouter,
   story: storyRouter,
   reel: reelRouter,

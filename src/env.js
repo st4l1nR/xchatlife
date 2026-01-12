@@ -33,6 +33,8 @@ export const env = createEnv({
     SOCKET_JWT_SECRET: z.string().min(32).optional(),
     // Email (Resend)
     RESEND_API_KEY: z.string().optional(),
+    // xAI
+    XAI_API_KEY: z.string().min(1).optional(),
   },
 
   /**
@@ -78,6 +80,8 @@ export const env = createEnv({
     // Email (Resend)
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    // xAI
+    XAI_API_KEY: process.env.XAI_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

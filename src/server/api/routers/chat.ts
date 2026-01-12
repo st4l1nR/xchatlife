@@ -411,29 +411,15 @@ export const chatRouter = createTRPCRouter({
   generateSocketToken: protectedProcedure.mutation(async ({ ctx }) => {
     const userId = ctx.session.user.id;
 
-    // Get user's subscription and usage quota for token payload
+    // Get user's subscription and token balance for token payload
     const user = await ctx.db.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        tokenBalance: true,
         subscription: {
           select: {
             status: true,
             billingCycle: true,
-          },
-        },
-        usage_quota: {
-          where: {
-            periodEnd: {
-              gte: new Date(),
-            },
-          },
-          orderBy: {
-            periodEnd: "desc",
-          },
-          take: 1,
-          select: {
-            tokensUsed: true,
-            tokensLimit: true,
           },
         },
       },
@@ -446,14 +432,11 @@ export const chatRouter = createTRPCRouter({
       });
     }
 
-    const usageQuota = user.usage_quota[0];
-
     // Create JWT payload
     const payload = {
       userId,
       subscription: user.subscription?.status ?? "none",
-      tokensUsed: usageQuota?.tokensUsed ?? 0,
-      tokensLimit: usageQuota?.tokensLimit ?? 0,
+      tokenBalance: user.tokenBalance,
     };
 
     // Get JWT secret from environment
