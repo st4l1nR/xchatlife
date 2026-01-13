@@ -3,16 +3,14 @@
 import {
   forwardRef,
   useState,
-  useEffect,
   Suspense,
   type ComponentPropsWithoutRef,
 } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 import { useMediaQuery } from "react-responsive";
 import { LogOut, Venus, Sparkles, Mars, Transgender } from "lucide-react";
-import toast from "react-hot-toast";
 import { Avatar } from "../atoms/avatar";
 import { Button } from "../atoms/button";
 import {
@@ -23,15 +21,11 @@ import {
   DropdownLabel,
   DropdownDivider,
 } from "../atoms/dropdown";
-import DialogAuth, {
-  type DialogAuthVariant,
-  type InvitationData,
-} from "./DialogAuth";
+import DialogAuth, { type DialogAuthVariant } from "./DialogAuth";
 import DropdownToken from "../molecules/DropdownToken";
 import { Logo } from "../atoms/logo";
 import { authClient } from "@/server/better-auth/client";
 import { useApp } from "@/app/_contexts/AppContext";
-import { api } from "@/trpc/react";
 
 // Default pricing items for DropdownToken
 const DEFAULT_PRICING = [
@@ -59,9 +53,10 @@ export type NavbarHomeProps = {
  * A responsive navbar component featuring:
  * - When logged in: User avatar with dropdown menu and logout option
  * - When logged out: "Join Free" (primary) and "Login" (outline) buttons
- * - Handles invitation URL parameters to auto-open signup dialog
  *
  * Uses semantic colors that automatically adapt to light/dark themes.
+ *
+ * Note: Invitation URL handling has been moved to HomePage component.
  */
 const NavbarHomeContent = forwardRef<
   HTMLElement,
@@ -72,65 +67,11 @@ const NavbarHomeContent = forwardRef<
 ) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { data: session, isPending } = authClient.useSession();
   const { hasActiveSubscription, tokensAvailable } = useApp();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-in");
-  const [invitationData, setInvitationData] = useState<
-    InvitationData | undefined
-  >(undefined);
-  const [inviteProcessed, setInviteProcessed] = useState(false);
-
-  // Get invite token from URL
-  const inviteToken = searchParams?.get("invite");
-
-  // Validate invitation token
-  const { data: invitationValidation, isLoading: isValidatingInvite } =
-    api.invitation.validate.useQuery(
-      { token: inviteToken! },
-      {
-        enabled: !!inviteToken && !inviteProcessed && !isPending && !session,
-        retry: false,
-      },
-    );
-
-  // Handle invitation token from URL
-  useEffect(() => {
-    if (
-      inviteToken &&
-      invitationValidation?.success &&
-      !inviteProcessed &&
-      !session
-    ) {
-      const { email, role } = invitationValidation.data;
-      setInvitationData({
-        token: inviteToken,
-        email,
-        role,
-      });
-      setAuthVariant("sign-up");
-      setAuthDialogOpen(true);
-      setInviteProcessed(true);
-    }
-  }, [inviteToken, invitationValidation, inviteProcessed, session]);
-
-  // Handle invitation validation errors
-  useEffect(() => {
-    if (inviteToken && !isValidatingInvite && !invitationValidation?.success) {
-      // Only show error if we've finished loading and there's no valid invitation
-      const timer = setTimeout(() => {
-        if (!invitationValidation?.success && !isValidatingInvite) {
-          toast.error("Invalid or expired invitation link");
-          // Clear the invite param from URL
-          const newUrl = pathname;
-          router.replace(newUrl);
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [inviteToken, invitationValidation, isValidatingInvite, pathname, router]);
 
   const user = session?.user;
   const userName = user?.name || "User";
@@ -153,25 +94,17 @@ const NavbarHomeContent = forwardRef<
   };
 
   const openSignIn = () => {
-    setInvitationData(undefined);
     setAuthVariant("sign-in");
     setAuthDialogOpen(true);
   };
 
   const openSignUp = () => {
-    setInvitationData(undefined);
     setAuthVariant("sign-up");
     setAuthDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setAuthDialogOpen(false);
-    // Clear invitation data when closing
-    if (invitationData) {
-      setInvitationData(undefined);
-      // Clear the invite param from URL
-      router.replace(pathname);
-    }
   };
 
   // Category tabs component
@@ -230,7 +163,6 @@ const NavbarHomeContent = forwardRef<
           onClose={handleDialogClose}
           variant={authVariant}
           onVariantChange={setAuthVariant}
-          invitation={invitationData}
         />
       </>
     ) : (

@@ -191,7 +191,7 @@ function DashboardUsersIdPageContent({
     return {
       name: user.name,
       avatarSrc: user.image,
-      role: user.customRole?.name ?? capitalize(user.role),
+      role: user.customRole?.name,
       location: undefined, // Not available in user model
       joinedDate: formatDate(new Date(user.createdAt)),
       bannerSrc: undefined, // Not available in user model

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { hashPassword } from "better-auth/crypto";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const invitationRouter = createTRPCRouter({
@@ -15,7 +16,13 @@ export const invitationRouter = createTRPCRouter({
         select: {
           id: true,
           email: true,
-          role: true,
+          roleId: true,
+          role: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           usedAt: true,
           createdAt: true,
         },
@@ -39,7 +46,8 @@ export const invitationRouter = createTRPCRouter({
         success: true,
         data: {
           email: invitation.email,
-          role: invitation.role,
+          roleId: invitation.roleId,
+          roleName: invitation.role.name,
         },
       };
     }),
@@ -74,7 +82,7 @@ export const invitationRouter = createTRPCRouter({
         });
       }
 
-      // Update invitation as used and update user role
+      // Update invitation as used and update user customRoleId
       await ctx.db.$transaction([
         ctx.db.invitation.update({
           where: { id: invitation.id },
@@ -82,7 +90,7 @@ export const invitationRouter = createTRPCRouter({
         }),
         ctx.db.user.update({
           where: { id: input.userId },
-          data: { role: invitation.role },
+          data: { customRoleId: invitation.roleId },
         }),
       ]);
 
@@ -110,6 +118,9 @@ export const invitationRouter = createTRPCRouter({
           email: input.email,
           usedAt: null,
         },
+        include: {
+          role: true,
+        },
       });
 
       if (!invitation) {
@@ -119,7 +130,7 @@ export const invitationRouter = createTRPCRouter({
         };
       }
 
-      // Update invitation as used and update user role
+      // Update invitation as used and update user customRoleId
       await ctx.db.$transaction([
         ctx.db.invitation.update({
           where: { id: invitation.id },
@@ -127,14 +138,100 @@ export const invitationRouter = createTRPCRouter({
         }),
         ctx.db.user.update({
           where: { id: input.userId },
-          data: { role: invitation.role },
+          data: { customRoleId: invitation.roleId },
         }),
       ]);
 
       return {
         success: true,
         hadInvitation: true,
-        role: invitation.role,
+        roleId: invitation.roleId,
+        roleName: invitation.role.name,
+      };
+    }),
+
+  /**
+   * Accept an invitation by creating a user account with the provided password
+   * This handles user creation, password hashing, account creation, and role assignment
+   * all in a single transaction
+   */
+  acceptInvitation: publicProcedure
+    .input(
+      z.object({
+        token: z.string(),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // 1. Validate invitation exists and is not used
+      const invitation = await ctx.db.invitation.findUnique({
+        where: { token: input.token },
+      });
+
+      if (!invitation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invitation not found or invalid",
+        });
+      }
+
+      if (invitation.usedAt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This invitation has already been used",
+        });
+      }
+
+      // 2. Check if email is already registered
+      const existingUser = await ctx.db.user.findUnique({
+        where: { email: invitation.email },
+      });
+
+      if (existingUser) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "An account with this email already exists",
+        });
+      }
+
+      // 3. Hash the password using better-auth's internal hash function
+      const hashedPassword = await hashPassword(input.password);
+
+      // 4. Create user, account, and mark invitation as used in a transaction
+      const user = await ctx.db.$transaction(async (tx) => {
+        // Create user with customRoleId from the invitation
+        const newUser = await tx.user.create({
+          data: {
+            email: invitation.email,
+            name: invitation.email.split("@")[0] ?? "User",
+            customRoleId: invitation.roleId,
+            emailVerified: true, // Invited users are pre-verified
+          },
+        });
+
+        // Create credential account for better-auth compatibility
+        await tx.account.create({
+          data: {
+            userId: newUser.id,
+            accountId: newUser.id,
+            providerId: "credential",
+            password: hashedPassword,
+          },
+        });
+
+        // Mark invitation as used
+        await tx.invitation.update({
+          where: { id: invitation.id },
+          data: { usedAt: new Date() },
+        });
+
+        return newUser;
+      });
+
+      return {
+        success: true,
+        userId: user.id,
+        email: user.email,
       };
     }),
 });

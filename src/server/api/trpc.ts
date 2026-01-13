@@ -140,13 +140,15 @@ export const protectedProcedure = t.procedure
  * Verifies the user has admin or superadmin role by fetching from database.
  */
 export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  // Fetch user role from database since better-auth session doesn't include it
+  // Fetch user's custom role from database since better-auth session doesn't include it
   const user = await ctx.db.user.findUnique({
     where: { id: ctx.session.user.id },
-    select: { role: true },
+    select: { customRole: { select: { name: true } } },
   });
 
-  if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
+  console.log({ user });
+  const roleName = user?.customRole?.name?.toUpperCase();
+  if (!roleName || (roleName !== "ADMIN" && roleName !== "SUPERADMIN")) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Admin access required",
@@ -205,13 +207,13 @@ export const permissionProcedure = (
     const user = await ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },
       select: {
-        role: true,
-        customRole: { select: { permissions: true } },
+        customRole: { select: { name: true, permissions: true } },
       },
     });
 
     // Admins/superadmins bypass all permission checks
-    if (user?.role === "admin" || user?.role === "superadmin") {
+    const roleName = user?.customRole?.name?.toUpperCase();
+    if (roleName === "ADMIN" || roleName === "SUPERADMIN") {
       return next({ ctx });
     }
 

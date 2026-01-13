@@ -4,7 +4,7 @@ import type { TableUserItem } from "@/app/_components/organisms/TableUser";
 
 // Generate mock users for testing
 const generateMockUsers = (count: number): TableUserItem[] => {
-  const roles = ["default", "admin", "superadmin"] as const;
+  const customRoleNames = ["Customer", "Admin", "Superadmin"] as const;
   const subscriptions = ["yearly", "monthly", "none"] as const;
   const statuses = ["pending", "active", "inactive"] as const;
 
@@ -43,7 +43,7 @@ const generateMockUsers = (count: number): TableUserItem[] => {
       name,
       username,
       avatarSrc: `https://i.pravatar.cc/150?u=${username}-${i}`,
-      role: roles[i % roles.length]!,
+      customRoleName: customRoleNames[i % customRoleNames.length]!,
       subscription: subscriptions[i % subscriptions.length]!,
       status: statuses[i % statuses.length]!,
     };
@@ -157,10 +157,10 @@ export const WithPagination: Story = {
 export const FilteredByRole: Story = {
   args: {
     mock: {
-      users: mockUsers50.filter((u) => u.role === "admin"),
+      users: mockUsers50.filter((u) => u.customRoleName === "Admin"),
       pagination: {
         page: 1,
-        total: mockUsers50.filter((u) => u.role === "admin").length,
+        total: mockUsers50.filter((u) => u.customRoleName === "Admin").length,
         totalPage: 1,
         size: 10,
       },

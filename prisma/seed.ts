@@ -1,24 +1,9 @@
 import { PrismaClient, MediaType, UserRole } from "../generated/prisma";
 import * as dotenv from "dotenv";
-import { scryptAsync } from "@noble/hashes/scrypt.js";
-import { bytesToHex, randomBytes } from "@noble/hashes/utils.js";
+import { hashPassword } from "better-auth/crypto";
 
 // Load environment variables from .env file
 dotenv.config();
-
-// Password hashing function compatible with Better Auth (uses @noble/hashes/scrypt)
-// Must match Better Auth's config: N: 16384, r: 16, p: 1, dkLen: 64
-async function hashPassword(password: string): Promise<string> {
-  const salt = bytesToHex(randomBytes(16));
-  const key = await scryptAsync(password.normalize("NFKC"), salt, {
-    N: 16384,
-    r: 16,
-    p: 1,
-    dkLen: 64,
-    maxmem: 128 * 16384 * 16 * 2,
-  });
-  return `${salt}:${bytesToHex(key)}`;
-}
 
 const prisma = new PrismaClient();
 
@@ -33,7 +18,7 @@ const TARGET_USER_EMAIL = "stalinramosbw@gmail.com";
 const TOTAL_CHARACTERS = 21;
 const LIVE_CHARACTERS = 5;
 
-// All permissions set to true for SUPER ADMIN (CRUD order)
+// All permissions set to true for SUPERADMIN (CRUD order)
 const ALL_PERMISSIONS = {
   user: { create: true, read: true, update: true, delete: true },
   character: { create: true, read: true, update: true, delete: true },
@@ -1563,29 +1548,29 @@ async function main() {
   console.log("Starting character seed script...");
 
   // ==========================================
-  // Step 0: Create SUPER ADMIN role and admin user
+  // Step 0: Create SUPERADMIN role and admin user
   // ==========================================
-  console.log("\n=== Creating SUPER ADMIN role ===");
+  console.log("\n=== Creating SUPERADMIN role ===");
 
   let superAdminRole = await prisma.role_custom.findUnique({
-    where: { name: "SUPER ADMIN" },
+    where: { name: "SUPERADMIN" },
   });
 
   if (!superAdminRole) {
     superAdminRole = await prisma.role_custom.create({
       data: {
-        name: "SUPER ADMIN",
+        name: "SUPERADMIN",
         permissions: ALL_PERMISSIONS,
       },
     });
-    console.log(`Created SUPER ADMIN role (${superAdminRole.id})`);
+    console.log(`Created SUPERADMIN role (${superAdminRole.id})`);
   } else {
     // Update permissions in case they changed
     superAdminRole = await prisma.role_custom.update({
       where: { id: superAdminRole.id },
       data: { permissions: ALL_PERMISSIONS },
     });
-    console.log(`Found existing SUPER ADMIN role (${superAdminRole.id})`);
+    console.log(`Found existing SUPERADMIN role (${superAdminRole.id})`);
   }
 
   // Create CUSTOMER role for regular users
@@ -1612,7 +1597,7 @@ async function main() {
     console.log(`Found existing CUSTOMER role (${customerRole.id})`);
   }
 
-  // Create Admin user with SUPER ADMIN role
+  // Create Admin user with SUPERADMIN role
   console.log("\n=== Creating Admin user ===");
 
   let adminUser = await prisma.user.findUnique({
@@ -1627,7 +1612,6 @@ async function main() {
         name: "Super Admin",
         email: ADMIN_EMAIL,
         emailVerified: true,
-        role: UserRole.superadmin,
         customRoleId: superAdminRole.id,
       },
     });
@@ -1649,7 +1633,6 @@ async function main() {
     adminUser = await prisma.user.update({
       where: { id: adminUser.id },
       data: {
-        role: UserRole.superadmin,
         customRoleId: superAdminRole.id,
       },
     });
@@ -1912,7 +1895,7 @@ async function main() {
   console.log("\n========================================");
   console.log("=== Seed Summary ===");
   console.log("========================================");
-  console.log(`SUPER ADMIN Role ID: ${superAdminRole.id}`);
+  console.log(`SUPERADMIN Role ID: ${superAdminRole.id}`);
   console.log(`CUSTOMER Role ID: ${customerRole.id}`);
   console.log(`Admin User: ${adminUser.email} (Password: ${ADMIN_PASSWORD})`);
   console.log(`Total characters created: ${characters.length}`);

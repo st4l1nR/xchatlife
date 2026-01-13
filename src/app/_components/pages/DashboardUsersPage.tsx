@@ -14,7 +14,6 @@ import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
 import { api } from "@/trpc/react";
 import type {
   TableUserItem,
-  UserRoleType,
   UserSubscriptionType,
   UserStatusType,
 } from "../organisms/TableUser";
@@ -193,7 +192,7 @@ function DashboardUsersPageContent({
       let filtered = mock.users;
 
       if (roleParam) {
-        filtered = filtered.filter((user) => user.role === roleParam);
+        filtered = filtered.filter((user) => user.customRoleName === roleParam);
       }
       if (subscriptionParam) {
         filtered = filtered.filter(
@@ -258,7 +257,6 @@ function DashboardUsersPageContent({
           name: user.name,
           username: user.email.split("@")[0] ?? user.email,
           avatarSrc: user.image ?? undefined,
-          role: (user.role as UserRoleType) ?? "default",
           customRoleName: userWithRelations.customRole?.name,
           subscription,
           status: "active" as UserStatusType,

@@ -47,7 +47,9 @@ function AuthCallbackContent() {
   const checkAndApplyRole = api.invitation.checkAndApplyRole.useMutation({
     onSuccess: (data) => {
       if (data.hadInvitation) {
-        toast.success(`Welcome! You've been assigned ${data.role} privileges.`);
+        toast.success(
+          `Welcome! You've been assigned ${data.roleName} privileges.`,
+        );
         router.push("/dashboard");
       } else {
         router.push("/");

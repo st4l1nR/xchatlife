@@ -899,12 +899,13 @@ model token_transaction {
 // ==========================================
 
 model role_custom {
-  id          String   @id @default(cuid())
-  name        String   @unique
+  id          String       @id @default(cuid())
+  name        String       @unique
   permissions Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       user[]   @relation("UserCustomRole")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  users       user[]       @relation("UserCustomRole")
+  invitations invitation[]
 }
 
 // ==========================================
@@ -924,7 +925,6 @@ model user {
   gender              String?
   language            Language            @default(english)
   notifications       Boolean             @default(true)
-  role                UserRole            @default(default)
   customRoleId        String?
   tokenBalance        Int                 @default(0)
   customRole          role_custom?        @relation("UserCustomRole", fields: [customRoleId], references: [id])
@@ -947,7 +947,7 @@ model user {
   invitations_created invitation[]        @relation("invitation_creator")
 
   @@index([language])
-  @@index([role])
+  @@index([customRoleId])
 }
 
 // ==========================================
@@ -955,18 +955,20 @@ model user {
 // ==========================================
 
 model invitation {
-  id        String    @id @default(cuid())
+  id        String      @id @default(cuid())
   email     String
-  role      UserRole  @default(default)
-  token     String    @unique
+  roleId    String
+  token     String      @unique
   usedAt    DateTime?
   createdBy String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  creator   user      @relation("invitation_creator", fields: [createdBy], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  role      role_custom @relation(fields: [roleId], references: [id])
+  creator   user        @relation("invitation_creator", fields: [createdBy], references: [id])
 
   @@index([token])
   @@index([email])
+  @@index([roleId])
 }
 
 model verification {
@@ -1025,12 +1027,6 @@ enum SubscriptionStatus {
   cancelled
   expired
   pending
-}
-
-enum UserRole {
-  default
-  admin
-  superadmin
 }
 
 enum VisualNovelNodeType {
