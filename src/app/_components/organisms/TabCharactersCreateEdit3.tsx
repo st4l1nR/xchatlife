@@ -55,7 +55,7 @@ const TabCharactersCreateEdit3: React.FC<TabCharactersCreateEdit3Props> = ({
               }}
               onRemove={(id) => {
                 field.onChange(
-                  (field.value ?? []).filter(
+                  ((field.value ?? []) as StoryUploadItem[]).filter(
                     (item: StoryUploadItem) => item.id !== id,
                   ),
                 );

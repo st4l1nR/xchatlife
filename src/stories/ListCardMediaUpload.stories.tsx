@@ -308,7 +308,6 @@ export const InteractiveRow: Story = {
 
 // Comparison of both layouts
 export const LayoutComparison: Story = {
-  name: "Layout Comparison",
   args: {
     items: [],
   },

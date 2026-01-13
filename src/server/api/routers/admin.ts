@@ -99,7 +99,7 @@ export const adminRouter = createTRPCRouter({
               invitedBy: creator?.name ?? undefined,
             }),
           });
-        } catch (error) {
+        } catch {
           // Delete invitation if email fails
           await ctx.db.invitation.delete({
             where: { id: invitation.id },

@@ -289,6 +289,7 @@ function DashboardUsersPageContent({
   }, [
     mock,
     usersData,
+    roleParam,
     subscriptionParam,
     statusParam,
     searchParam,

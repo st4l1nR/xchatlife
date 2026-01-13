@@ -1,4 +1,4 @@
-import { PrismaClient, MediaType, UserRole } from "../generated/prisma";
+import { PrismaClient, MediaType } from "../generated/prisma";
 import * as dotenv from "dotenv";
 import { hashPassword } from "better-auth/crypto";
 

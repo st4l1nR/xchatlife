@@ -189,7 +189,6 @@ export const NoLabel: Story = {
 };
 
 export const AllAspectRatios: Story = {
-  name: "All Aspect Ratios",
   decorators: [
     () => (
       <div className="flex flex-wrap items-start gap-6 p-4">

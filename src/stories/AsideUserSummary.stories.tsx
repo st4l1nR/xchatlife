@@ -151,7 +151,6 @@ export const PartialOverview: Story = {
 };
 
 export const InactiveUser: Story = {
-  name: "Inactive User",
   args: {
     fullName: "Mike Wilson",
     status: "Inactive",
@@ -166,7 +165,6 @@ export const InactiveUser: Story = {
 };
 
 export const SuspendedUser: Story = {
-  name: "Suspended User",
   args: {
     fullName: "Suspended Account",
     status: "Suspended",
@@ -178,7 +176,6 @@ export const SuspendedUser: Story = {
 };
 
 export const MinimalData: Story = {
-  name: "Minimal Data",
   args: {
     fullName: "New User",
     status: "Active",
@@ -187,7 +184,6 @@ export const MinimalData: Story = {
 };
 
 export const HighActivityUser: Story = {
-  name: "High Activity User",
   args: {
     fullName: "Power User",
     status: "Active",

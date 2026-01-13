@@ -419,7 +419,6 @@ export const MilestoneFirstPublish: Story = {
 // ============================================
 
 export const AllCategoryColors: Story = {
-  name: "All Category Colors",
   args: {
     category: "chat",
     title: "Activity title",
