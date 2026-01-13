@@ -59,7 +59,7 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
     icon: Users2,
     children: [
       { name: "View All", href: "/dashboard/characters" },
-      { name: "Create", href: "/dashboard/characters/create" },
+      { name: "Create", href: "/dashboard/characters/create-update" },
       { name: "Kinks", href: "/dashboard/characters/kinks" },
       { name: "Ethnicities", href: "/dashboard/characters/ethnicities" },
       { name: "Personalities", href: "/dashboard/characters/personalities" },

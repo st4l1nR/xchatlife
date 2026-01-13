@@ -345,7 +345,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   };
 
   return (
-    <div className={clsx("space-y-8", className)}>
+    <div className={clsx("space-y-8 p-5", className)}>
       {/* Roles Section */}
       <section>
         <div className="mb-6 flex items-start justify-between">

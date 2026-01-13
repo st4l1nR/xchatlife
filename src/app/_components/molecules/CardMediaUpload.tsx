@@ -19,6 +19,7 @@ export type CardMediaUploadProps = {
   disabled?: boolean;
   readOnly?: boolean;
   enablePreview?: boolean;
+  showBrowseButton?: boolean;
   error?: string;
   onChange?: (file: File | null) => void;
   onRemove?: () => void;
@@ -53,6 +54,7 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
   disabled = false,
   readOnly = false,
   enablePreview = true,
+  showBrowseButton = false,
   error,
   onChange,
   onRemove: _onRemove,
@@ -182,21 +184,25 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
                   ? "Drop your media here"
                   : "Drag and drop your media here"}
               </p>
-              <p className="text-muted-foreground mt-1 text-sm">or</p>
+              {showBrowseButton && (
+                <p className="text-muted-foreground mt-1 text-sm">or</p>
+              )}
             </div>
 
-            <button
-              type="button"
-              className={clsx(
-                "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
-                "border-amber-400 text-amber-500",
-                "hover:bg-amber-50 dark:hover:bg-amber-950",
-                "focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:outline-none",
-              )}
-              onClick={(e) => e.stopPropagation()}
-            >
-              Browse Media
-            </button>
+            {showBrowseButton && (
+              <button
+                type="button"
+                className={clsx(
+                  "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
+                  "border-amber-400 text-amber-500",
+                  "hover:bg-amber-50 dark:hover:bg-amber-950",
+                  "focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:outline-none",
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                Browse Media
+              </button>
+            )}
           </div>
         )}
       </div>

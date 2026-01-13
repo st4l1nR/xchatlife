@@ -286,6 +286,303 @@ export const characterRouter = createTRPCRouter({
     }),
 
   /**
+   * Get character by ID for editing (admin only)
+   * Returns full character data formatted for the edit form
+   */
+  getByIdForEdit: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const character = await ctx.db.character.findUnique({
+        where: { id: input.id },
+        include: {
+          poster: true,
+          video: true,
+          ethnicity: true,
+          personality: true,
+          hairStyle: true,
+          hairColor: true,
+          eyeColor: true,
+          bodyType: true,
+          breastSize: true,
+          occupation: true,
+          relationship: true,
+          character_kink: {
+            include: {
+              kink: true,
+            },
+          },
+          reel: {
+            include: {
+              video: true,
+              thumbnail: true,
+            },
+            orderBy: { sortOrder: "asc" },
+          },
+          story: {
+            include: {
+              media: true,
+              thumbnail: true,
+            },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      });
+
+      if (!character) {
+        return null;
+      }
+
+      // Split name into firstName and lastName (assuming format "FirstName LastName")
+      const nameParts = character.name.split(" ");
+      const firstName = nameParts[0] ?? "";
+      const lastName = nameParts.slice(1).join(" ");
+
+      return {
+        success: true,
+        data: {
+          id: character.id,
+          firstName,
+          lastName,
+          age: character.age,
+          gender: character.gender,
+          style: character.style,
+          isPublic: character.isPublic,
+          isActive: character.isActive,
+          voice: character.voice,
+          // Media URLs
+          posterImage: character.poster?.url,
+          posterVideo: character.video?.url,
+          // Option IDs for dropdowns
+          ethnicityId: character.ethnicityId,
+          personalityId: character.personalityId,
+          hairStyleId: character.hairStyleId,
+          hairColorId: character.hairColorId,
+          eyeColorId: character.eyeColorId,
+          bodyTypeId: character.bodyTypeId,
+          breastSizeId: character.breastSizeId,
+          occupationId: character.occupationId,
+          relationshipId: character.relationshipId,
+          // Kink IDs
+          kinkIds: character.character_kink.map((k) => k.kinkId),
+          // Option labels for display
+          ethnicity: character.ethnicity?.label,
+          personality: character.personality?.label,
+          hairStyle: character.hairStyle?.label,
+          hairColor: character.hairColor?.label,
+          eyeColor: character.eyeColor?.label,
+          bodyType: character.bodyType?.label,
+          breastSize: character.breastSize?.label,
+          occupation: character.occupation?.label,
+          relationship: character.relationship?.label,
+          kinks: character.character_kink.map((k) => k.kink.label),
+          // Reels
+          reels: character.reel.map((r) => ({
+            id: r.id,
+            url: r.video.url,
+            thumbnailUrl: r.thumbnail?.url,
+            mediaType: "video" as const,
+            sortOrder: r.sortOrder,
+          })),
+          // Stories
+          stories: character.story.map((s) => ({
+            id: s.id,
+            url: s.media.url,
+            thumbnailUrl: s.thumbnail?.url,
+            mediaType:
+              s.media.type === "video"
+                ? ("video" as const)
+                : ("image" as const),
+            expiresAt: s.expiresAt,
+            sortOrder: s.sortOrder,
+          })),
+          // Stats
+          chatCount: character.chatCount,
+          likeCount: character.likeCount,
+          messageCount: character.messageCount,
+          viewCount: character.viewCount,
+          createdAt: character.createdAt,
+          updatedAt: character.updatedAt,
+        },
+      };
+    }),
+
+  /**
+   * Update an existing character (admin only)
+   */
+  update: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        firstName: z.string().min(1).optional(),
+        lastName: z.string().optional(),
+        age: z.number().min(18).max(999).optional(),
+        gender: z.nativeEnum(CharacterGender).optional(),
+        style: z.nativeEnum(CharacterStyle).optional(),
+        voice: z.string().optional(),
+        isPublic: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+        // Option IDs
+        ethnicityId: z.string().optional(),
+        personalityId: z.string().optional(),
+        hairStyleId: z.string().optional(),
+        hairColorId: z.string().optional(),
+        eyeColorId: z.string().optional(),
+        bodyTypeId: z.string().optional(),
+        breastSizeId: z.string().optional(),
+        occupationId: z.string().optional(),
+        relationshipId: z.string().optional(),
+        kinkIds: z.array(z.string()).min(1).max(3).optional(),
+        // Media URLs (only update if provided)
+        posterUrl: z.string().url().optional(),
+        videoUrl: z.string().url().optional(),
+        // Reorder arrays
+        reelOrder: z
+          .array(
+            z.object({
+              id: z.string(),
+              sortOrder: z.number(),
+            }),
+          )
+          .optional(),
+        storyOrder: z
+          .array(
+            z.object({
+              id: z.string(),
+              sortOrder: z.number(),
+            }),
+          )
+          .optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const {
+        id,
+        kinkIds,
+        posterUrl,
+        videoUrl,
+        firstName,
+        lastName,
+        reelOrder,
+        storyOrder,
+        ...updateData
+      } = input;
+
+      // Check if character exists
+      const existingCharacter = await ctx.db.character.findUnique({
+        where: { id },
+        include: { poster: true, video: true },
+      });
+
+      if (!existingCharacter) {
+        throw new Error("Character not found");
+      }
+
+      // Build the name from firstName and lastName
+      let name: string | undefined;
+      if (firstName !== undefined || lastName !== undefined) {
+        const newFirstName =
+          firstName ?? existingCharacter.name.split(" ")[0] ?? "";
+        const newLastName =
+          lastName ?? existingCharacter.name.split(" ").slice(1).join(" ");
+        name = `${newFirstName} ${newLastName}`.trim();
+      }
+
+      // Handle media updates
+      let posterId: string | undefined;
+      let videoId: string | undefined;
+
+      if (posterUrl && posterUrl !== existingCharacter.poster?.url) {
+        const posterUpload = await fetchAndUploadToR2(
+          posterUrl,
+          "characters",
+          "poster",
+        );
+        const posterMedia = await ctx.db.media.create({
+          data: {
+            type: "image",
+            key: posterUpload.key,
+            url: posterUpload.url,
+            mimeType: posterUpload.mimeType,
+            size: posterUpload.size,
+          },
+        });
+        posterId = posterMedia.id;
+      }
+
+      if (videoUrl && videoUrl !== existingCharacter.video?.url) {
+        const videoUpload = await fetchAndUploadToR2(
+          videoUrl,
+          "characters",
+          "video",
+        );
+        const videoMedia = await ctx.db.media.create({
+          data: {
+            type: "video",
+            key: videoUpload.key,
+            url: videoUpload.url,
+            mimeType: videoUpload.mimeType,
+            size: videoUpload.size,
+          },
+        });
+        videoId = videoMedia.id;
+      }
+
+      // Update character in a transaction
+      const character = await ctx.db.$transaction(async (tx) => {
+        // Update kinks if provided
+        if (kinkIds) {
+          // Delete existing kinks
+          await tx.character_kink.deleteMany({
+            where: { characterId: id },
+          });
+          // Create new kinks
+          await tx.character_kink.createMany({
+            data: kinkIds.map((kinkId) => ({ characterId: id, kinkId })),
+          });
+        }
+
+        // Update reel order if provided
+        if (reelOrder && reelOrder.length > 0) {
+          await Promise.all(
+            reelOrder.map((item) =>
+              tx.reel.update({
+                where: { id: item.id },
+                data: { sortOrder: item.sortOrder },
+              }),
+            ),
+          );
+        }
+
+        // Update story order if provided
+        if (storyOrder && storyOrder.length > 0) {
+          await Promise.all(
+            storyOrder.map((item) =>
+              tx.story.update({
+                where: { id: item.id },
+                data: { sortOrder: item.sortOrder },
+              }),
+            ),
+          );
+        }
+
+        // Update character
+        const updatedCharacter = await tx.character.update({
+          where: { id },
+          data: {
+            ...updateData,
+            ...(name && { name }),
+            ...(posterId && { posterId }),
+            ...(videoId && { videoId }),
+          },
+        });
+
+        return updatedCharacter;
+      });
+
+      return { success: true, characterId: character.id };
+    }),
+
+  /**
    * Get characters for dashboard with pagination, filtering, and sorting (admin only)
    */
   getForDashboard: adminProcedure
