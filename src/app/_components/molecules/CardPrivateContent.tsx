@@ -3,7 +3,7 @@
 import React from "react";
 import clsx from "clsx";
 import Image from "next/image";
-import { ThumbsUp, Images, Lock, Gem } from "lucide-react";
+import { ThumbsUp, Images, Lock, Gem, Pencil } from "lucide-react";
 import { Button } from "../atoms/button";
 
 // ============================================================================
@@ -32,6 +32,8 @@ export type CardPrivateContentProps = {
   isUnlocking?: boolean;
   // Unlocked interactions
   onClick?: () => void;
+  // Edit callback
+  onUpdate?: () => void;
   // Bottom like count (shown outside card)
   bottomLikeCount?: number;
   // Media array for gallery view (when unlocked)
@@ -53,6 +55,7 @@ const CardPrivateContent: React.FC<CardPrivateContentProps> = ({
   onUnlock,
   isUnlocking,
   onClick,
+  onUpdate,
   bottomLikeCount,
 }) => {
   const isClickable = !locked && onClick;
@@ -122,6 +125,21 @@ const CardPrivateContent: React.FC<CardPrivateContentProps> = ({
                 )}
               </div>
 
+              {/* Edit button (top-right) */}
+              {onUpdate && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdate();
+                  }}
+                  className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70"
+                  aria-label="Edit content"
+                >
+                  <Pencil className="size-4" />
+                </button>
+              )}
+
               {/* Locked state content */}
               {locked && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
@@ -149,9 +167,9 @@ const CardPrivateContent: React.FC<CardPrivateContentProps> = ({
 
               {/* Unlocked state content */}
               {!locked && (
-                <div className="absolute right-0 bottom-0 left-0 p-4">
+                <div className="absolute right-1 -bottom-11 left-0 p-4">
                   {description && (
-                    <p className="line-clamp-2 text-sm text-white/90">
+                    <p className="line-clamp-2 truncate text-sm text-white/90">
                       {description}
                     </p>
                   )}

@@ -577,6 +577,7 @@ model reel {
   thumbnailId String?
   title       String?
   description String?
+  sortOrder   Int       @default(0)
   viewCount   Int       @default(0)
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
@@ -589,6 +590,7 @@ model reel {
   @@index([createdAt])
   @@index([isActive])
   @@index([videoId])
+  @@index([sortOrder])
 }
 
 model story {
@@ -596,6 +598,7 @@ model story {
   characterId String
   mediaId     String
   thumbnailId String?
+  sortOrder   Int       @default(0)
   expiresAt   DateTime
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
@@ -607,6 +610,7 @@ model story {
   @@index([expiresAt])
   @@index([isActive])
   @@index([mediaId])
+  @@index([sortOrder])
 }
 
 // ==========================================

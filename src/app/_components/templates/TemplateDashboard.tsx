@@ -49,7 +49,7 @@ export const TemplateDashboard = ({
         <NavbarDashboard />
 
         {/* Page Content */}
-        <main className="bg-background flex flex-1 flex-col overflow-auto p-5">
+        <main className="bg-background flex flex-1 flex-col overflow-auto">
           {children}
         </main>
 

@@ -35,6 +35,7 @@ export type ListCardMediaUploadProps = {
   className?: string;
   layout?: "row" | "grid";
   cols?: number;
+  gridClassName?: string;
   items: MediaUploadItem[];
   aspectRatio?: AspectRatio;
   accept?: Accept;
@@ -101,6 +102,7 @@ const ListCardMediaUpload: React.FC<ListCardMediaUploadProps> = ({
   className,
   layout = "grid",
   cols = 4,
+  gridClassName,
   items,
   aspectRatio = "1:1",
   accept,
@@ -157,11 +159,12 @@ const ListCardMediaUpload: React.FC<ListCardMediaUploadProps> = ({
           <div
             className={clsx(
               layout === "grid" && "grid gap-4",
+              layout === "grid" && gridClassName,
               layout === "row" &&
                 "scrollbar-thin flex gap-4 overflow-x-auto pb-2",
             )}
             style={
-              layout === "grid"
+              layout === "grid" && !gridClassName
                 ? {
                     gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
                   }
