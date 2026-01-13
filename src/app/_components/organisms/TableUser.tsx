@@ -37,7 +37,6 @@ export type TableUserItem = {
   name: string;
   username: string;
   avatarSrc?: string;
-  role: UserRoleType;
   customRoleName?: string;
   subscription: UserSubscriptionType;
   status: UserStatusType;
@@ -63,14 +62,16 @@ export type TableUserProps = {
   onMore?: (id: string) => void;
 };
 
-const getRoleIcon = (role: UserRoleType) => {
+const getRoleIcon = (roleName?: string) => {
   const iconClass = "text-muted-foreground size-4";
-  switch (role) {
+  const normalizedRole = roleName?.toLowerCase();
+  switch (normalizedRole) {
     case "superadmin":
       return <ShieldCheck className={iconClass} />;
     case "admin":
       return <ShieldCheck className={iconClass} />;
-    case "default":
+    case "customer":
+    case "user":
       return <User className={iconClass} />;
     default:
       return <CircleUser className={iconClass} />;
@@ -145,17 +146,15 @@ const TableUser: React.FC<TableUserProps> = ({
     }),
 
     // ROLE Column - Icon + Text
-    columnHelper.accessor("role", {
+    columnHelper.accessor("customRoleName", {
       header: "Role",
       enableSorting: true,
       cell: (info) => {
-        const role = info.getValue();
-        const customRoleName = info.row.original.customRoleName;
-        const displayRole = customRoleName ?? role;
+        const roleName = info.getValue();
         return (
           <div className="flex items-center gap-2">
-            {getRoleIcon(role)}
-            <span className="capitalize">{displayRole}</span>
+            {getRoleIcon(roleName)}
+            <span className="capitalize">{roleName ?? "No role"}</span>
           </div>
         );
       },

@@ -5,4 +5,4 @@ export const resend = env.RESEND_API_KEY
   ? new Resend(env.RESEND_API_KEY)
   : null;
 
-export const EMAIL_FROM = "XChatLife <noreply@xchatlife.com>";
+export const EMAIL_FROM = "contact@createqr-ai.com";

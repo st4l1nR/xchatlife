@@ -15,6 +15,17 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
+          // Check if user already has a customRoleId assigned (from invitation)
+          const currentUser = await db.user.findUnique({
+            where: { id: user.id },
+            select: { customRoleId: true },
+          });
+
+          // Skip assigning CUSTOMER role if user already has a role from invitation
+          if (currentUser?.customRoleId) {
+            return;
+          }
+
           // Find the CUSTOMER role and assign it to new users
           const customerRole = await db.role_custom.findUnique({
             where: { name: "CUSTOMER" },

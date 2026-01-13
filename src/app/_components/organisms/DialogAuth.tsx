@@ -39,6 +39,20 @@ export type DialogAuthProps = {
   backgroundImage?: string;
   invitation?: InvitationData;
   onSuccessRedirect?: string;
+  /**
+   * When true, shows simplified invitation UI:
+   * - Title: "Accept Invitation"
+   * - Hides social login buttons
+   * - Hides "Don't have an account yet?" link
+   * - Hides "Forgot password?" link
+   * - Button text: "Create Account"
+   * - Prevents closing on outside click
+   */
+  inviteMode?: boolean;
+  /**
+   * When true, shows loading skeleton while validating invitation token
+   */
+  isValidating?: boolean;
 };
 
 // ============================================================================
@@ -59,9 +73,14 @@ const resetPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
+const inviteSignUpSchema = z.object({
+  password: z.string().min(6, "Minimum 6 characters"),
+});
+
 type SignInFormData = z.infer<typeof signInSchema>;
 type SignUpFormData = z.infer<typeof signUpSchema>;
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+type InviteSignUpFormData = z.infer<typeof inviteSignUpSchema>;
 
 // ============================================================================
 // Social Icons
@@ -295,6 +314,66 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   );
 };
 
+type InviteSignUpFormProps = {
+  onSubmit: (data: InviteSignUpFormData) => Promise<void>;
+  isLoading: boolean;
+  email: string;
+};
+
+const InviteSignUpForm: React.FC<InviteSignUpFormProps> = ({
+  onSubmit,
+  isLoading,
+  email,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<InviteSignUpFormData>({
+    resolver: zodResolver(inviteSignUpSchema),
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <Field>
+        <Label>E-mail</Label>
+        <InputGroup>
+          <Mail data-slot="icon" />
+          <Input
+            type="email"
+            value={email}
+            readOnly
+            className="bg-muted cursor-not-allowed"
+          />
+        </InputGroup>
+      </Field>
+
+      <Field>
+        <Label>Password</Label>
+        <InputGroup>
+          <Lock data-slot="icon" />
+          <Input
+            type="password"
+            placeholder="Choose a password"
+            {...register("password")}
+            data-invalid={errors.password ? true : undefined}
+          />
+        </InputGroup>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Minimum 6 characters
+        </p>
+        {errors.password && (
+          <ErrorMessage>{errors.password.message}</ErrorMessage>
+        )}
+      </Field>
+
+      <Button type="submit" className="w-full" loading={isLoading}>
+        Create Account
+      </Button>
+    </form>
+  );
+};
+
 // ============================================================================
 // Invitation Banner
 // ============================================================================
@@ -396,13 +475,15 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
   backgroundImage = "/images/girl-poster.webp",
   invitation,
   onSuccessRedirect,
+  inviteMode = false,
+  isValidating = false,
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { refetchSession } = useApp();
 
   const markInvitationUsed = api.invitation.markUsed.useMutation();
-  const checkAndApplyRole = api.invitation.checkAndApplyRole.useMutation();
+  const acceptInvitation = api.invitation.acceptInvitation.useMutation();
 
   const handleSuccessfulAuth = async (userId?: string) => {
     await refetchSession();
@@ -495,6 +576,45 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
     }
   };
 
+  const handleInviteSignUp = async (data: InviteSignUpFormData) => {
+    if (!invitation) return;
+
+    setIsLoading(true);
+    try {
+      // Create user via tRPC endpoint (handles user creation + role assignment)
+      await acceptInvitation.mutateAsync({
+        token: invitation.token,
+        password: data.password,
+      });
+
+      // Sign in the user after account creation
+      const signInResult = await authClient.signIn.email({
+        email: invitation.email,
+        password: data.password,
+      });
+
+      if (signInResult.error) {
+        toast.error(
+          "Account created but sign-in failed. Please sign in manually.",
+        );
+        onVariantChange?.("sign-in");
+      } else {
+        await refetchSession();
+        toast.success(
+          `Account created with ${formatRole(invitation.role)} privileges!`,
+        );
+        onClose();
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to create account";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSocialLogin = async (
     provider: "google" | "discord" | "twitter",
   ) => {
@@ -525,11 +645,14 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
     "reset-password": "Reset Password",
   };
 
+  // In invite mode, prevent closing by clicking outside - only allow X button
+  const handleDialogClose = inviteMode ? () => {} : onClose;
+
   return (
     <Dialog
       className={clsx("overflow-hidden p-0!", className)}
       open={open}
-      onClose={onClose}
+      onClose={handleDialogClose}
       size="3xl"
     >
       <div className="flex">
@@ -545,7 +668,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
 
         {/* Right side - Form content */}
         <div className="relative flex w-full flex-col p-6 sm:p-8 md:w-1/2">
-          {/* Close button */}
+          {/* Close button - always works */}
           <button
             type="button"
             onClick={onClose}
@@ -554,105 +677,151 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
             <X className="size-6" />
           </button>
 
-          {/* Title */}
-          <h2 className="text-foreground mb-6 text-center text-2xl font-bold">
-            {titles[variant]}
-          </h2>
+          {/* Loading skeleton while validating invitation */}
+          {isValidating ? (
+            <div className="flex min-h-[400px] flex-col items-center justify-center">
+              <div className="w-full max-w-sm space-y-6">
+                <div className="bg-muted mx-auto h-8 w-48 animate-pulse rounded" />
+                <div className="bg-muted/50 h-20 animate-pulse rounded-lg" />
+                <div className="space-y-4">
+                  <div className="bg-muted h-12 animate-pulse rounded" />
+                  <div className="bg-muted h-12 animate-pulse rounded" />
+                  <div className="bg-muted h-12 animate-pulse rounded" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Title */}
+              <h2 className="text-foreground mb-6 text-center text-2xl font-bold">
+                {titles[variant]}
+              </h2>
 
-          {/* Invitation Banner */}
-          {invitation && variant === "sign-up" && (
-            <InvitationBanner email={invitation.email} role={invitation.role} />
+              {/* Invitation Banner */}
+              {invitation && variant === "sign-up" && (
+                <InvitationBanner
+                  email={invitation.email}
+                  role={invitation.role}
+                />
+              )}
+
+              {/* Form */}
+              <div className="flex-1">
+                {variant === "sign-in" && !inviteMode && (
+                  <>
+                    <SignInForm
+                      onSubmit={handleSignIn}
+                      onForgotPassword={() =>
+                        onVariantChange?.("reset-password")
+                      }
+                      isLoading={isLoading}
+                    />
+                    <div className="mt-6">
+                      <SocialButtons
+                        mode="sign-in"
+                        onSocialLogin={handleSocialLogin}
+                        isLoading={isLoading}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {variant === "sign-up" && inviteMode && invitation && (
+                  <>
+                    <InviteSignUpForm
+                      onSubmit={handleInviteSignUp}
+                      isLoading={isLoading}
+                      email={invitation.email}
+                    />
+                    <p className="text-muted-foreground mt-4 text-center text-xs">
+                      By signing up, you agree to{" "}
+                      <Link
+                        href="/terms"
+                        className="text-primary hover:underline"
+                      >
+                        Terms of Service
+                      </Link>
+                    </p>
+                  </>
+                )}
+
+                {variant === "sign-up" && !inviteMode && (
+                  <>
+                    <SignUpForm
+                      onSubmit={handleSignUp}
+                      isLoading={isLoading}
+                      initialEmail={invitation?.email}
+                      emailReadOnly={!!invitation}
+                    />
+                    <div className="mt-6">
+                      <SocialButtons
+                        mode="sign-up"
+                        onSocialLogin={handleSocialLogin}
+                        isLoading={isLoading}
+                      />
+                    </div>
+                    <p className="text-muted-foreground mt-4 text-center text-xs">
+                      By signing up, you agree to{" "}
+                      <Link
+                        href="/terms"
+                        className="text-primary hover:underline"
+                      >
+                        Terms of Service
+                      </Link>
+                    </p>
+                  </>
+                )}
+
+                {variant === "reset-password" && !inviteMode && (
+                  <ResetPasswordForm
+                    onSubmit={handleResetPassword}
+                    isLoading={isLoading}
+                  />
+                )}
+              </div>
+
+              {/* Footer links - hidden in invite mode */}
+              {!inviteMode && (
+                <div className="mt-6 text-center">
+                  {variant === "sign-in" && (
+                    <p className="text-muted-foreground text-sm">
+                      Don&apos;t have an account yet?{" "}
+                      <button
+                        type="button"
+                        onClick={() => onVariantChange?.("sign-up")}
+                        className="text-primary hover:underline"
+                      >
+                        Sign up
+                      </button>
+                    </p>
+                  )}
+
+                  {variant === "sign-up" && !invitation && (
+                    <p className="text-muted-foreground text-sm">
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={() => onVariantChange?.("sign-in")}
+                        className="text-primary hover:underline"
+                      >
+                        Sign in
+                      </button>
+                    </p>
+                  )}
+
+                  {variant === "reset-password" && (
+                    <button
+                      type="button"
+                      onClick={() => onVariantChange?.("sign-in")}
+                      className="text-primary text-sm hover:underline"
+                    >
+                      Back to Sign in
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
           )}
-
-          {/* Form */}
-          <div className="flex-1">
-            {variant === "sign-in" && (
-              <>
-                <SignInForm
-                  onSubmit={handleSignIn}
-                  onForgotPassword={() => onVariantChange?.("reset-password")}
-                  isLoading={isLoading}
-                />
-                <div className="mt-6">
-                  <SocialButtons
-                    mode="sign-in"
-                    onSocialLogin={handleSocialLogin}
-                    isLoading={isLoading}
-                  />
-                </div>
-              </>
-            )}
-
-            {variant === "sign-up" && (
-              <>
-                <SignUpForm
-                  onSubmit={handleSignUp}
-                  isLoading={isLoading}
-                  initialEmail={invitation?.email}
-                  emailReadOnly={!!invitation}
-                />
-                <div className="mt-6">
-                  <SocialButtons
-                    mode="sign-up"
-                    onSocialLogin={handleSocialLogin}
-                    isLoading={isLoading}
-                  />
-                </div>
-                <p className="text-muted-foreground mt-4 text-center text-xs">
-                  By signing up, you agree to{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
-                    Terms of Service
-                  </Link>
-                </p>
-              </>
-            )}
-
-            {variant === "reset-password" && (
-              <ResetPasswordForm
-                onSubmit={handleResetPassword}
-                isLoading={isLoading}
-              />
-            )}
-          </div>
-
-          {/* Footer links */}
-          <div className="mt-6 text-center">
-            {variant === "sign-in" && (
-              <p className="text-muted-foreground text-sm">
-                Don&apos;t have an account yet?{" "}
-                <button
-                  type="button"
-                  onClick={() => onVariantChange?.("sign-up")}
-                  className="text-primary hover:underline"
-                >
-                  Sign up
-                </button>
-              </p>
-            )}
-
-            {variant === "sign-up" && !invitation && (
-              <p className="text-muted-foreground text-sm">
-                Already have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => onVariantChange?.("sign-in")}
-                  className="text-primary hover:underline"
-                >
-                  Sign in
-                </button>
-              </p>
-            )}
-
-            {variant === "reset-password" && (
-              <button
-                type="button"
-                onClick={() => onVariantChange?.("sign-in")}
-                className="text-primary text-sm hover:underline"
-              >
-                Back to Sign in
-              </button>
-            )}
-          </div>
         </div>
       </div>
     </Dialog>

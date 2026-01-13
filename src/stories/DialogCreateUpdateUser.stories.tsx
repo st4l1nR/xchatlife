@@ -37,7 +37,8 @@ const sampleExistingUser: ExistingUser = {
   firstName: "John",
   lastName: "Doe",
   email: "john.doe@example.com",
-  role: "admin",
+  roleId: "role-admin-123",
+  roleName: "Admin",
 };
 
 // ============================================================================
@@ -216,7 +217,8 @@ export const SuperAdminUser: Story = {
       firstName: "Super",
       lastName: "Admin",
       email: "superadmin@example.com",
-      role: "superadmin",
+      roleId: "role-superadmin-123",
+      roleName: "Superadmin",
     };
 
     return (

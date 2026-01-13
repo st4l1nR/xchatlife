@@ -17,10 +17,7 @@ import DialogCreateUpdateRole from "@/app/_components/organisms/DialogCreateUpda
 import DialogCreateUpdateUser from "@/app/_components/organisms/DialogCreateUpdateUser";
 import { api } from "@/trpc/react";
 import type { CardRoleProps } from "@/app/_components/molecules/CardRole";
-import type {
-  TableUserItem,
-  UserRoleType,
-} from "@/app/_components/organisms/TableUser";
+import type { TableUserItem } from "@/app/_components/organisms/TableUser";
 import type {
   ExistingRole,
   RolePermissions,
@@ -118,7 +115,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Jordan Stevenson",
       username: "jordan.stevenson",
       avatarSrc: "/images/girl-poster.webp",
-      role: "admin",
+      customRoleName: "Admin",
       subscription: "yearly",
       status: "pending",
     },
@@ -127,7 +124,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Richard Payne",
       username: "richard247",
       avatarSrc: "/images/girl-poster.webp",
-      role: "admin",
+      customRoleName: "Admin",
       subscription: "monthly",
       status: "active",
     },
@@ -136,7 +133,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Jennifer Summers",
       username: "summers.45",
       avatarSrc: "/images/girl-poster.webp",
-      role: "default",
+      customRoleName: "Customer",
       subscription: "yearly",
       status: "active",
     },
@@ -145,7 +142,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Mr. Justin Richardson",
       username: "jr.3734",
       avatarSrc: "/images/girl-poster.webp",
-      role: "admin",
+      customRoleName: "Admin",
       subscription: "monthly",
       status: "pending",
     },
@@ -154,7 +151,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Nicholas Tanner",
       username: "nicholas.t",
       avatarSrc: "/images/girl-poster.webp",
-      role: "superadmin",
+      customRoleName: "Superadmin",
       subscription: "yearly",
       status: "active",
     },
@@ -163,7 +160,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Crystal Mays",
       username: "mays.754",
       avatarSrc: "/images/girl-poster.webp",
-      role: "admin",
+      customRoleName: "Admin",
       subscription: "none",
       status: "pending",
     },
@@ -172,7 +169,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Mary Garcia",
       username: "mary.garcia",
       avatarSrc: "/images/girl-poster.webp",
-      role: "superadmin",
+      customRoleName: "Superadmin",
       subscription: "monthly",
       status: "inactive",
     },
@@ -181,7 +178,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Megan Roberts",
       username: "roberts.3456",
       avatarSrc: "/images/girl-poster.webp",
-      role: "default",
+      customRoleName: "Customer",
       subscription: "yearly",
       status: "active",
     },
@@ -190,7 +187,7 @@ export const defaultMockData: DashboardRolesPageMockData = {
       name: "Joseph Oliver",
       username: "joseph.87",
       avatarSrc: "/images/girl-poster.webp",
-      role: "default",
+      customRoleName: "Customer",
       subscription: "none",
       status: "pending",
     },
@@ -272,7 +269,7 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
       name: user.name,
       username: user.email,
       avatarSrc: user.image ?? undefined,
-      role: user.role as UserRoleType,
+      customRoleName: user.customRole?.name,
       subscription: "none" as const,
       status: user.emailVerified ? ("active" as const) : ("pending" as const),
     }));
@@ -334,7 +331,8 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
         firstName: user.name.split(" ")[0] ?? "",
         lastName: user.name.split(" ").slice(1).join(" ") ?? "",
         email: user.email,
-        role: user.role as "default" | "admin" | "superadmin",
+        roleId: user.customRole?.id ?? "",
+        roleName: user.customRole?.name,
       });
       setUserDialogMode("update");
       setUserDialogOpen(true);

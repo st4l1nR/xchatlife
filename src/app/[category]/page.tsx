@@ -11,6 +11,7 @@ const VALID_CATEGORIES = [
 type Category = (typeof VALID_CATEGORIES)[number];
 
 type CategoryParams = { category: string };
+type SearchParams = { invite?: string };
 
 // Parse category into style and gender
 function parseCategory(category: Category) {
@@ -28,10 +29,13 @@ function parseCategory(category: Category) {
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<CategoryParams>;
+  searchParams: Promise<SearchParams>;
 }) {
   const { category } = await params;
+  const { invite: inviteToken } = await searchParams;
 
   if (!VALID_CATEGORIES.includes(category as Category)) {
     notFound();
@@ -39,5 +43,5 @@ export default async function CategoryPage({
 
   const { style, gender } = parseCategory(category as Category);
 
-  return <HomePage style={style} gender={gender} />;
+  return <HomePage style={style} gender={gender} inviteToken={inviteToken} />;
 }

@@ -23,20 +23,11 @@ import {
 } from "@/app/_components/atoms/listbox";
 import { api } from "@/trpc/react";
 
-// Role options based on UserRole enum from Prisma schema
-const ROLE_OPTIONS = [
-  { value: "default", label: "Default" },
-  { value: "admin", label: "Admin" },
-  { value: "superadmin", label: "Super Admin" },
-] as const;
-
-type UserRole = "default" | "admin" | "superadmin";
-
 export type UserFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole;
+  roleId: string;
 };
 
 export type ExistingUser = {
@@ -44,7 +35,8 @@ export type ExistingUser = {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole;
+  roleId: string;
+  roleName?: string;
 };
 
 export type DialogCreateUpdateUserProps = {
@@ -61,7 +53,7 @@ const userSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  role: z.enum(["default", "admin", "superadmin"]),
+  roleId: z.string().min(1, "Role is required"),
 });
 
 type UserSchemaType = z.infer<typeof userSchema>;
@@ -75,6 +67,9 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
   onSuccess,
 }) => {
   const utils = api.useUtils();
+
+  // Fetch available roles
+  const { data: rolesData } = api.role.getAll.useQuery();
 
   // Mutation for inviting a new user
   const inviteUser = api.admin.inviteUser.useMutation({
@@ -110,14 +105,20 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
 
   const loading = inviteUser.isPending || updateUserRole.isPending;
 
+  // Get default roleId (first role in list or existing user's role)
+  const defaultRoleId = useMemo(() => {
+    if (existingUser?.roleId) return existingUser.roleId;
+    return rolesData?.data?.[0]?.id ?? "";
+  }, [existingUser?.roleId, rolesData?.data]);
+
   const defaultValues = useMemo(
     () => ({
       firstName: existingUser?.firstName ?? "",
       lastName: existingUser?.lastName ?? "",
       email: existingUser?.email ?? "",
-      role: existingUser?.role ?? ("admin" as UserRole),
+      roleId: existingUser?.roleId ?? defaultRoleId,
     }),
-    [existingUser],
+    [existingUser, defaultRoleId],
   );
 
   const {
@@ -143,15 +144,13 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
       // Send invitation
       inviteUser.mutate({
         email: data.email,
-        role: data.role,
-        firstName: data.firstName ?? undefined,
-        lastName: data.lastName ?? undefined,
+        roleId: data.roleId,
       });
     } else if (existingUser) {
       // Update user role
       updateUserRole.mutate({
         userId: existingUser.id,
-        role: data.role,
+        customRoleId: data.roleId,
       });
     }
   };
@@ -238,7 +237,7 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
           <Field>
             <Label>Role</Label>
             <Controller
-              name="role"
+              name="roleId"
               control={control}
               render={({ field }) => (
                 <Listbox
@@ -247,15 +246,17 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
                   disabled={loading}
                   placeholder="Select a role"
                 >
-                  {ROLE_OPTIONS.map((option) => (
-                    <ListboxOption key={option.value} value={option.value}>
-                      <ListboxLabel>{option.label}</ListboxLabel>
+                  {rolesData?.data?.map((role) => (
+                    <ListboxOption key={role.id} value={role.id}>
+                      <ListboxLabel>{role.name}</ListboxLabel>
                     </ListboxOption>
                   ))}
                 </Listbox>
               )}
             />
-            {errors.role && <ErrorMessage>{errors.role.message}</ErrorMessage>}
+            {errors.roleId && (
+              <ErrorMessage>{errors.roleId.message}</ErrorMessage>
+            )}
             <p className="text-muted-foreground mt-1 text-xs">
               {mode === "create"
                 ? "The user will be assigned this role after accepting the invitation"

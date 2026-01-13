@@ -1,14 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import clsx from "clsx";
+import toast from "react-hot-toast";
 import Banner from "../organisms/Banner";
 import ListBubbleStory from "../organisms/ListBubbleStory";
 import ListCardCharacter from "../organisms/ListCardCharacter";
+import DialogAuth, {
+  type DialogAuthVariant,
+  type InvitationData,
+} from "../organisms/DialogAuth";
 import type { BannerSlide } from "../organisms/Banner";
 import type { StoryProfile } from "../organisms/ListCardStory";
 import type { CardCharacterProps } from "../molecules/CardCharacter";
 import { api } from "@/trpc/react";
+import { authClient } from "@/server/better-auth/client";
 
 export type HomePageMockData = {
   bannerSlides: BannerSlide[];
@@ -32,6 +39,10 @@ export type HomePageProps = {
    * When provided, uses mock data instead of fetching from API
    */
   mock?: HomePageMockData;
+  /**
+   * Invitation token from URL for accepting invitations
+   */
+  inviteToken?: string;
 };
 
 // Default mock data for development and Storybook
@@ -347,7 +358,91 @@ const HomePage: React.FC<HomePageProps> = ({
   style,
   gender,
   mock,
+  inviteToken,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
+
+  // Invitation dialog state
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-up");
+  const [invitationData, setInvitationData] = useState<
+    InvitationData | undefined
+  >(undefined);
+  const [inviteProcessed, setInviteProcessed] = useState(false);
+
+  // When inviteToken exists, open dialog immediately (before validation)
+  useEffect(() => {
+    if (inviteToken && !session && !isSessionPending && !inviteProcessed) {
+      setAuthDialogOpen(true);
+      setAuthVariant("sign-up");
+    }
+  }, [inviteToken, session, isSessionPending, inviteProcessed]);
+
+  // Validate invitation token
+  const { data: invitationValidation, isLoading: isValidatingInvite } =
+    api.invitation.validate.useQuery(
+      { token: inviteToken! },
+      {
+        enabled:
+          !!inviteToken && !inviteProcessed && !isSessionPending && !session,
+        retry: false,
+      },
+    );
+
+  // On validation success, set invitation data
+  useEffect(() => {
+    if (invitationValidation?.success && inviteToken && !inviteProcessed) {
+      setInvitationData({
+        token: inviteToken,
+        email: invitationValidation.data.email,
+        role: invitationValidation.data.roleName,
+      });
+      setInviteProcessed(true);
+    }
+  }, [invitationValidation, inviteToken, inviteProcessed]);
+
+  // On validation error, close dialog and show error
+  useEffect(() => {
+    if (
+      inviteToken &&
+      !isValidatingInvite &&
+      !invitationValidation?.success &&
+      !inviteProcessed &&
+      !isSessionPending
+    ) {
+      // Use a small delay to avoid flashing error during initial load
+      const timer = setTimeout(() => {
+        if (!invitationValidation?.success && !isValidatingInvite) {
+          toast.error("Invalid or expired invitation link");
+          setAuthDialogOpen(false);
+          router.replace(pathname);
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    inviteToken,
+    invitationValidation,
+    isValidatingInvite,
+    inviteProcessed,
+    isSessionPending,
+    pathname,
+    router,
+  ]);
+
+  const handleDialogClose = () => {
+    setAuthDialogOpen(false);
+    // Clear invitation data and URL param when closing
+    if (invitationData || inviteToken) {
+      setInvitationData(undefined);
+      setInviteProcessed(true);
+      router.replace(pathname);
+    }
+  };
+
   // Fetch AI characters with infinite scroll pagination
   const {
     data: aiCharactersData,
@@ -445,6 +540,19 @@ const HomePage: React.FC<HomePageProps> = ({
           onLoadMore={() => fetchNextPage()}
         />
       </section>
+
+      {/* Invitation Auth Dialog */}
+      {inviteToken && (
+        <DialogAuth
+          open={authDialogOpen}
+          onClose={handleDialogClose}
+          variant={authVariant}
+          onVariantChange={setAuthVariant}
+          invitation={invitationData}
+          inviteMode={true}
+          isValidating={isValidatingInvite}
+        />
+      )}
     </div>
   );
 };

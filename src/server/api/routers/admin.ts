@@ -7,9 +7,7 @@ import { env } from "@/env";
 
 const inviteUserSchema = z.object({
   email: z.string().email("Invalid email address"),
-  role: z.enum(["default", "admin", "superadmin"]),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  roleId: z.string().min(1, "Role is required"),
 });
 
 export const adminRouter = createTRPCRouter({
@@ -19,7 +17,19 @@ export const adminRouter = createTRPCRouter({
   inviteUser: adminProcedure
     .input(inviteUserSchema)
     .mutation(async ({ ctx, input }) => {
-      const { email, role, firstName, lastName } = input;
+      const { email, roleId } = input;
+
+      // Verify the role exists
+      const role = await ctx.db.role_custom.findUnique({
+        where: { id: roleId },
+      });
+
+      if (!role) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Role not found",
+        });
+      }
 
       // Check if user already exists
       const existingUser = await ctx.db.user.findUnique({
@@ -52,13 +62,16 @@ export const adminRouter = createTRPCRouter({
       // Generate unique token
       const token = crypto.randomUUID();
 
-      // Create invitation record
+      // Create invitation record with roleId
       const invitation = await ctx.db.invitation.create({
         data: {
           email,
-          role,
+          roleId,
           token,
           createdBy: ctx.session.user.id,
+        },
+        include: {
+          role: true,
         },
       });
 
@@ -82,7 +95,7 @@ export const adminRouter = createTRPCRouter({
             react: InvitationEmail({
               inviteLink,
               email,
-              role,
+              role: invitation.role.name,
               invitedBy: creator?.name ?? undefined,
             }),
           });
@@ -103,7 +116,8 @@ export const adminRouter = createTRPCRouter({
         data: {
           id: invitation.id,
           email: invitation.email,
-          role: invitation.role,
+          roleId: invitation.roleId,
+          roleName: invitation.role.name,
           inviteLink: resend ? undefined : inviteLink, // Only return link if email not sent (dev mode)
         },
       };
@@ -178,6 +192,7 @@ export const adminRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const invitation = await ctx.db.invitation.findUnique({
         where: { id: input.id },
+        include: { role: true },
       });
 
       if (!invitation) {
@@ -214,7 +229,7 @@ export const adminRouter = createTRPCRouter({
             react: InvitationEmail({
               inviteLink,
               email: invitation.email,
-              role: invitation.role,
+              role: invitation.role.name,
               invitedBy: creator?.name ?? undefined,
             }),
           });
@@ -246,7 +261,6 @@ export const adminRouter = createTRPCRouter({
           name: true,
           email: true,
           image: true,
-          role: true,
           language: true,
           tokenBalance: true,
           createdAt: true,
@@ -338,7 +352,6 @@ export const adminRouter = createTRPCRouter({
             name: true,
             email: true,
             image: true,
-            role: true,
             createdAt: true,
             emailVerified: true,
             customRole: {
@@ -383,17 +396,29 @@ export const adminRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
-        role: z.enum(["default", "admin", "superadmin"]),
+        customRoleId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId, role } = input;
+      const { userId, customRoleId } = input;
 
       // Prevent changing own role
       if (userId === ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "You cannot change your own role",
+        });
+      }
+
+      // Verify the role exists
+      const role = await ctx.db.role_custom.findUnique({
+        where: { id: customRoleId },
+      });
+
+      if (!role) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Role not found",
         });
       }
 
@@ -411,10 +436,14 @@ export const adminRouter = createTRPCRouter({
       // Check if current user is superadmin when promoting to superadmin
       const currentUser = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
-        select: { role: true },
+        select: { customRole: { select: { name: true } } },
       });
 
-      if (role === "superadmin" && currentUser?.role !== "superadmin") {
+      const currentUserRoleName = currentUser?.customRole?.name?.toUpperCase();
+      if (
+        role.name.toUpperCase() === "SUPERADMIN" &&
+        currentUserRoleName !== "SUPERADMIN"
+      ) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only super admins can promote users to super admin",
@@ -423,7 +452,7 @@ export const adminRouter = createTRPCRouter({
 
       await ctx.db.user.update({
         where: { id: userId },
-        data: { role },
+        data: { customRoleId },
       });
 
       return {

@@ -16,7 +16,12 @@ export const authRouter = createTRPCRouter({
         gender: true,
         language: true,
         notifications: true,
-        role: true,
+        customRole: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         createdAt: true,
         updatedAt: true,
       },
