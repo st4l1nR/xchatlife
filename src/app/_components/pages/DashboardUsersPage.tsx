@@ -443,7 +443,7 @@ function DashboardUsersPageContent({
 
 const DashboardUsersPage: React.FC<DashboardUsersPageProps> = (props) => {
   return (
-    <Suspense fallback={<div className="animate-pulse p-6">Loading...</div>}>
+    <Suspense fallback={<div className="animate-pulse p-5">Loading...</div>}>
       <DashboardUsersPageContent {...props} />
     </Suspense>
   );

@@ -53,6 +53,10 @@ const meta = {
       control: "text",
       description: "Additional CSS classes",
     },
+    onUpdate: {
+      action: "onUpdate",
+      description: "Callback for edit button (shows pencil icon when provided)",
+    },
   },
 } satisfies Meta<typeof CardPrivateContent>;
 
@@ -73,6 +77,20 @@ export const Locked: Story = {
     locked: true,
     tokenCost: 140,
     bottomLikeCount: 3800,
+  },
+};
+
+export const LockedWithEdit: Story = {
+  name: "Locked (With Edit)",
+  args: {
+    imageSrc: mockImage,
+    description: "Sextape & Anal in my dorm room",
+    likeCount: 2,
+    imageCount: 37,
+    locked: true,
+    tokenCost: 140,
+    bottomLikeCount: 3800,
+    onUpdate: () => alert("Edit clicked!"),
   },
 };
 
@@ -132,6 +150,20 @@ export const UnlockedWithClick: Story = {
     locked: false,
     bottomLikeCount: 3500,
     onClick: () => alert("Card clicked!"),
+  },
+};
+
+export const UnlockedWithEdit: Story = {
+  name: "Unlocked (With Edit)",
+  args: {
+    imageSrc: mockImage,
+    description: "Caught in the lockeroom",
+    likeCount: 2,
+    imageCount: 24,
+    locked: false,
+    bottomLikeCount: 3500,
+    onClick: () => alert("Card clicked!"),
+    onUpdate: () => alert("Edit clicked!"),
   },
 };
 
