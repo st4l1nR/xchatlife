@@ -131,7 +131,6 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
     resolver: zodResolver(userSchema),
     defaultValues,
   });
-
   // Reset form when dialog opens or existingUser changes
   useEffect(() => {
     if (open) {
@@ -243,7 +242,7 @@ const DialogCreateUpdateUser: React.FC<DialogCreateUpdateUserProps> = ({
                 <Listbox
                   value={field.value}
                   onChange={field.onChange}
-                  disabled={loading}
+                  // disabled={loading}
                   placeholder="Select a role"
                 >
                   {rolesData?.data?.map((role) => (

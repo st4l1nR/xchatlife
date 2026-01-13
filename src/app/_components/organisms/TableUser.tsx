@@ -26,6 +26,8 @@ import {
   Eye,
   MoreVertical,
   CircleUser,
+  Pencil,
+  Send,
 } from "lucide-react";
 
 export type UserRoleType = "default" | "admin" | "superadmin";
@@ -59,7 +61,8 @@ export type TableUserProps = {
   onPageChange?: (page: number) => void;
   onDelete?: (id: string) => void;
   onView?: (id: string) => void;
-  onMore?: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onResendInvite?: (id: string) => void;
 };
 
 const getRoleIcon = (roleName?: string) => {
@@ -116,7 +119,8 @@ const TableUser: React.FC<TableUserProps> = ({
   onPageChange,
   onDelete,
   onView,
-  onMore,
+  onEdit,
+  onResendInvite,
 }) => {
   const columnHelper = createColumnHelper<TableUserItem>();
 
@@ -208,8 +212,15 @@ const TableUser: React.FC<TableUserProps> = ({
               <MoreVertical className="size-4" />
             </DropdownButton>
             <DropdownMenu anchor="bottom end">
-              <DropdownItem onClick={() => onMore?.(info.row.original.id)}>
-                More options
+              <DropdownItem onClick={() => onEdit?.(info.row.original.id)}>
+                <Pencil data-slot="icon" className="size-4" />
+                Edit
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => onResendInvite?.(info.row.original.id)}
+              >
+                <Send data-slot="icon" className="size-4" />
+                Resend Invite
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

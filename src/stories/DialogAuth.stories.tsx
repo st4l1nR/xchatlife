@@ -26,6 +26,20 @@ const meta = {
       control: "text",
       description: "URL for the left-side background image",
     },
+    inviteMode: {
+      control: "boolean",
+      description:
+        "When true, shows simplified invitation UI with no social buttons or navigation links",
+    },
+    isValidating: {
+      control: "boolean",
+      description:
+        "When true, shows loading skeleton while validating invitation token",
+    },
+    invitation: {
+      control: "object",
+      description: "Invitation data containing token, email, and role",
+    },
   },
   args: {
     onClose: () => {},
@@ -252,6 +266,224 @@ export const MobileView: Story = {
       description: {
         story:
           "Mobile view where the background image is hidden and only the form is displayed.",
+      },
+    },
+  },
+};
+
+// ============================================================================
+// Accept Invitation - Validating State
+// ============================================================================
+export const AcceptInviteValidating: Story = {
+  render: function Render(args) {
+    const [isOpen, setIsOpen] = useState(true);
+    const [variant, setVariant] = useState<DialogAuthVariant>("sign-up");
+
+    return (
+      <>
+        <Button onClick={() => setIsOpen(true)}>
+          Open Accept Invite (Validating)
+        </Button>
+        <DialogAuth
+          {...args}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          variant={variant}
+          onVariantChange={setVariant}
+          inviteMode
+          isValidating
+        />
+      </>
+    );
+  },
+  args: {
+    variant: "sign-up",
+    open: true,
+    backgroundImage: "/images/girl-poster.webp",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows the loading skeleton state while validating an invitation token. This appears briefly before the invitation form is displayed.",
+      },
+    },
+  },
+};
+
+// ============================================================================
+// Accept Invitation - Admin Role
+// ============================================================================
+export const AcceptInviteAdmin: Story = {
+  render: function Render(args) {
+    const [isOpen, setIsOpen] = useState(true);
+    const [variant, setVariant] = useState<DialogAuthVariant>("sign-up");
+
+    return (
+      <>
+        <Button onClick={() => setIsOpen(true)}>
+          Open Accept Invite (Admin)
+        </Button>
+        <DialogAuth
+          {...args}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          variant={variant}
+          onVariantChange={setVariant}
+          inviteMode
+          invitation={{
+            token: "mock-token-admin",
+            email: "admin@example.com",
+            role: "admin",
+          }}
+        />
+      </>
+    );
+  },
+  args: {
+    variant: "sign-up",
+    open: true,
+    backgroundImage: "/images/girl-poster.webp",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Accept invitation flow for an Admin role. Shows simplified UI with email pre-filled and role badge displayed in the invitation banner.",
+      },
+    },
+  },
+};
+
+// ============================================================================
+// Accept Invitation - Super Admin Role
+// ============================================================================
+export const AcceptInviteSuperAdmin: Story = {
+  render: function Render(args) {
+    const [isOpen, setIsOpen] = useState(true);
+    const [variant, setVariant] = useState<DialogAuthVariant>("sign-up");
+
+    return (
+      <>
+        <Button onClick={() => setIsOpen(true)}>
+          Open Accept Invite (Super Admin)
+        </Button>
+        <DialogAuth
+          {...args}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          variant={variant}
+          onVariantChange={setVariant}
+          inviteMode
+          invitation={{
+            token: "mock-token-superadmin",
+            email: "superadmin@example.com",
+            role: "superadmin",
+          }}
+        />
+      </>
+    );
+  },
+  args: {
+    variant: "sign-up",
+    open: true,
+    backgroundImage: "/images/girl-poster.webp",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Accept invitation flow for a Super Admin role. The role name is formatted as 'Super Admin' in the invitation banner.",
+      },
+    },
+  },
+};
+
+// ============================================================================
+// Accept Invitation - Customer Role
+// ============================================================================
+export const AcceptInviteCustomer: Story = {
+  render: function Render(args) {
+    const [isOpen, setIsOpen] = useState(true);
+    const [variant, setVariant] = useState<DialogAuthVariant>("sign-up");
+
+    return (
+      <>
+        <Button onClick={() => setIsOpen(true)}>
+          Open Accept Invite (Customer)
+        </Button>
+        <DialogAuth
+          {...args}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          variant={variant}
+          onVariantChange={setVariant}
+          inviteMode
+          invitation={{
+            token: "mock-token-customer",
+            email: "customer@example.com",
+            role: "customer",
+          }}
+        />
+      </>
+    );
+  },
+  args: {
+    variant: "sign-up",
+    open: true,
+    backgroundImage: "/images/girl-poster.webp",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Accept invitation flow for a Customer role. This is the typical flow for invited users.",
+      },
+    },
+  },
+};
+
+// ============================================================================
+// Accept Invitation - Mobile View
+// ============================================================================
+export const AcceptInviteMobile: Story = {
+  render: function Render(args) {
+    const [isOpen, setIsOpen] = useState(true);
+    const [variant, setVariant] = useState<DialogAuthVariant>("sign-up");
+
+    return (
+      <>
+        <Button onClick={() => setIsOpen(true)}>
+          Open Accept Invite (Mobile)
+        </Button>
+        <DialogAuth
+          {...args}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          variant={variant}
+          onVariantChange={setVariant}
+          inviteMode
+          invitation={{
+            token: "mock-token-mobile",
+            email: "mobile@example.com",
+            role: "admin",
+          }}
+        />
+      </>
+    );
+  },
+  args: {
+    variant: "sign-up",
+    open: true,
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile1",
+    },
+    docs: {
+      description: {
+        story:
+          "Accept invitation flow on mobile devices. The background image is hidden and only the form is displayed.",
       },
     },
   },
