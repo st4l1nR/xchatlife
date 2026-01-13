@@ -1,10 +1,13 @@
 import { z } from "zod";
-import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
 import {
   createTRPCRouter,
   publicProcedure,
   adminProcedure,
 } from "@/server/api/trpc";
+
+// Valid gender and style names (matching database option tables)
+const VALID_GENDERS = ["girl", "men", "trans"] as const;
+const VALID_STYLES = ["realistic", "anime"] as const;
 
 // Zod schemas for input validation
 const storyCreateSchema = z.object({
@@ -47,8 +50,8 @@ export const storyRouter = createTRPCRouter({
     .input(
       z
         .object({
-          style: z.nativeEnum(CharacterStyle).optional(),
-          gender: z.nativeEnum(CharacterGender).optional(),
+          style: z.enum(VALID_STYLES).optional(),
+          gender: z.enum(VALID_GENDERS).optional(),
         })
         .optional(),
     )
@@ -65,8 +68,8 @@ export const storyRouter = createTRPCRouter({
           character: {
             isActive: true,
             isPublic: true,
-            ...(input?.style && { style: input.style }),
-            ...(input?.gender && { gender: input.gender }),
+            ...(input?.style && { style: { name: input.style } }),
+            ...(input?.gender && { gender: { name: input.gender } }),
           },
         },
         include: {

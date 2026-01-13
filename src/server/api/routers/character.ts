@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -7,6 +6,10 @@ import {
   adminProcedure,
 } from "@/server/api/trpc";
 import { fetchAndUploadToR2 } from "@/server/r2";
+
+// Valid gender and style names (matching database option tables)
+const VALID_GENDERS = ["girl", "men", "trans"] as const;
+const VALID_STYLES = ["realistic", "anime"] as const;
 
 // Input schema matching frontend form with option IDs (directly from frontend)
 const createCharacterSchema = z.object({
@@ -78,8 +81,8 @@ export const characterRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(50).default(16),
         cursor: z.string().nullish(),
-        style: z.nativeEnum(CharacterStyle).optional(),
-        gender: z.nativeEnum(CharacterGender).optional(),
+        style: z.enum(VALID_STYLES).optional(),
+        gender: z.enum(VALID_GENDERS).optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -91,8 +94,8 @@ export const characterRouter = createTRPCRouter({
           isPublic: true,
           isActive: true,
           isLive: false, // Exclude live characters (shown in separate section)
-          ...(style && { style }),
-          ...(gender && { gender }),
+          ...(style && { style: { name: style } }),
+          ...(gender && { gender: { name: gender } }),
         },
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
@@ -136,8 +139,8 @@ export const characterRouter = createTRPCRouter({
     .input(
       z
         .object({
-          style: z.nativeEnum(CharacterStyle).optional(),
-          gender: z.nativeEnum(CharacterGender).optional(),
+          style: z.enum(VALID_STYLES).optional(),
+          gender: z.enum(VALID_GENDERS).optional(),
         })
         .optional(),
     )
@@ -147,8 +150,8 @@ export const characterRouter = createTRPCRouter({
           isPublic: true,
           isActive: true,
           isLive: true,
-          ...(input?.style && { style: input.style }),
-          ...(input?.gender && { gender: input.gender }),
+          ...(input?.style && { style: { name: input.style } }),
+          ...(input?.gender && { gender: { name: input.gender } }),
         },
         include: {
           poster: true,
@@ -182,6 +185,8 @@ export const characterRouter = createTRPCRouter({
         include: {
           poster: true,
           video: true,
+          gender: true,
+          style: true,
           ethnicity: true,
           personality: true,
           hairStyle: true,
@@ -219,6 +224,23 @@ export const characterRouter = createTRPCRouter({
       console.log("[character.create] Input posterUrl:", input.posterUrl);
       console.log("[character.create] Input videoUrl:", input.videoUrl);
 
+      // Look up gender and style IDs by name
+      const [genderOption, styleOption] = await Promise.all([
+        ctx.db.character_gender_option.findUnique({
+          where: { name: input.characterType },
+        }),
+        ctx.db.character_style_option.findUnique({
+          where: { name: input.style },
+        }),
+      ]);
+
+      if (!genderOption) {
+        throw new Error(`Invalid gender: ${input.characterType}`);
+      }
+      if (!styleOption) {
+        throw new Error(`Invalid style: ${input.style}`);
+      }
+
       // Fetch media from URLs and re-upload to R2 with unique keys
       // This avoids unique constraint violations on the Media.key field
       const [posterUpload, videoUpload] = await Promise.all([
@@ -255,8 +277,8 @@ export const characterRouter = createTRPCRouter({
         const newCharacter = await tx.character.create({
           data: {
             name: input.name,
-            gender: input.characterType as CharacterGender,
-            style: input.style as CharacterStyle,
+            genderId: genderOption.id,
+            styleId: styleOption.id,
             age: input.age,
             voice: input.voice,
             isPublic: input.isPublic,
@@ -297,6 +319,8 @@ export const characterRouter = createTRPCRouter({
         include: {
           poster: true,
           video: true,
+          gender: true,
+          style: true,
           ethnicity: true,
           personality: true,
           hairStyle: true,
@@ -344,8 +368,10 @@ export const characterRouter = createTRPCRouter({
           firstName,
           lastName,
           age: character.age,
-          gender: character.gender,
-          style: character.style,
+          gender: character.gender.name,
+          genderId: character.genderId,
+          style: character.style.name,
+          styleId: character.styleId,
           isPublic: character.isPublic,
           isActive: character.isActive,
           voice: character.voice,
@@ -416,8 +442,8 @@ export const characterRouter = createTRPCRouter({
         firstName: z.string().min(1).optional(),
         lastName: z.string().optional(),
         age: z.number().min(18).max(999).optional(),
-        gender: z.nativeEnum(CharacterGender).optional(),
-        style: z.nativeEnum(CharacterStyle).optional(),
+        gender: z.enum(VALID_GENDERS).optional(),
+        style: z.enum(VALID_STYLES).optional(),
         voice: z.string().optional(),
         isPublic: z.boolean().optional(),
         isActive: z.boolean().optional(),
@@ -464,6 +490,8 @@ export const characterRouter = createTRPCRouter({
         lastName,
         reelOrder,
         storyOrder,
+        gender,
+        style,
         ...updateData
       } = input;
 
@@ -485,6 +513,30 @@ export const characterRouter = createTRPCRouter({
         const newLastName =
           lastName ?? existingCharacter.name.split(" ").slice(1).join(" ");
         name = `${newFirstName} ${newLastName}`.trim();
+      }
+
+      // Look up gender and style IDs if provided
+      let genderId: string | undefined;
+      let styleId: string | undefined;
+
+      if (gender) {
+        const genderOption = await ctx.db.character_gender_option.findUnique({
+          where: { name: gender },
+        });
+        if (!genderOption) {
+          throw new Error(`Invalid gender: ${gender}`);
+        }
+        genderId = genderOption.id;
+      }
+
+      if (style) {
+        const styleOption = await ctx.db.character_style_option.findUnique({
+          where: { name: style },
+        });
+        if (!styleOption) {
+          throw new Error(`Invalid style: ${style}`);
+        }
+        styleId = styleOption.id;
       }
 
       // Handle media updates
@@ -571,6 +623,8 @@ export const characterRouter = createTRPCRouter({
           data: {
             ...updateData,
             ...(name && { name }),
+            ...(genderId && { genderId }),
+            ...(styleId && { styleId }),
             ...(posterId && { posterId }),
             ...(videoId && { videoId }),
           },
@@ -591,7 +645,7 @@ export const characterRouter = createTRPCRouter({
         page: z.number().min(1).default(1),
         limit: z.number().min(1).max(100).default(10),
         search: z.string().optional(),
-        style: z.nativeEnum(CharacterStyle).optional(),
+        style: z.enum(VALID_STYLES).optional(),
         sortBy: z
           .enum(["createdAt", "likeCount", "chatCount"])
           .default("createdAt"),
@@ -604,7 +658,7 @@ export const characterRouter = createTRPCRouter({
 
       // Build where clause
       const where = {
-        ...(style && { style }),
+        ...(style && { style: { name: style } }),
         ...(search && {
           name: {
             contains: search,
@@ -623,6 +677,7 @@ export const characterRouter = createTRPCRouter({
           orderBy: { [sortBy]: sortOrder },
           include: {
             poster: true,
+            style: true,
             user: {
               select: { name: true, email: true },
             },
@@ -640,7 +695,7 @@ export const characterRouter = createTRPCRouter({
             name: character.name,
             username: character.name.toLowerCase().replace(/\s+/g, "."),
             avatarSrc: character.poster?.url,
-            style: character.style.toLowerCase() as "anime" | "realistic",
+            style: character.style.name as "anime" | "realistic",
             likes: character.likeCount,
             chats: character.chatCount,
             status:

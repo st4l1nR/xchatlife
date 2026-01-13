@@ -16,16 +16,12 @@ import CreateCharacterStep5 from "../organisms/CreateCharacterStep5";
 import DialogAuth, { type DialogAuthVariant } from "../organisms/DialogAuth";
 import { api } from "@/trpc/react";
 import { useApp } from "@/app/_contexts/AppContext";
-import type {
-  CharacterGender,
-  CharacterStyle,
-} from "../../../../generated/prisma";
 
 // ============================================================================
 // Schemas
 // ============================================================================
 
-// Character Type (variant) - matches Prisma CharacterGender enum
+// Character Type (variant) - matches character_gender_option table names
 export const characterTypeSchema = z.enum(["girl", "trans"]);
 
 // Step 1: Style
@@ -176,19 +172,9 @@ const stepSchemas = {
   5: step5Schema,
 };
 
-// Helper to map form characterType to Prisma CharacterGender
-const mapCharacterTypeToGender = (
-  characterType: "girl" | "trans",
-): CharacterGender => {
-  return characterType as CharacterGender;
-};
-
-// Helper to map form style to Prisma CharacterStyle
-const mapStyleToCharacterStyle = (
-  style: "realistic" | "anime",
-): CharacterStyle => {
-  return style as CharacterStyle;
-};
+// Character gender and style types (matching database option tables)
+type CharacterGenderType = "girl" | "men" | "trans";
+type CharacterStyleType = "realistic" | "anime";
 
 const CreateCharacterPage: React.FC = () => {
   const router = useRouter();
@@ -232,8 +218,8 @@ const CreateCharacterPage: React.FC = () => {
     isFetching: variantFetching,
   } = api.options.getVariantOptions.useQuery(
     {
-      gender: mapCharacterTypeToGender(characterType ?? "girl"),
-      style: mapStyleToCharacterStyle(style ?? "realistic"),
+      gender: (characterType ?? "girl") as CharacterGenderType,
+      style: (style ?? "realistic") as CharacterStyleType,
     },
     {
       enabled: !!characterType && !!style,
