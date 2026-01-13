@@ -105,6 +105,7 @@ function AuthCallbackContent() {
       router.push("/");
       setIsProcessing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, isSessionPending, inviteToken, router]);
 
   if (isProcessing) {

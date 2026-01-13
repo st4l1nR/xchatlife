@@ -1,15 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { CharacterGender, CharacterStyle } from "../../../../generated/prisma";
+
+// Valid gender and style names (matching database option tables)
+const VALID_GENDERS = ["girl", "men", "trans"] as const;
+const VALID_STYLES = ["realistic", "anime"] as const;
 
 // ============================================================================
 // Input Schemas
 // ============================================================================
 
 const getVariantOptionsSchema = z.object({
-  gender: z.nativeEnum(CharacterGender),
-  style: z.nativeEnum(CharacterStyle),
+  gender: z.enum(VALID_GENDERS),
+  style: z.enum(VALID_STYLES),
 });
 
 // ============================================================================
@@ -23,13 +26,13 @@ export const optionsRouter = createTRPCRouter({
    */
   getCharacterVariants: publicProcedure.query(async ({ ctx }) => {
     const rawVariants = await ctx.db.character_variant.findMany({
-      orderBy: [{ gender: "asc" }, { sortOrder: "asc" }],
+      orderBy: [{ genderId: "asc" }, { sortOrder: "asc" }],
       select: {
         id: true,
         name: true,
         label: true,
-        gender: true,
-        style: true,
+        gender: { select: { name: true, label: true } },
+        style: { select: { name: true, label: true } },
         isActive: true,
         sortOrder: true,
         image: { select: { url: true } },
@@ -37,13 +40,13 @@ export const optionsRouter = createTRPCRouter({
       },
     });
 
-    // Transform to include imageSrc and videoSrc
+    // Transform to include imageSrc and videoSrc with flattened gender/style
     const variants = rawVariants.map((v) => ({
       id: v.id,
       name: v.name,
       label: v.label,
-      gender: v.gender,
-      style: v.style,
+      gender: v.gender.name,
+      style: v.style.name,
       isActive: v.isActive,
       sortOrder: v.sortOrder,
       imageSrc: v.image?.url ?? null,
@@ -78,12 +81,29 @@ export const optionsRouter = createTRPCRouter({
   getVariantOptions: publicProcedure
     .input(getVariantOptionsSchema)
     .query(async ({ ctx, input }) => {
-      // Find variant by gender + style
+      // Find gender and style options by name
+      const [genderOption, styleOption] = await Promise.all([
+        ctx.db.character_gender_option.findUnique({
+          where: { name: input.gender },
+        }),
+        ctx.db.character_style_option.findUnique({
+          where: { name: input.style },
+        }),
+      ]);
+
+      if (!genderOption || !styleOption) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Gender or style not found",
+        });
+      }
+
+      // Find variant by genderId + styleId
       const variant = await ctx.db.character_variant.findUnique({
         where: {
-          gender_style: {
-            gender: input.gender,
-            style: input.style,
+          genderId_styleId: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
           },
         },
       });

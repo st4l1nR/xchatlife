@@ -156,8 +156,15 @@ function DashboardCharactersCreateUpdatePageContent({
     api.options.getUniversalOptions.useQuery(undefined, { enabled: !mock });
 
   // Fetch variant-specific options based on character's gender/style
-  const characterGender = characterData?.data?.gender;
-  const characterStyle = characterData?.data?.style;
+  const characterGender = characterData?.data?.gender as
+    | "girl"
+    | "men"
+    | "trans"
+    | undefined;
+  const characterStyle = characterData?.data?.style as
+    | "realistic"
+    | "anime"
+    | undefined;
   const { data: variantOptionsData, isLoading: isLoadingVariantOptions } =
     api.options.getVariantOptions.useQuery(
       { gender: characterGender!, style: characterStyle! },

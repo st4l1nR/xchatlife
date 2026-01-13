@@ -32,7 +32,9 @@ const TabCharactersCreateEdit2: React.FC<TabCharactersCreateEdit2Props> = ({
   const handleRemove = (id: string) => {
     setValue(
       "reels",
-      reels.filter((item: MediaUploadItem) => item.id !== id),
+      (reels as MediaUploadItem[]).filter(
+        (item: MediaUploadItem) => item.id !== id,
+      ),
     );
   };
 

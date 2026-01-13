@@ -55,38 +55,92 @@ model affiliate {
 }
 
 // ==========================================
+// CHARACTER GENDER & STYLE OPTIONS
+// ==========================================
+
+model character_gender_option {
+  id          String   @id @default(cuid())
+  name        String   @unique // "girl", "men", "trans"
+  label       String // Display name e.g., "Girl", "Men", "Trans"
+  imageId     String? // Media ID for preview image
+  videoId     String? // Media ID for preview video
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  image              media?              @relation("gender_image", fields: [imageId], references: [id])
+  video              media?              @relation("gender_video", fields: [videoId], references: [id])
+  characters         character[]
+  character_variants character_variant[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
+}
+
+model character_style_option {
+  id          String   @id @default(cuid())
+  name        String   @unique // "realistic", "anime"
+  label       String // Display name e.g., "Realistic", "Anime"
+  imageId     String? // Media ID for preview image
+  videoId     String? // Media ID for preview video
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  image              media?              @relation("style_image", fields: [imageId], references: [id])
+  video              media?              @relation("style_video", fields: [videoId], references: [id])
+  characters         character[]
+  character_variants character_variant[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
+}
+
+// ==========================================
 // CHARACTER VARIANT (for option grouping)
 // ==========================================
 
 model character_variant {
-  id        String          @id @default(cuid())
-  gender    CharacterGender
-  style     CharacterStyle
-  name      String          @unique // "girl-realistic", "girl-anime", etc.
-  label     String          @default("") // Display name e.g., "Realistic", "Anime"
-  imageId   String?         // Media ID for preview image
-  videoId   String?         // Media ID for preview video
-  isActive  Boolean         @default(true)
-  sortOrder Int             @default(0)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id        String  @id @default(cuid())
+  genderId  String
+  styleId   String
+  name      String  @unique // "girl-realistic", "girl-anime", etc.
+  label     String  @default("") // Display name e.g., "Realistic", "Anime"
+  imageId   String? // Media ID for preview image
+  videoId   String? // Media ID for preview video
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Media relations
-  image media? @relation("variant_image", fields: [imageId], references: [id])
-  video media? @relation("variant_video", fields: [videoId], references: [id])
+  // Relations
+  gender character_gender_option @relation(fields: [genderId], references: [id])
+  style  character_style_option  @relation(fields: [styleId], references: [id])
+  image  media?                  @relation("variant_image", fields: [imageId], references: [id])
+  video  media?                  @relation("variant_video", fields: [videoId], references: [id])
 
   // Relations to variant-specific option tables
-  ethnicities  ethnicity_option[]
-  hairStyles   hair_style_option[]
-  hairColors   hair_color_option[]
-  eyeColors    eye_color_option[]
-  bodyTypes    body_type_option[]
-  breastSizes  breast_size_option[]
+  ethnicities ethnicity_option[]
+  hairStyles  hair_style_option[]
+  hairColors  hair_color_option[]
+  eyeColors   eye_color_option[]
+  bodyTypes   body_type_option[]
+  breastSizes breast_size_option[]
 
-  @@unique([gender, style])
+  @@unique([genderId, styleId])
   @@index([isActive])
   @@index([imageId])
   @@index([videoId])
+  @@index([genderId])
+  @@index([styleId])
 }
 
 // ==========================================
@@ -329,8 +383,8 @@ model character {
   name           String
   posterId       String?
   videoId        String?
-  gender         CharacterGender
-  style          CharacterStyle
+  genderId       String
+  styleId        String
   age            Int
   voice          String
   isPublic       Boolean             @default(false)
@@ -358,6 +412,8 @@ model character {
   user                           user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   poster                         media?                   @relation("character_posterIdTomedia", fields: [posterId], references: [id])
   video                          media?                   @relation("character_videoIdTomedia", fields: [videoId], references: [id])
+  gender                         character_gender_option  @relation(fields: [genderId], references: [id])
+  style                          character_style_option   @relation(fields: [styleId], references: [id])
   ethnicity                      ethnicity_option         @relation(fields: [ethnicityId], references: [id])
   personality                    personality_option       @relation(fields: [personalityId], references: [id])
   hairStyle                      hair_style_option        @relation(fields: [hairStyleId], references: [id])
@@ -377,10 +433,10 @@ model character {
   visual_novel_node              visual_novel_node[]
 
   @@index([createdById])
-  @@index([gender])
+  @@index([genderId])
   @@index([isActive])
   @@index([isPublic])
-  @@index([style])
+  @@index([styleId])
   @@index([ethnicityId])
   @@index([personalityId])
   @@index([hairStyleId])
@@ -532,20 +588,24 @@ model media {
   variant_video                       character_variant[]   @relation("variant_video")
 
   // Option table relations
-  personality_image  personality_option[]  @relation("personality_image")
-  relationship_image relationship_option[] @relation("relationship_image")
-  ethnicity_image    ethnicity_option[]    @relation("ethnicity_image")
-  ethnicity_video    ethnicity_option[]    @relation("ethnicity_video")
-  hair_style_image   hair_style_option[]   @relation("hair_style_image")
-  hair_style_video   hair_style_option[]   @relation("hair_style_video")
-  hair_color_image   hair_color_option[]   @relation("hair_color_image")
-  hair_color_video   hair_color_option[]   @relation("hair_color_video")
-  eye_color_image    eye_color_option[]    @relation("eye_color_image")
-  eye_color_video    eye_color_option[]    @relation("eye_color_video")
-  body_type_image    body_type_option[]    @relation("body_type_image")
-  body_type_video    body_type_option[]    @relation("body_type_video")
-  breast_size_image  breast_size_option[]  @relation("breast_size_image")
-  breast_size_video  breast_size_option[]  @relation("breast_size_video")
+  gender_image       character_gender_option[] @relation("gender_image")
+  gender_video       character_gender_option[] @relation("gender_video")
+  style_image        character_style_option[]  @relation("style_image")
+  style_video        character_style_option[]  @relation("style_video")
+  personality_image  personality_option[]      @relation("personality_image")
+  relationship_image relationship_option[]     @relation("relationship_image")
+  ethnicity_image    ethnicity_option[]        @relation("ethnicity_image")
+  ethnicity_video    ethnicity_option[]        @relation("ethnicity_video")
+  hair_style_image   hair_style_option[]       @relation("hair_style_image")
+  hair_style_video   hair_style_option[]       @relation("hair_style_video")
+  hair_color_image   hair_color_option[]       @relation("hair_color_image")
+  hair_color_video   hair_color_option[]       @relation("hair_color_video")
+  eye_color_image    eye_color_option[]        @relation("eye_color_image")
+  eye_color_video    eye_color_option[]        @relation("eye_color_video")
+  body_type_image    body_type_option[]        @relation("body_type_image")
+  body_type_video    body_type_option[]        @relation("body_type_video")
+  breast_size_image  breast_size_option[]      @relation("breast_size_image")
+  breast_size_video  breast_size_option[]      @relation("breast_size_video")
 
   character_image                     character_image[]
   collection                          collection[]
@@ -928,17 +988,6 @@ enum BillingCycle {
   monthly
   quarterly
   annually
-}
-
-enum CharacterGender {
-  girl
-  men
-  trans
-}
-
-enum CharacterStyle {
-  realistic
-  anime
 }
 
 enum Language {

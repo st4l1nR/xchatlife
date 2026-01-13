@@ -184,7 +184,6 @@ export const Default: Story = {
 };
 
 export const WithTitle: Story = {
-  name: "With Title",
   args: {
     title: "Activity Timeline",
     activities: mockActivities,
@@ -208,7 +207,6 @@ export const Empty: Story = {
 };
 
 export const ChatActivitiesOnly: Story = {
-  name: "Chat Activities Only",
   args: {
     title: "Chat & Messaging",
     activities: mockActivities.filter((a) => a.category === "chat"),
@@ -216,7 +214,6 @@ export const ChatActivitiesOnly: Story = {
 };
 
 export const ContentActivitiesOnly: Story = {
-  name: "Content Activities Only",
   args: {
     title: "Content Creation",
     activities: mockActivities.filter((a) => a.category === "content"),
@@ -224,7 +221,6 @@ export const ContentActivitiesOnly: Story = {
 };
 
 export const MediaActivitiesOnly: Story = {
-  name: "Media Activities Only",
   args: {
     title: "Media & Collections",
     activities: mockActivities.filter((a) => a.category === "media"),
@@ -232,7 +228,6 @@ export const MediaActivitiesOnly: Story = {
 };
 
 export const SubscriptionActivitiesOnly: Story = {
-  name: "Subscription Activities Only",
   args: {
     title: "Subscription & Billing",
     activities: mockActivities.filter((a) => a.category === "subscription"),

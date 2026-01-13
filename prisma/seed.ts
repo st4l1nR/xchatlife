@@ -1,9 +1,4 @@
-import {
-  PrismaClient,
-  CharacterGender,
-  CharacterStyle,
-  MediaType,
-} from "../generated/prisma";
+import { PrismaClient, MediaType } from "../generated/prisma";
 import * as dotenv from "dotenv";
 import { hashPassword } from "better-auth/crypto";
 
@@ -64,10 +59,25 @@ if (!R2_BASE_URL) {
 // Variant Definitions
 // ============================================================================
 
+// ============================================================================
+// Character Gender & Style Option Data
+// ============================================================================
+
+const CHARACTER_GENDER_DATA = [
+  { name: "girl", label: "Girl" },
+  { name: "men", label: "Men" },
+  { name: "trans", label: "Trans" },
+];
+
+const CHARACTER_STYLE_DATA = [
+  { name: "realistic", label: "Realistic" },
+  { name: "anime", label: "Anime" },
+];
+
 const VARIANT_DEFINITIONS = [
   {
-    gender: CharacterGender.girl,
-    style: CharacterStyle.realistic,
+    genderName: "girl",
+    styleName: "realistic",
     name: "girl-realistic",
     label: "Realistic",
     imageKey: "seed/variants/girl-realistic.webp",
@@ -79,8 +89,8 @@ const VARIANT_DEFINITIONS = [
     isActive: true,
   },
   {
-    gender: CharacterGender.girl,
-    style: CharacterStyle.anime,
+    genderName: "girl",
+    styleName: "anime",
     name: "girl-anime",
     label: "Anime",
     imageKey: "seed/variants/girl-anime.webp",
@@ -92,8 +102,8 @@ const VARIANT_DEFINITIONS = [
     isActive: true,
   },
   {
-    gender: CharacterGender.trans,
-    style: CharacterStyle.realistic,
+    genderName: "trans",
+    styleName: "realistic",
     name: "trans-realistic",
     label: "Realistic",
     imageKey: "seed/variants/trans-realistic.jpg",
@@ -105,8 +115,8 @@ const VARIANT_DEFINITIONS = [
     isActive: true,
   },
   {
-    gender: CharacterGender.trans,
-    style: CharacterStyle.anime,
+    genderName: "trans",
+    styleName: "anime",
     name: "trans-anime",
     label: "Anime",
     imageKey: "seed/variants/trans-anime.jpg",
@@ -1054,12 +1064,58 @@ const voiceOptions = [
 // Map key format: "optionName" -> id (for universal options)
 type OptionMap = Map<string, string>;
 
-async function seedVariants(): Promise<Map<string, string>> {
+async function seedGendersAndStyles(): Promise<{
+  genders: OptionMap;
+  styles: OptionMap;
+}> {
+  console.log("Seeding character genders and styles...");
+
+  // Seed genders
+  const genders = new Map<string, string>();
+  for (let i = 0; i < CHARACTER_GENDER_DATA.length; i++) {
+    const data = CHARACTER_GENDER_DATA[i]!;
+    const option = await prisma.character_gender_option.upsert({
+      where: { name: data.name },
+      update: { label: data.label, sortOrder: i },
+      create: { name: data.name, label: data.label, sortOrder: i },
+    });
+    genders.set(data.name, option.id);
+  }
+  console.log(`  - Created ${genders.size} gender options`);
+
+  // Seed styles
+  const styles = new Map<string, string>();
+  for (let i = 0; i < CHARACTER_STYLE_DATA.length; i++) {
+    const data = CHARACTER_STYLE_DATA[i]!;
+    const option = await prisma.character_style_option.upsert({
+      where: { name: data.name },
+      update: { label: data.label, sortOrder: i },
+      create: { name: data.name, label: data.label, sortOrder: i },
+    });
+    styles.set(data.name, option.id);
+  }
+  console.log(`  - Created ${styles.size} style options`);
+
+  return { genders, styles };
+}
+
+async function seedVariants(
+  genders: OptionMap,
+  styles: OptionMap,
+): Promise<Map<string, string>> {
   console.log("Seeding character variants...");
   const variantMap = new Map<string, string>();
 
   for (let i = 0; i < VARIANT_DEFINITIONS.length; i++) {
     const v = VARIANT_DEFINITIONS[i]!;
+
+    const genderId = genders.get(v.genderName);
+    const styleId = styles.get(v.styleName);
+
+    if (!genderId || !styleId) {
+      console.warn(`  - Skipping variant ${v.name}: gender or style not found`);
+      continue;
+    }
 
     // Create or find Media record for image
     const imageMedia = await prisma.media.upsert({
@@ -1095,8 +1151,8 @@ async function seedVariants(): Promise<Map<string, string>> {
     const variant = await prisma.character_variant.upsert({
       where: { name: v.name },
       update: {
-        gender: v.gender,
-        style: v.style,
+        genderId,
+        styleId,
         label: v.label,
         imageId: imageMedia.id,
         videoId: videoMedia.id,
@@ -1105,8 +1161,8 @@ async function seedVariants(): Promise<Map<string, string>> {
       },
       create: {
         name: v.name,
-        gender: v.gender,
-        style: v.style,
+        genderId,
+        styleId,
         label: v.label,
         imageId: imageMedia.id,
         videoId: videoMedia.id,
@@ -1585,10 +1641,13 @@ async function main() {
     );
   }
 
-  // Step 1: Seed variants first
-  const variantMap = await seedVariants();
+  // Step 1: Seed genders and styles first
+  const { genders, styles } = await seedGendersAndStyles();
 
-  // Step 2: Seed option tables (needs variant IDs)
+  // Step 2: Seed variants (needs gender and style IDs)
+  const variantMap = await seedVariants(genders, styles);
+
+  // Step 3: Seed option tables (needs variant IDs)
   const optionMaps = await seedOptionTables(variantMap);
 
   // Step 3: Find or create target user
@@ -1675,12 +1734,15 @@ async function main() {
     // Pick a random variant for this character
     const variantName = getRandomItem(availableVariants);
     const [genderStr, styleStr] = variantName.split("-") as [string, string];
-    const gender =
-      genderStr === "girl" ? CharacterGender.girl : CharacterGender.trans;
-    const style =
-      styleStr === "realistic"
-        ? CharacterStyle.realistic
-        : CharacterStyle.anime;
+    const genderId = genders.get(genderStr);
+    const styleId = styles.get(styleStr);
+
+    if (!genderId || !styleId) {
+      console.warn(
+        `Skipping character: gender or style not found for ${variantName}`,
+      );
+      continue;
+    }
 
     // Get available options for this variant
     const variantEthnicities = ETHNICITY_DATA.filter(
@@ -1723,8 +1785,8 @@ async function main() {
       name,
       posterId: posterMedia.id,
       videoId: videoMedia.id,
-      gender,
-      style,
+      genderId,
+      styleId,
       age,
       voice: getRandomItem(voiceOptions),
       isPublic: true,

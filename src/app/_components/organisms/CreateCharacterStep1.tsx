@@ -10,17 +10,13 @@ import clsx from "clsx";
 import CardSelectable from "../molecules/CardSelectable";
 import CardSelectableSkeleton from "../atoms/CardSelectableSkeleton";
 import type { CharacterFormData } from "../pages/CreateCharacterPage";
-import type {
-  CharacterGender,
-  CharacterStyle,
-} from "../../../../generated/prisma";
 
 type CharacterVariant = {
   id: string;
   name: string;
   label: string;
-  gender: CharacterGender;
-  style: CharacterStyle;
+  gender: string;
+  style: string;
   imageSrc: string | null;
   videoSrc: string | null;
   isActive: boolean;
