@@ -89,7 +89,7 @@ function TabWrapper({ children }: { children: React.ReactNode }) {
 
 // Interactive wrapper that handles dialog state
 function InteractiveWrapper({
-  children,
+  children: _children,
   onCreatePrivateContent,
   onUpdatePrivateContent,
   ...props

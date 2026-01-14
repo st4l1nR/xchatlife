@@ -22,8 +22,6 @@ export const tokenService = {
     metadata?: Prisma.InputJsonValue,
     tx?: TransactionClient,
   ) {
-    const client = tx ?? db;
-
     const executeDeduction = async (prisma: TransactionClient | typeof db) => {
       const user = await prisma.user.findUniqueOrThrow({
         where: { id: userId },
@@ -86,8 +84,6 @@ export const tokenService = {
     metadata?: Prisma.InputJsonValue,
     tx?: TransactionClient,
   ) {
-    const client = tx ?? db;
-
     const executeAddition = async (prisma: TransactionClient | typeof db) => {
       const user = await prisma.user.findUniqueOrThrow({
         where: { id: userId },

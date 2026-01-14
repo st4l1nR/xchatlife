@@ -7,19 +7,16 @@ import { TabGroup, TabPanels } from "@headlessui/react";
 import TabCharactersCreateEdit1 from "@/app/_components/organisms/TabCharactersCreateEdit1";
 
 // Sample options for dropdowns
+const genderOptions = [
+  { value: "girl", label: "Girl" },
+  { value: "men", label: "Men" },
+  { value: "trans", label: "Trans" },
+];
+
 const styleOptions = [
   { value: "anime", label: "Anime" },
   { value: "realistic", label: "Realistic" },
   { value: "cartoon", label: "Cartoon" },
-];
-
-const kinksOptions = [
-  { value: "romantic", label: "Romantic" },
-  { value: "adventurous", label: "Adventurous" },
-  { value: "mysterious", label: "Mysterious" },
-  { value: "playful", label: "Playful" },
-  { value: "dominant", label: "Dominant" },
-  { value: "submissive", label: "Submissive" },
 ];
 
 const ethnicityOptions = [
@@ -102,7 +99,6 @@ const characterFormSchema = z.object({
   gender: z.string().optional(),
   description: z.string().optional(),
   style: z.string().optional(),
-  kinks: z.array(z.string()).max(3, "Maximum 3 kinks allowed").optional(),
   ethnicity: z.string().optional(),
   personality: z.string().optional(),
   hairStyle: z.string().optional(),
@@ -133,7 +129,6 @@ function FormWrapper({
       gender: "",
       description: "",
       style: "",
-      kinks: [],
       ethnicity: "",
       personality: "",
       hairStyle: "",
@@ -206,8 +201,8 @@ const defaultProps = {
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   role: "Anime",
   joinedDate: "April 2021",
+  genderOptions,
   styleOptions,
-  kinksOptions,
   ethnicityOptions,
   personalityOptions,
   hairStyleOptions,
@@ -239,7 +234,6 @@ export const WithPrefilledData: Story = {
         description:
           "A cheerful and adventurous character who loves to explore new places and meet new people. Always ready for an adventure!",
         style: "anime",
-        kinks: ["romantic", "adventurous"],
         ethnicity: "latin",
         personality: "cheerful",
         hairStyle: "long",

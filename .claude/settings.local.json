@@ -55,8 +55,15 @@
       "Bash(pnpm prisma migrate:*)",
       "Bash(pnpm prisma db seed:*)",
       "Bash(grep:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma migrate reset:*)"
     ],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "paypal",
+    "github",
+    "db"
+  ],
+  "enableAllProjectMcpServers": true
 }

@@ -32,7 +32,9 @@ const TabCharactersCreateEdit2: React.FC<TabCharactersCreateEdit2Props> = ({
   const handleRemove = (id: string) => {
     setValue(
       "reels",
-      reels.filter((item: MediaUploadItem) => item.id !== id),
+      (reels as MediaUploadItem[]).filter(
+        (item: MediaUploadItem) => item.id !== id,
+      ),
     );
   };
 
@@ -54,7 +56,7 @@ const TabCharactersCreateEdit2: React.FC<TabCharactersCreateEdit2Props> = ({
             <>
               <ListCardMediaUpload
                 layout="grid"
-                cols={2}
+                cols={3}
                 items={reels}
                 aspectRatio="9:16"
                 accept={{ "video/*": [".mp4", ".webm", ".mov"] }}

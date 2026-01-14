@@ -19,11 +19,12 @@ export default async function CharactersCreateUpdatePage({
   // Fetch user role from database since better-auth session doesn't include it
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true },
+    select: { customRole: { select: { name: true } } },
   });
 
   // Check for admin role
-  if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
+  const roleName = user?.customRole?.name?.toUpperCase();
+  if (!user || (roleName !== "ADMIN" && roleName !== "SUPERADMIN")) {
     redirect("/dashboard");
   }
 

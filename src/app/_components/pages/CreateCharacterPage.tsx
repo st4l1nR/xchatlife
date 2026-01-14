@@ -16,16 +16,12 @@ import CreateCharacterStep5 from "../organisms/CreateCharacterStep5";
 import DialogAuth, { type DialogAuthVariant } from "../organisms/DialogAuth";
 import { api } from "@/trpc/react";
 import { useApp } from "@/app/_contexts/AppContext";
-import type {
-  CharacterGender,
-  CharacterStyle,
-} from "../../../../generated/prisma";
 
 // ============================================================================
 // Schemas
 // ============================================================================
 
-// Character Type (variant) - matches Prisma CharacterGender enum
+// Character Type (variant) - matches character_gender_option table names
 export const characterTypeSchema = z.enum(["girl", "trans"]);
 
 // Step 1: Style
@@ -63,10 +59,6 @@ export const characterFormSchema = z.object({
   personalityId: z.string().min(1, "Please select a personality"),
   relationshipId: z.string().min(1, "Please select a relationship"),
   occupationId: z.string().min(1, "Please select an occupation"),
-  kinkIds: z
-    .array(z.string())
-    .min(1, "Select at least 1 kink")
-    .max(3, "Maximum 3 kinks"),
   voice: z.string().min(1, "Please select a voice"),
 
   // Visibility
@@ -102,7 +94,6 @@ export const step5Schema = z.object({
   personalityId: z.string().min(1, "Please select a personality"),
   relationshipId: z.string().min(1, "Please select a relationship"),
   occupationId: z.string().min(1, "Please select an occupation"),
-  kinkIds: z.array(z.string()).min(1).max(3),
   voice: z.string().min(1, "Please select a voice"),
 });
 
@@ -139,12 +130,6 @@ export type OccupationOption = {
   emoji?: string | null;
 };
 
-export type KinkOption = {
-  id: string;
-  name: string;
-  label: string;
-};
-
 // ============================================================================
 // Hardcoded Constants (Voice only - kept hardcoded per plan)
 // ============================================================================
@@ -176,19 +161,9 @@ const stepSchemas = {
   5: step5Schema,
 };
 
-// Helper to map form characterType to Prisma CharacterGender
-const mapCharacterTypeToGender = (
-  characterType: "girl" | "trans",
-): CharacterGender => {
-  return characterType as CharacterGender;
-};
-
-// Helper to map form style to Prisma CharacterStyle
-const mapStyleToCharacterStyle = (
-  style: "realistic" | "anime",
-): CharacterStyle => {
-  return style as CharacterStyle;
-};
+// Character gender and style types (matching database option tables)
+type CharacterGenderType = "girl" | "men" | "trans";
+type CharacterStyleType = "realistic" | "anime";
 
 const CreateCharacterPage: React.FC = () => {
   const router = useRouter();
@@ -212,7 +187,6 @@ const CreateCharacterPage: React.FC = () => {
     defaultValues: {
       characterType: "girl",
       age: 21,
-      kinkIds: [],
       isPublic: false,
     },
     mode: "onChange",
@@ -232,17 +206,25 @@ const CreateCharacterPage: React.FC = () => {
     isFetching: variantFetching,
   } = api.options.getVariantOptions.useQuery(
     {
-      gender: mapCharacterTypeToGender(characterType ?? "girl"),
-      style: mapStyleToCharacterStyle(style ?? "realistic"),
+      gender: (characterType ?? "girl") as CharacterGenderType,
+      style: (style ?? "realistic") as CharacterStyleType,
     },
     {
       enabled: !!characterType && !!style,
     },
   );
 
-  // Fetch universal options once (personalities, relationships, occupations, kinks)
+  // Fetch universal options (personalities, relationships, occupations) - filtered by gender + style
   const { data: universalOptions, isLoading: universalLoading } =
-    api.options.getUniversalOptions.useQuery();
+    api.options.getUniversalOptions.useQuery(
+      {
+        gender: (characterType ?? "girl") as CharacterGenderType,
+        style: (style ?? "realistic") as CharacterStyleType,
+      },
+      {
+        enabled: !!characterType && !!style,
+      },
+    );
 
   // Reset variant-specific form values when variant changes
   useEffect(() => {
@@ -254,6 +236,10 @@ const CreateCharacterPage: React.FC = () => {
       setValue("eyeColorId", "");
       setValue("bodyTypeId", "");
       setValue("breastSizeId", "");
+      // Also clear universal options since they're now filtered by gender+style
+      setValue("personalityId", "");
+      setValue("relationshipId", "");
+      setValue("occupationId", "");
     }
   }, [variantFetching, setValue]);
 
@@ -354,7 +340,6 @@ const CreateCharacterPage: React.FC = () => {
       personalityId: data.personalityId,
       relationshipId: data.relationshipId,
       occupationId: data.occupationId,
-      kinkIds: data.kinkIds,
       voice: data.voice,
       posterUrl: data.posterUrl,
       videoUrl: data.videoUrl,
@@ -418,7 +403,6 @@ const CreateCharacterPage: React.FC = () => {
             personalities={universalOptions?.data?.personalities ?? []}
             relationships={universalOptions?.data?.relationships ?? []}
             occupations={universalOptions?.data?.occupations ?? []}
-            kinks={universalOptions?.data?.kinks ?? []}
             loading={universalLoading}
           />
         );

@@ -1,9 +1,4 @@
-import {
-  PrismaClient,
-  CharacterGender,
-  CharacterStyle,
-  MediaType,
-} from "../generated/prisma";
+import { PrismaClient, MediaType } from "../generated/prisma";
 import * as dotenv from "dotenv";
 import { hashPassword } from "better-auth/crypto";
 
@@ -61,60 +56,93 @@ if (!R2_BASE_URL) {
 }
 
 // ============================================================================
-// Variant Definitions
+// Character Gender & Style Option Data
+// ============================================================================
+
+const CHARACTER_GENDER_DATA = [
+  { name: "girl", label: "Girl", emoji: "👩" },
+  { name: "men", label: "Men", emoji: "👨" },
+  { name: "trans", label: "Transexual", emoji: "⚧️" },
+];
+
+const CHARACTER_STYLE_DATA = [
+  {
+    name: "realistic",
+    label: "Realistic",
+    imageKey: "seed/variants/girl-realistic.webp",
+    videoKey: "seed/variants/girl-realistic.mp4",
+  },
+  {
+    name: "anime",
+    label: "Anime",
+    imageKey: "seed/variants/girl-anime.webp",
+    videoKey: "seed/variants/girl-anime.mp4",
+  },
+];
+
+// ============================================================================
+// Variant Definitions (intersection of gender + style)
 // ============================================================================
 
 const VARIANT_DEFINITIONS = [
   {
-    gender: CharacterGender.girl,
-    style: CharacterStyle.realistic,
+    genderName: "girl",
+    styleName: "realistic",
     name: "girl-realistic",
-    label: "Realistic",
+    label: "Realistic Girl",
+    emoji: "👩",
     imageKey: "seed/variants/girl-realistic.webp",
-    imageUrl: `${R2_BASE_URL}/seed/variants/girl-realistic.webp`,
-    imageMimeType: "image/webp",
     videoKey: "seed/variants/girl-realistic.mp4",
-    videoUrl: `${R2_BASE_URL}/seed/variants/girl-realistic.mp4`,
-    videoMimeType: "video/mp4",
     isActive: true,
   },
   {
-    gender: CharacterGender.girl,
-    style: CharacterStyle.anime,
+    genderName: "girl",
+    styleName: "anime",
     name: "girl-anime",
-    label: "Anime",
+    label: "Anime Girl",
+    emoji: "👧",
     imageKey: "seed/variants/girl-anime.webp",
-    imageUrl: `${R2_BASE_URL}/seed/variants/girl-anime.webp`,
-    imageMimeType: "image/webp",
     videoKey: "seed/variants/girl-anime.mp4",
-    videoUrl: `${R2_BASE_URL}/seed/variants/girl-anime.mp4`,
-    videoMimeType: "video/mp4",
     isActive: true,
   },
   {
-    gender: CharacterGender.trans,
-    style: CharacterStyle.realistic,
+    genderName: "men",
+    styleName: "realistic",
+    name: "men-realistic",
+    label: "Realistic Men",
+    emoji: "👨",
+    imageKey: "seed/variants/girl-realistic.webp", // Using girl-realistic as placeholder
+    videoKey: "seed/variants/girl-realistic.mp4",
+    isActive: true,
+  },
+  {
+    genderName: "men",
+    styleName: "anime",
+    name: "men-anime",
+    label: "Anime Men",
+    emoji: "👦",
+    imageKey: "seed/variants/girl-anime.webp", // Using girl-anime as placeholder
+    videoKey: "seed/variants/girl-anime.mp4",
+    isActive: true,
+  },
+  {
+    genderName: "trans",
+    styleName: "realistic",
     name: "trans-realistic",
-    label: "Realistic",
+    label: "Realistic Trans",
+    emoji: "⚧️",
     imageKey: "seed/variants/trans-realistic.jpg",
-    imageUrl: `${R2_BASE_URL}/seed/variants/trans-realistic.jpg`,
-    imageMimeType: "image/jpeg",
     videoKey: "seed/variants/trans-realistic.mp4",
-    videoUrl: `${R2_BASE_URL}/seed/variants/trans-realistic.mp4`,
-    videoMimeType: "video/mp4",
     isActive: true,
   },
   {
-    gender: CharacterGender.trans,
-    style: CharacterStyle.anime,
+    genderName: "trans",
+    styleName: "anime",
     name: "trans-anime",
-    label: "Anime",
+    label: "Anime Trans",
+    emoji: "⚧️",
     imageKey: "seed/variants/trans-anime.jpg",
-    imageUrl: `${R2_BASE_URL}/seed/variants/trans-anime.jpg`,
-    imageMimeType: "image/jpeg",
     videoKey: "seed/variants/trans-anime.mp4",
-    videoUrl: `${R2_BASE_URL}/seed/variants/trans-anime.mp4`,
-    videoMimeType: "video/mp4",
     isActive: false, // Coming soon
   },
 ] as const;
@@ -149,14 +177,12 @@ function getMimeType(url: string): string {
 
 // Helper to extract key from URL
 function getKeyFromUrl(url: string): string {
-  // URL format: https://domain.com/seed/options/personality/nympho.png
-  // Key format: seed/options/personality/nympho.png
   const match = url.match(/\/(seed\/.+)$/);
   return match?.[1] ?? url;
 }
 
 // ============================================================================
-// Universal Options (same for all variants) - Using R2 URLs
+// Universal Options - Using R2 URLs (now with genderName and styleName)
 // ============================================================================
 
 // Personality options - with images from R2
@@ -346,79 +372,59 @@ const OCCUPATION_DATA = [
   { name: "fitness_coach", label: "Fitness Coach", emoji: "🏋️" },
 ];
 
-// Kinks options - text only
-const KINK_DATA = [
-  { name: "daddy_dominance", label: "Daddy Dominance" },
-  { name: "bondage", label: "Bondage" },
-  { name: "spanking", label: "Spanking" },
-  { name: "collar_leash", label: "Collar & Leash" },
-  { name: "punishment", label: "Punishment" },
-  { name: "humiliation", label: "Humiliation" },
-  { name: "public_play", label: "Public Play" },
-  { name: "roleplay", label: "Roleplay" },
-  { name: "anal_play", label: "Anal Play" },
-  { name: "oral_play", label: "Oral Play" },
-  { name: "cum_play", label: "Cum Play" },
-  { name: "creampie", label: "Creampie" },
-  { name: "squirting", label: "Squirting" },
-  { name: "dirty_talk", label: "Dirty Talk" },
-  { name: "breeding", label: "Breeding" },
-  { name: "edging", label: "Edging" },
-  { name: "obedience", label: "Obedience" },
-  { name: "control", label: "Control" },
-  { name: "inexperienced", label: "Inexperienced" },
-  { name: "shy_flirting", label: "Shy Flirting" },
-  { name: "playful_teasing", label: "Playful Teasing" },
-  { name: "cuddling", label: "Cuddling" },
-  { name: "slow_sensual", label: "Slow & Sensual" },
-  { name: "hair_pulling", label: "Hair Pulling" },
-];
-
 // ============================================================================
-// Variant-Specific Options (different images per variant) - Using R2 URLs
+// Variant-Specific Options (using genderName and styleName)
 // ============================================================================
 
-// Ethnicity options per variant
-const ETHNICITY_DATA: {
+type OptionData = {
   name: string;
   label: string;
-  variantName: string;
+  genderName: string;
+  styleName: string;
   imageUrl: string;
   videoUrl?: string;
-}[] = [
+};
+
+// Ethnicity options per gender+style
+const ETHNICITY_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "caucasian",
     label: "Caucasian",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.mp4`,
   },
   {
     name: "asian",
     label: "Asian",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.mp4`,
   },
   {
     name: "black",
     label: "Black / Afro",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.mp4`,
   },
   {
     name: "latina",
     label: "Latina",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.mp4`,
   },
   {
     name: "arab",
     label: "Arab",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.jpg`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/arab.mp4`,
   },
@@ -426,93 +432,150 @@ const ETHNICITY_DATA: {
   {
     name: "caucasian",
     label: "Caucasian",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.mp4`,
   },
   {
     name: "asian",
     label: "Asian",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.mp4`,
   },
   {
     name: "latina",
     label: "Latina",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.mp4`,
+  },
+  // men-realistic (using girl-realistic images as placeholder)
+  {
+    name: "caucasian",
+    label: "Caucasian",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/caucasian.png`,
+  },
+  {
+    name: "asian",
+    label: "Asian",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/asian.png`,
+  },
+  {
+    name: "black",
+    label: "Black / Afro",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/black.png`,
+  },
+  {
+    name: "latina",
+    label: "Latino",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/ethnicity/latina.png`,
+  },
+  // men-anime (using girl-anime images as placeholder)
+  {
+    name: "caucasian",
+    label: "Caucasian",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/caucasian.webp`,
+  },
+  {
+    name: "asian",
+    label: "Asian",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/asian.webp`,
+  },
+  {
+    name: "latina",
+    label: "Latino",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/ethnicity/latina.webp`,
   },
   // trans-realistic
   {
     name: "caucasian",
     label: "Caucasian",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/caucasian.png`,
   },
   {
     name: "asian",
     label: "Asian",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/asian.png`,
   },
   {
     name: "latina",
     label: "Latina",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/ethnicity/latina.png`,
   },
 ];
 
-// Hair Style options per variant
-const HAIR_STYLE_DATA: {
-  name: string;
-  label: string;
-  variantName: string;
-  imageUrl: string;
-  videoUrl?: string;
-}[] = [
+// Hair Style options per gender+style
+const HAIR_STYLE_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "straight",
     label: "Straight",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4`,
   },
   {
     name: "bangs",
     label: "Bangs",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4`,
   },
   {
     name: "curly",
     label: "Curly",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4`,
   },
   {
     name: "bun",
     label: "Bun",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4`,
   },
   {
     name: "short",
     label: "Short",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4`,
   },
   {
     name: "ponytail",
     label: "Ponytail",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4`,
   },
@@ -520,468 +583,718 @@ const HAIR_STYLE_DATA: {
   {
     name: "straight",
     label: "Straight",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.mp4`,
   },
   {
     name: "bangs",
     label: "Bangs",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bangs.mp4`,
   },
   {
     name: "curly",
     label: "Curly",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.mp4`,
   },
   {
     name: "bun",
     label: "Bun",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/bun.mp4`,
   },
   {
     name: "short",
     label: "Short",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.mp4`,
   },
   {
     name: "ponytail",
     label: "Ponytail",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.webp`,
     videoUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/ponytail.mp4`,
   },
-  // trans-realistic (reuses girl-realistic URLs)
+  // men-realistic (reusing girl-realistic)
   {
     name: "straight",
     label: "Straight",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.mp4`,
-  },
-  {
-    name: "bangs",
-    label: "Bangs",
-    variantName: "trans-realistic",
-    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.mp4`,
   },
   {
     name: "curly",
     label: "Curly",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.mp4`,
-  },
-  {
-    name: "bun",
-    label: "Bun",
-    variantName: "trans-realistic",
-    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.mp4`,
   },
   {
     name: "short",
     label: "Short",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.mp4`,
+  },
+  // men-anime (reusing girl-anime)
+  {
+    name: "straight",
+    label: "Straight",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/straight.webp`,
+  },
+  {
+    name: "curly",
+    label: "Curly",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/curly.webp`,
+  },
+  {
+    name: "short",
+    label: "Short",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-style/short.webp`,
+  },
+  // trans-realistic (reuses girl-realistic)
+  {
+    name: "straight",
+    label: "Straight",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/straight.png`,
+  },
+  {
+    name: "bangs",
+    label: "Bangs",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bangs.png`,
+  },
+  {
+    name: "curly",
+    label: "Curly",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/curly.png`,
+  },
+  {
+    name: "bun",
+    label: "Bun",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/bun.png`,
+  },
+  {
+    name: "short",
+    label: "Short",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/short.png`,
   },
   {
     name: "ponytail",
     label: "Ponytail",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.png`,
-    videoUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-style/ponytail.mp4`,
   },
 ];
 
-// Hair Color options per variant
-const HAIR_COLOR_DATA: {
-  name: string;
-  label: string;
-  variantName: string;
-  imageUrl: string;
-  videoUrl?: string;
-}[] = [
+// Hair Color options per gender+style
+const HAIR_COLOR_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "brunette",
     label: "Brunette",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png`,
   },
   {
     name: "blonde",
     label: "Blonde",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png`,
   },
   {
     name: "black",
     label: "Black",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png`,
   },
   {
     name: "redhead",
     label: "Redhead",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png`,
   },
   {
     name: "pink",
     label: "Pink",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png`,
   },
   // girl-anime
   {
     name: "black",
     label: "Black",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/black.webp`,
   },
   {
     name: "blonde",
     label: "Blonde",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blonde.webp`,
   },
   {
     name: "blue",
     label: "Blue",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blue.webp`,
   },
   {
     name: "multicolor",
     label: "Multicolor",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/multicolor.webp`,
   },
   {
     name: "pink",
     label: "Pink",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/pink.webp`,
   },
   {
     name: "purple",
     label: "Purple",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/purple.webp`,
   },
   {
     name: "redhead",
     label: "Redhead",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/redhead.webp`,
   },
   {
     name: "white",
     label: "White",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/white.webp`,
   },
-  // trans-realistic (reuses girl-realistic URLs)
+  // men-realistic (reusing girl-realistic)
   {
     name: "brunette",
     label: "Brunette",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png`,
   },
   {
     name: "blonde",
     label: "Blonde",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png`,
   },
   {
     name: "black",
     label: "Black",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png`,
   },
   {
     name: "redhead",
     label: "Redhead",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png`,
+  },
+  // men-anime (reusing girl-anime)
+  {
+    name: "black",
+    label: "Black",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/black.webp`,
+  },
+  {
+    name: "blonde",
+    label: "Blonde",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blonde.webp`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/blue.webp`,
+  },
+  {
+    name: "white",
+    label: "White",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/hair-color/white.webp`,
+  },
+  // trans-realistic (reuses girl-realistic)
+  {
+    name: "brunette",
+    label: "Brunette",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/brunette.png`,
+  },
+  {
+    name: "blonde",
+    label: "Blonde",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/blonde.png`,
+  },
+  {
+    name: "black",
+    label: "Black",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/black.png`,
+  },
+  {
+    name: "redhead",
+    label: "Redhead",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/redhead.png`,
   },
   {
     name: "pink",
     label: "Pink",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/hair-color/pink.png`,
   },
 ];
 
-// Eye Color options per variant
-const EYE_COLOR_DATA: {
-  name: string;
-  label: string;
-  variantName: string;
-  imageUrl: string;
-  videoUrl?: string;
-}[] = [
+// Eye Color options per gender+style
+const EYE_COLOR_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "brown",
     label: "Brown",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png`,
   },
   {
     name: "blue",
     label: "Blue",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png`,
   },
   {
     name: "green",
     label: "Green",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png`,
   },
   // girl-anime
   {
     name: "brown",
     label: "Brown",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/brown.webp`,
   },
   {
     name: "blue",
     label: "Blue",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/blue.webp`,
   },
   {
     name: "green",
     label: "Green",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/green.webp`,
   },
   {
     name: "red",
     label: "Red",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/red.webp`,
   },
   {
     name: "yellow",
     label: "Yellow",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/yellow.webp`,
   },
-  // trans-realistic (reuses girl-realistic URLs)
+  // men-realistic (reusing girl-realistic)
   {
     name: "brown",
     label: "Brown",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png`,
   },
   {
     name: "blue",
     label: "Blue",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png`,
   },
   {
     name: "green",
     label: "Green",
-    variantName: "trans-realistic",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png`,
+  },
+  // men-anime (reusing girl-anime)
+  {
+    name: "brown",
+    label: "Brown",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/brown.webp`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/blue.webp`,
+  },
+  {
+    name: "green",
+    label: "Green",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/green.webp`,
+  },
+  {
+    name: "red",
+    label: "Red",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/eye-color/red.webp`,
+  },
+  // trans-realistic (reuses girl-realistic)
+  {
+    name: "brown",
+    label: "Brown",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/brown.png`,
+  },
+  {
+    name: "blue",
+    label: "Blue",
+    genderName: "trans",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/blue.png`,
+  },
+  {
+    name: "green",
+    label: "Green",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/eye-color/green.png`,
   },
 ];
 
-// Body Type options per variant
-const BODY_TYPE_DATA: {
-  name: string;
-  label: string;
-  variantName: string;
-  imageUrl: string;
-  videoUrl?: string;
-}[] = [
+// Body Type options per gender+style
+const BODY_TYPE_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "skinny",
     label: "Skinny",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/skinny.png`,
   },
   {
     name: "athletic",
     label: "Athletic",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/athletic.png`,
   },
   {
     name: "average",
     label: "Average",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/average.png`,
   },
   {
     name: "curvy",
     label: "Curvy",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/curvy.png`,
   },
   {
     name: "bbw",
     label: "BBW",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/bbw.png`,
   },
   // girl-anime (no BBW)
   {
     name: "skinny",
     label: "Skinny",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/skinny.webp`,
   },
   {
     name: "athletic",
     label: "Athletic",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/athletic.webp`,
   },
   {
     name: "average",
     label: "Average",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/average.webp`,
   },
   {
     name: "curvy",
     label: "Curvy",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/curvy.webp`,
+  },
+  // men-realistic
+  {
+    name: "skinny",
+    label: "Skinny",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/skinny.png`,
+  },
+  {
+    name: "athletic",
+    label: "Athletic",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/athletic.png`,
+  },
+  {
+    name: "average",
+    label: "Average",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/body-type/average.png`,
+  },
+  // men-anime
+  {
+    name: "skinny",
+    label: "Skinny",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/skinny.webp`,
+  },
+  {
+    name: "athletic",
+    label: "Athletic",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/athletic.webp`,
+  },
+  {
+    name: "average",
+    label: "Average",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/body-type/average.webp`,
   },
   // trans-realistic
   {
     name: "skinny",
     label: "Skinny",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/skinny.png`,
   },
   {
     name: "athletic",
     label: "Athletic",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/athletic.png`,
   },
   {
     name: "average",
     label: "Average",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/average.png`,
   },
   {
     name: "curvy",
     label: "Curvy",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/curvy.png`,
   },
   {
     name: "bbw",
     label: "BBW",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/trans-realistic/body-type/bbw.png`,
   },
 ];
 
-// Breast Size options per variant
-const BREAST_SIZE_DATA: {
-  name: string;
-  label: string;
-  variantName: string;
-  imageUrl: string;
-  videoUrl?: string;
-}[] = [
+// Breast Size options per gender+style (only for girl and trans)
+const BREAST_SIZE_DATA: OptionData[] = [
   // girl-realistic
   {
     name: "small",
     label: "Small",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png`,
   },
   {
     name: "medium",
     label: "Medium",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png`,
   },
   {
     name: "large",
     label: "Large",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png`,
   },
   {
     name: "extra_large",
     label: "Extra Large",
-    variantName: "girl-realistic",
+    genderName: "girl",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png`,
   },
   // girl-anime
   {
     name: "small",
     label: "Small",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/small.webp`,
   },
   {
     name: "medium",
     label: "Medium",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/medium.webp`,
   },
   {
     name: "large",
     label: "Large",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/large.webp`,
   },
   {
     name: "extra_large",
     label: "Extra Large",
-    variantName: "girl-anime",
+    genderName: "girl",
+    styleName: "anime",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/extra_large.webp`,
   },
-  // trans-realistic (reuses girl-realistic URLs)
+  // men-realistic (placeholder - N/A)
+  {
+    name: "none",
+    label: "N/A",
+    genderName: "men",
+    styleName: "realistic",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png`,
+  },
+  // men-anime (placeholder - N/A)
+  {
+    name: "none",
+    label: "N/A",
+    genderName: "men",
+    styleName: "anime",
+    imageUrl: `${R2_BASE_URL}/seed/options/girl-anime/breast-size/small.webp`,
+  },
+  // trans-realistic (reuses girl-realistic)
   {
     name: "small",
     label: "Small",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/small.png`,
   },
   {
     name: "medium",
     label: "Medium",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/medium.png`,
   },
   {
     name: "large",
     label: "Large",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/large.png`,
   },
   {
     name: "extra_large",
     label: "Extra Large",
-    variantName: "trans-realistic",
+    genderName: "trans",
+    styleName: "realistic",
     imageUrl: `${R2_BASE_URL}/seed/options/girl-realistic/breast-size/extra_large.png`,
   },
 ];
@@ -990,7 +1303,6 @@ const BREAST_SIZE_DATA: {
 // Helper Functions
 // ============================================================================
 
-// Helper to get random item from array
 function getRandomItem<T>(array: T[]): T {
   const index = Math.floor(Math.random() * array.length);
   const item = array[index];
@@ -998,12 +1310,6 @@ function getRandomItem<T>(array: T[]): T {
     throw new Error("Array is empty or index out of bounds");
   }
   return item;
-}
-
-// Helper to get random items from array (for kinks)
-function getRandomItems<T>(array: T[], count: number): T[] {
-  const shuffled = [...array].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
 }
 
 // Character name generator
@@ -1035,7 +1341,6 @@ function generateCharacterName(): string {
   return getRandomItem(firstNames);
 }
 
-// Voice options
 const voiceOptions = [
   "soft",
   "sultry",
@@ -1047,146 +1352,22 @@ const voiceOptions = [
 ];
 
 // ============================================================================
-// Seed Option Tables
+// Seed Functions
 // ============================================================================
 
-// Map key format: "variantName:optionName" -> id (for variant-specific options)
-// Map key format: "optionName" -> id (for universal options)
 type OptionMap = Map<string, string>;
 
-async function seedVariants(): Promise<Map<string, string>> {
-  console.log("Seeding character variants...");
-  const variantMap = new Map<string, string>();
-
-  for (let i = 0; i < VARIANT_DEFINITIONS.length; i++) {
-    const v = VARIANT_DEFINITIONS[i]!;
-
-    // Create or find Media record for image
-    const imageMedia = await prisma.media.upsert({
-      where: { key: v.imageKey },
-      update: {
-        url: v.imageUrl,
-        mimeType: v.imageMimeType,
-      },
-      create: {
-        type: MediaType.image,
-        key: v.imageKey,
-        url: v.imageUrl,
-        mimeType: v.imageMimeType,
-      },
-    });
-
-    // Create or find Media record for video
-    const videoMedia = await prisma.media.upsert({
-      where: { key: v.videoKey },
-      update: {
-        url: v.videoUrl,
-        mimeType: v.videoMimeType,
-      },
-      create: {
-        type: MediaType.video,
-        key: v.videoKey,
-        url: v.videoUrl,
-        mimeType: v.videoMimeType,
-      },
-    });
-
-    // Create or update variant with Media relations
-    const variant = await prisma.character_variant.upsert({
-      where: { name: v.name },
-      update: {
-        gender: v.gender,
-        style: v.style,
-        label: v.label,
-        imageId: imageMedia.id,
-        videoId: videoMedia.id,
-        isActive: v.isActive,
-        sortOrder: i,
-      },
-      create: {
-        name: v.name,
-        gender: v.gender,
-        style: v.style,
-        label: v.label,
-        imageId: imageMedia.id,
-        videoId: videoMedia.id,
-        isActive: v.isActive,
-        sortOrder: i,
-      },
-    });
-    variantMap.set(v.name, variant.id);
-    console.log(
-      `  - Created variant ${v.name} with image (${imageMedia.id}) and video (${videoMedia.id})`,
-    );
-  }
-
-  console.log(`  - Created ${variantMap.size} character variants`);
-  return variantMap;
-}
-
-async function seedOptionTables(variantMap: Map<string, string>): Promise<{
-  ethnicities: OptionMap;
-  hairStyles: OptionMap;
-  hairColors: OptionMap;
-  eyeColors: OptionMap;
-  bodyTypes: OptionMap;
-  breastSizes: OptionMap;
-  personalities: OptionMap;
-  relationships: OptionMap;
-  occupations: OptionMap;
-  kinks: OptionMap;
+async function seedGendersAndStyles(): Promise<{
+  genders: OptionMap;
+  styles: OptionMap;
 }> {
-  console.log("Seeding option tables...");
+  console.log("Seeding character genders and styles...");
 
-  // ============================================================================
-  // Universal Options (same for all variants)
-  // ============================================================================
-
-  // Seed personalities (with images)
-  const personalities = new Map<string, string>();
-  for (let i = 0; i < PERSONALITY_DATA.length; i++) {
-    const data = PERSONALITY_DATA[i]!;
-    // Create media record for image
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const option = await prisma.personality_option.upsert({
-      where: { name: data.name },
-      update: { label: data.label, imageId, sortOrder: i },
-      create: { name: data.name, label: data.label, imageId, sortOrder: i },
-    });
-    personalities.set(data.name, option.id);
-  }
-  console.log(`  - Created ${personalities.size} personality options`);
-
-  // Seed relationships (with images)
-  const relationships = new Map<string, string>();
-  for (let i = 0; i < RELATIONSHIP_DATA.length; i++) {
-    const data = RELATIONSHIP_DATA[i]!;
-    // Create media record for image
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const option = await prisma.relationship_option.upsert({
-      where: { name: data.name },
-      update: { label: data.label, imageId, sortOrder: i },
-      create: { name: data.name, label: data.label, imageId, sortOrder: i },
-    });
-    relationships.set(data.name, option.id);
-  }
-  console.log(`  - Created ${relationships.size} relationship options`);
-
-  // Seed occupations (with emojis)
-  const occupations = new Map<string, string>();
-  for (let i = 0; i < OCCUPATION_DATA.length; i++) {
-    const data = OCCUPATION_DATA[i]!;
-    const option = await prisma.occupation_option.upsert({
+  // Seed genders with emoji
+  const genders = new Map<string, string>();
+  for (let i = 0; i < CHARACTER_GENDER_DATA.length; i++) {
+    const data = CHARACTER_GENDER_DATA[i]!;
+    const option = await prisma.character_gender.upsert({
       where: { name: data.name },
       update: { label: data.label, emoji: data.emoji, sortOrder: i },
       create: {
@@ -1196,279 +1377,432 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
         sortOrder: i,
       },
     });
-    occupations.set(data.name, option.id);
+    genders.set(data.name, option.id);
   }
-  console.log(`  - Created ${occupations.size} occupation options`);
+  console.log(`  - Created ${genders.size} gender options`);
 
-  // Seed kinks (text only)
-  const kinks = new Map<string, string>();
-  for (let i = 0; i < KINK_DATA.length; i++) {
-    const data = KINK_DATA[i]!;
-    const option = await prisma.kink_option.upsert({
-      where: { name: data.name },
-      update: { label: data.label, sortOrder: i },
-      create: { name: data.name, label: data.label, sortOrder: i },
-    });
-    kinks.set(data.name, option.id);
-  }
-  console.log(`  - Created ${kinks.size} kink options`);
+  // Seed styles with images/videos
+  const styles = new Map<string, string>();
+  for (let i = 0; i < CHARACTER_STYLE_DATA.length; i++) {
+    const data = CHARACTER_STYLE_DATA[i]!;
 
-  // ============================================================================
-  // Variant-Specific Options (different images per variant)
-  // ============================================================================
-
-  // Seed ethnicities (per variant)
-  const ethnicities = new Map<string, string>();
-  for (let i = 0; i < ETHNICITY_DATA.length; i++) {
-    const data = ETHNICITY_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping ethnicity ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
+    // Create media for style image and video
     const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
+      data.imageKey,
+      `${R2_BASE_URL}/${data.imageKey}`,
       MediaType.image,
-      getMimeType(data.imageUrl),
+      getMimeType(data.imageKey),
     );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.ethnicity_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
+    const videoId = await getOrCreateMedia(
+      data.videoKey,
+      `${R2_BASE_URL}/${data.videoKey}`,
+      MediaType.video,
+      getMimeType(data.videoKey),
+    );
+
+    const option = await prisma.character_style.upsert({
+      where: { name: data.name },
       update: { label: data.label, imageId, videoId, sortOrder: i },
       create: {
         name: data.name,
         label: data.label,
-        variantId,
         imageId,
         videoId,
         sortOrder: i,
       },
     });
-    // Store with variant prefix for lookup
-    ethnicities.set(`${data.variantName}:${data.name}`, option.id);
+    styles.set(data.name, option.id);
   }
+  console.log(`  - Created ${styles.size} style options`);
+
+  return { genders, styles };
+}
+
+async function seedVariants(
+  genders: OptionMap,
+  styles: OptionMap,
+): Promise<Map<string, string>> {
+  console.log("Seeding character variants...");
+  const variantMap = new Map<string, string>();
+
+  for (let i = 0; i < VARIANT_DEFINITIONS.length; i++) {
+    const v = VARIANT_DEFINITIONS[i]!;
+
+    const genderId = genders.get(v.genderName);
+    const styleId = styles.get(v.styleName);
+
+    if (!genderId || !styleId) {
+      console.warn(`  - Skipping variant ${v.name}: gender or style not found`);
+      continue;
+    }
+
+    // Create media for variant image and video
+    const imageId = await getOrCreateMedia(
+      v.imageKey,
+      `${R2_BASE_URL}/${v.imageKey}`,
+      MediaType.image,
+      getMimeType(v.imageKey),
+    );
+    const videoId = await getOrCreateMedia(
+      v.videoKey,
+      `${R2_BASE_URL}/${v.videoKey}`,
+      MediaType.video,
+      getMimeType(v.videoKey),
+    );
+
+    const variant = await prisma.character_variant.upsert({
+      where: { name: v.name },
+      update: {
+        genderId,
+        styleId,
+        label: v.label,
+        emoji: v.emoji,
+        imageId,
+        videoId,
+        isActive: v.isActive,
+        sortOrder: i,
+      },
+      create: {
+        name: v.name,
+        genderId,
+        styleId,
+        label: v.label,
+        emoji: v.emoji,
+        imageId,
+        videoId,
+        isActive: v.isActive,
+        sortOrder: i,
+      },
+    });
+    variantMap.set(v.name, variant.id);
+    console.log(`  - Created variant ${v.name}`);
+  }
+
+  console.log(`  - Created ${variantMap.size} character variants`);
+  return variantMap;
+}
+
+async function seedOptionTables(
+  genders: OptionMap,
+  styles: OptionMap,
+): Promise<{
+  ethnicities: OptionMap;
+  hairStyles: OptionMap;
+  hairColors: OptionMap;
+  eyeColors: OptionMap;
+  bodyTypes: OptionMap;
+  breastSizes: OptionMap;
+  personalities: OptionMap;
+  relationships: OptionMap;
+  occupations: OptionMap;
+}> {
+  console.log("Seeding option tables...");
+
+  // Helper to seed options with gender/style
+  async function seedOptionWithGenderStyle<T extends OptionData>(
+    data: T[],
+    tableName: string,
+    createFn: (
+      item: T,
+      genderId: string,
+      styleId: string,
+      imageId: string | undefined,
+      videoId: string | undefined,
+      sortOrder: number,
+    ) => Promise<{ id: string }>,
+  ): Promise<OptionMap> {
+    const map = new Map<string, string>();
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i]!;
+      const genderId = genders.get(item.genderName);
+      const styleId = styles.get(item.styleName);
+
+      if (!genderId || !styleId) {
+        console.warn(
+          `  - Skipping ${tableName} ${item.name}: gender or style not found`,
+        );
+        continue;
+      }
+
+      const imageId = await getOrCreateMedia(
+        getKeyFromUrl(item.imageUrl),
+        item.imageUrl,
+        MediaType.image,
+        getMimeType(item.imageUrl),
+      );
+      const videoId = item.videoUrl
+        ? await getOrCreateMedia(
+            getKeyFromUrl(item.videoUrl),
+            item.videoUrl,
+            MediaType.video,
+            getMimeType(item.videoUrl),
+          )
+        : undefined;
+
+      const option = await createFn(
+        item,
+        genderId,
+        styleId,
+        imageId,
+        videoId,
+        i,
+      );
+      map.set(`${item.genderName}:${item.styleName}:${item.name}`, option.id);
+    }
+    return map;
+  }
+
+  // Seed ethnicities
+  const ethnicities = await seedOptionWithGenderStyle(
+    ETHNICITY_DATA,
+    "ethnicity",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_ethnicity.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${ethnicities.size} ethnicity options`);
 
-  // Seed hair styles (per variant)
-  const hairStyles = new Map<string, string>();
-  for (let i = 0; i < HAIR_STYLE_DATA.length; i++) {
-    const data = HAIR_STYLE_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping hair style ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.hair_style_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
-      update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: {
-        name: data.name,
-        label: data.label,
-        variantId,
-        imageId,
-        videoId,
-        sortOrder: i,
-      },
-    });
-    hairStyles.set(`${data.variantName}:${data.name}`, option.id);
-  }
+  // Seed hair styles
+  const hairStyles = await seedOptionWithGenderStyle(
+    HAIR_STYLE_DATA,
+    "hair_style",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_hair_style.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${hairStyles.size} hair style options`);
 
-  // Seed hair colors (per variant)
-  const hairColors = new Map<string, string>();
-  for (let i = 0; i < HAIR_COLOR_DATA.length; i++) {
-    const data = HAIR_COLOR_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping hair color ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.hair_color_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
-      update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: {
-        name: data.name,
-        label: data.label,
-        variantId,
-        imageId,
-        videoId,
-        sortOrder: i,
-      },
-    });
-    hairColors.set(`${data.variantName}:${data.name}`, option.id);
-  }
+  // Seed hair colors
+  const hairColors = await seedOptionWithGenderStyle(
+    HAIR_COLOR_DATA,
+    "hair_color",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_hair_color.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${hairColors.size} hair color options`);
 
-  // Seed eye colors (per variant)
-  const eyeColors = new Map<string, string>();
-  for (let i = 0; i < EYE_COLOR_DATA.length; i++) {
-    const data = EYE_COLOR_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping eye color ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.eye_color_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
-      update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: {
-        name: data.name,
-        label: data.label,
-        variantId,
-        imageId,
-        videoId,
-        sortOrder: i,
-      },
-    });
-    eyeColors.set(`${data.variantName}:${data.name}`, option.id);
-  }
+  // Seed eye colors
+  const eyeColors = await seedOptionWithGenderStyle(
+    EYE_COLOR_DATA,
+    "eye_color",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_eye_color.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${eyeColors.size} eye color options`);
 
-  // Seed body types (per variant)
-  const bodyTypes = new Map<string, string>();
-  for (let i = 0; i < BODY_TYPE_DATA.length; i++) {
-    const data = BODY_TYPE_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping body type ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.body_type_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
-      update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: {
-        name: data.name,
-        label: data.label,
-        variantId,
-        imageId,
-        videoId,
-        sortOrder: i,
-      },
-    });
-    bodyTypes.set(`${data.variantName}:${data.name}`, option.id);
-  }
+  // Seed body types
+  const bodyTypes = await seedOptionWithGenderStyle(
+    BODY_TYPE_DATA,
+    "body_type",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_body_type.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${bodyTypes.size} body type options`);
 
-  // Seed breast sizes (per variant)
-  const breastSizes = new Map<string, string>();
-  for (let i = 0; i < BREAST_SIZE_DATA.length; i++) {
-    const data = BREAST_SIZE_DATA[i]!;
-    const variantId = variantMap.get(data.variantName);
-    if (!variantId) {
-      console.warn(
-        `  - Skipping breast size ${data.name} for unknown variant ${data.variantName}`,
-      );
-      continue;
-    }
-    // Create media records for image and video
-    const imageId = await getOrCreateMedia(
-      getKeyFromUrl(data.imageUrl),
-      data.imageUrl,
-      MediaType.image,
-      getMimeType(data.imageUrl),
-    );
-    const videoId = data.videoUrl
-      ? await getOrCreateMedia(
-          getKeyFromUrl(data.videoUrl),
-          data.videoUrl,
-          MediaType.video,
-          getMimeType(data.videoUrl),
-        )
-      : undefined;
-    const option = await prisma.breast_size_option.upsert({
-      where: { name_variantId: { name: data.name, variantId } },
-      update: { label: data.label, imageId, videoId, sortOrder: i },
-      create: {
-        name: data.name,
-        label: data.label,
-        variantId,
-        imageId,
-        videoId,
-        sortOrder: i,
-      },
-    });
-    breastSizes.set(`${data.variantName}:${data.name}`, option.id);
-  }
+  // Seed breast sizes
+  const breastSizes = await seedOptionWithGenderStyle(
+    BREAST_SIZE_DATA,
+    "breast_size",
+    async (item, genderId, styleId, imageId, videoId, sortOrder) => {
+      return prisma.character_breast_size.upsert({
+        where: {
+          name_genderId_styleId: { name: item.name, genderId, styleId },
+        },
+        update: { label: item.label, imageId, videoId, sortOrder },
+        create: {
+          name: item.name,
+          label: item.label,
+          genderId,
+          styleId,
+          imageId,
+          videoId,
+          sortOrder,
+        },
+      });
+    },
+  );
   console.log(`  - Created ${breastSizes.size} breast size options`);
+
+  // Seed personalities (now with gender/style)
+  const personalities = new Map<string, string>();
+  for (const genderData of CHARACTER_GENDER_DATA) {
+    for (const styleData of CHARACTER_STYLE_DATA) {
+      const genderId = genders.get(genderData.name)!;
+      const styleId = styles.get(styleData.name)!;
+
+      for (let i = 0; i < PERSONALITY_DATA.length; i++) {
+        const data = PERSONALITY_DATA[i]!;
+        const imageId = await getOrCreateMedia(
+          getKeyFromUrl(data.imageUrl),
+          data.imageUrl,
+          MediaType.image,
+          getMimeType(data.imageUrl),
+        );
+        const option = await prisma.character_personality.upsert({
+          where: {
+            name_genderId_styleId: { name: data.name, genderId, styleId },
+          },
+          update: { label: data.label, imageId, sortOrder: i },
+          create: {
+            name: data.name,
+            label: data.label,
+            genderId,
+            styleId,
+            imageId,
+            sortOrder: i,
+          },
+        });
+        personalities.set(
+          `${genderData.name}:${styleData.name}:${data.name}`,
+          option.id,
+        );
+      }
+    }
+  }
+  console.log(`  - Created ${personalities.size} personality options`);
+
+  // Seed relationships (now with gender/style)
+  const relationships = new Map<string, string>();
+  for (const genderData of CHARACTER_GENDER_DATA) {
+    for (const styleData of CHARACTER_STYLE_DATA) {
+      const genderId = genders.get(genderData.name)!;
+      const styleId = styles.get(styleData.name)!;
+
+      for (let i = 0; i < RELATIONSHIP_DATA.length; i++) {
+        const data = RELATIONSHIP_DATA[i]!;
+        const imageId = await getOrCreateMedia(
+          getKeyFromUrl(data.imageUrl),
+          data.imageUrl,
+          MediaType.image,
+          getMimeType(data.imageUrl),
+        );
+        const option = await prisma.character_relationship.upsert({
+          where: {
+            name_genderId_styleId: { name: data.name, genderId, styleId },
+          },
+          update: { label: data.label, imageId, sortOrder: i },
+          create: {
+            name: data.name,
+            label: data.label,
+            genderId,
+            styleId,
+            imageId,
+            sortOrder: i,
+          },
+        });
+        relationships.set(
+          `${genderData.name}:${styleData.name}:${data.name}`,
+          option.id,
+        );
+      }
+    }
+  }
+  console.log(`  - Created ${relationships.size} relationship options`);
+
+  // Seed occupations (now with gender/style)
+  const occupations = new Map<string, string>();
+  for (const genderData of CHARACTER_GENDER_DATA) {
+    for (const styleData of CHARACTER_STYLE_DATA) {
+      const genderId = genders.get(genderData.name)!;
+      const styleId = styles.get(styleData.name)!;
+
+      for (let i = 0; i < OCCUPATION_DATA.length; i++) {
+        const data = OCCUPATION_DATA[i]!;
+        const option = await prisma.character_occupation.upsert({
+          where: {
+            name_genderId_styleId: { name: data.name, genderId, styleId },
+          },
+          update: { label: data.label, emoji: data.emoji, sortOrder: i },
+          create: {
+            name: data.name,
+            label: data.label,
+            genderId,
+            styleId,
+            emoji: data.emoji,
+            sortOrder: i,
+          },
+        });
+        occupations.set(
+          `${genderData.name}:${styleData.name}:${data.name}`,
+          option.id,
+        );
+      }
+    }
+  }
+  console.log(`  - Created ${occupations.size} occupation options`);
 
   return {
     ethnicities,
@@ -1480,7 +1814,6 @@ async function seedOptionTables(variantMap: Map<string, string>): Promise<{
     personalities,
     relationships,
     occupations,
-    kinks,
   };
 }
 
@@ -1509,7 +1842,6 @@ async function main() {
     });
     console.log(`Created SUPERADMIN role (${superAdminRole.id})`);
   } else {
-    // Update permissions in case they changed
     superAdminRole = await prisma.role_custom.update({
       where: { id: superAdminRole.id },
       data: { permissions: ALL_PERMISSIONS },
@@ -1533,7 +1865,6 @@ async function main() {
     });
     console.log(`Created CUSTOMER role (${customerRole.id})`);
   } else {
-    // Update permissions in case they changed
     customerRole = await prisma.role_custom.update({
       where: { id: customerRole.id },
       data: { permissions: CUSTOMER_PERMISSIONS },
@@ -1560,7 +1891,6 @@ async function main() {
       },
     });
 
-    // Create credential account with password
     await prisma.account.create({
       data: {
         accountId: adminUser.id,
@@ -1573,25 +1903,25 @@ async function main() {
     console.log(`Created admin user: ${adminUser.email} (${adminUser.id})`);
     console.log(`Password: ${ADMIN_PASSWORD}`);
   } else {
-    // Update to ensure superadmin role
     adminUser = await prisma.user.update({
       where: { id: adminUser.id },
-      data: {
-        customRoleId: superAdminRole.id,
-      },
+      data: { customRoleId: superAdminRole.id },
     });
     console.log(
       `Found existing admin user: ${adminUser.email} (${adminUser.id})`,
     );
   }
 
-  // Step 1: Seed variants first
-  const variantMap = await seedVariants();
+  // Step 1: Seed genders and styles first
+  const { genders, styles } = await seedGendersAndStyles();
 
-  // Step 2: Seed option tables (needs variant IDs)
-  const optionMaps = await seedOptionTables(variantMap);
+  // Step 2: Seed variants (needs gender and style IDs)
+  await seedVariants(genders, styles);
 
-  // Step 3: Find or create target user
+  // Step 3: Seed option tables (needs gender and style IDs)
+  const optionMaps = await seedOptionTables(genders, styles);
+
+  // Step 4: Find or create target user
   console.log(`Looking for user with email: ${TARGET_USER_EMAIL}`);
   let user = await prisma.user.findUnique({
     where: { email: TARGET_USER_EMAIL },
@@ -1611,7 +1941,6 @@ async function main() {
       },
     });
 
-    // Create credential account with password
     await prisma.account.create({
       data: {
         accountId: user.id,
@@ -1628,8 +1957,7 @@ async function main() {
     console.log(`Found existing user: ${user.name} (${user.id})`);
   }
 
-  // Step 3: Create Media records using pre-uploaded R2 assets
-  // NOTE: Run `npx tsx prisma/upload-seed-assets.ts` first to upload all assets to R2
+  // Step 5: Create Media records using pre-uploaded R2 assets
   console.log("Creating Media records from R2 assets...");
 
   const posterKey = "seed/characters/poster.webp";
@@ -1657,11 +1985,17 @@ async function main() {
   });
   console.log(`Video Media created: ${videoMedia.id} (${videoUrl})`);
 
-  // Step 5: Generate and create characters
+  // Step 6: Generate and create characters
   console.log(`Creating ${TOTAL_CHARACTERS} characters...`);
 
-  // Only use variants that have seeded options
-  const availableVariants = ["girl-realistic", "girl-anime", "trans-realistic"];
+  // Only use variants that have seeded options (excluding trans-anime which is not active)
+  const availableVariants = [
+    "girl-realistic",
+    "girl-anime",
+    "men-realistic",
+    "men-anime",
+    "trans-realistic",
+  ];
 
   const characters = [];
 
@@ -1669,40 +2003,44 @@ async function main() {
     const isLive = i < LIVE_CHARACTERS;
     const name = generateCharacterName();
 
-    // Generate random age between 18 and 35
     const age = Math.floor(Math.random() * (35 - 18 + 1)) + 18;
 
     // Pick a random variant for this character
     const variantName = getRandomItem(availableVariants);
     const [genderStr, styleStr] = variantName.split("-") as [string, string];
-    const gender =
-      genderStr === "girl" ? CharacterGender.girl : CharacterGender.trans;
-    const style =
-      styleStr === "realistic"
-        ? CharacterStyle.realistic
-        : CharacterStyle.anime;
+    const genderId = genders.get(genderStr);
+    const styleId = styles.get(styleStr);
 
-    // Get available options for this variant
+    if (!genderId || !styleId) {
+      console.warn(
+        `Skipping character: gender or style not found for ${variantName}`,
+      );
+      continue;
+    }
+
+    // Get available options for this gender+style combination
+    const optionKey = `${genderStr}:${styleStr}`;
+
     const variantEthnicities = ETHNICITY_DATA.filter(
-      (e) => e.variantName === variantName,
+      (e) => e.genderName === genderStr && e.styleName === styleStr,
     );
     const variantHairStyles = HAIR_STYLE_DATA.filter(
-      (h) => h.variantName === variantName,
+      (h) => h.genderName === genderStr && h.styleName === styleStr,
     );
     const variantHairColors = HAIR_COLOR_DATA.filter(
-      (h) => h.variantName === variantName,
+      (h) => h.genderName === genderStr && h.styleName === styleStr,
     );
     const variantEyeColors = EYE_COLOR_DATA.filter(
-      (e) => e.variantName === variantName,
+      (e) => e.genderName === genderStr && e.styleName === styleStr,
     );
     const variantBodyTypes = BODY_TYPE_DATA.filter(
-      (b) => b.variantName === variantName,
+      (b) => b.genderName === genderStr && b.styleName === styleStr,
     );
     const variantBreastSizes = BREAST_SIZE_DATA.filter(
-      (b) => b.variantName === variantName,
+      (b) => b.genderName === genderStr && b.styleName === styleStr,
     );
 
-    // Get random option values for variant-specific options
+    // Get random option values
     const ethnicity = getRandomItem(variantEthnicities);
     const hairStyle = getRandomItem(variantHairStyles);
     const hairColor = getRandomItem(variantHairColors);
@@ -1715,51 +2053,42 @@ async function main() {
     const relationship = getRandomItem(RELATIONSHIP_DATA);
     const occupation = getRandomItem(OCCUPATION_DATA);
 
-    // Generate random kinks (2-5 kinks per character)
-    const numKinks = Math.floor(Math.random() * 4) + 2;
-    const selectedKinks = getRandomItems(KINK_DATA, numKinks);
-
     const characterData = {
       name,
       posterId: posterMedia.id,
       videoId: videoMedia.id,
-      gender,
-      style,
+      genderId,
+      styleId,
       age,
       voice: getRandomItem(voiceOptions),
       isPublic: true,
       isActive: true,
       isLive,
       createdById: user.id,
-      // Foreign keys to option tables (variant-specific use "variantName:optionName" key format)
+      // Foreign keys to option tables (use "gender:style:name" key format)
       ethnicityId: optionMaps.ethnicities.get(
-        `${variantName}:${ethnicity.name}`,
+        `${optionKey}:${ethnicity.name}`,
       )!,
-      hairStyleId: optionMaps.hairStyles.get(
-        `${variantName}:${hairStyle.name}`,
-      )!,
-      hairColorId: optionMaps.hairColors.get(
-        `${variantName}:${hairColor.name}`,
-      )!,
-      eyeColorId: optionMaps.eyeColors.get(`${variantName}:${eyeColor.name}`)!,
-      bodyTypeId: optionMaps.bodyTypes.get(`${variantName}:${bodyType.name}`)!,
+      hairStyleId: optionMaps.hairStyles.get(`${optionKey}:${hairStyle.name}`)!,
+      hairColorId: optionMaps.hairColors.get(`${optionKey}:${hairColor.name}`)!,
+      eyeColorId: optionMaps.eyeColors.get(`${optionKey}:${eyeColor.name}`)!,
+      bodyTypeId: optionMaps.bodyTypes.get(`${optionKey}:${bodyType.name}`)!,
       breastSizeId: optionMaps.breastSizes.get(
-        `${variantName}:${breastSize.name}`,
+        `${optionKey}:${breastSize.name}`,
       )!,
-      // Universal options use just the name as key
-      personalityId: optionMaps.personalities.get(personality.name)!,
-      relationshipId: optionMaps.relationships.get(relationship.name)!,
-      occupationId: optionMaps.occupations.get(occupation.name)!,
-      character_kink: {
-        create: selectedKinks.map((kink) => ({
-          kinkId: optionMaps.kinks.get(kink.name)!,
-        })),
-      },
+      personalityId: optionMaps.personalities.get(
+        `${optionKey}:${personality.name}`,
+      )!,
+      relationshipId: optionMaps.relationships.get(
+        `${optionKey}:${relationship.name}`,
+      )!,
+      occupationId: optionMaps.occupations.get(
+        `${optionKey}:${occupation.name}`,
+      )!,
     };
 
     const character = await prisma.character.create({
       data: characterData,
-      include: { character_kink: true },
     });
 
     characters.push(character);
@@ -1768,18 +2097,18 @@ async function main() {
     );
   }
 
-  // Step 6: Create Stories for each character
+  // Step 7: Create Stories for each character
   console.log("Creating stories for characters...");
   let totalStories = 0;
 
   for (const character of characters) {
-    const numStories = Math.floor(Math.random() * 3) + 1; // 1-3 stories
+    const numStories = Math.floor(Math.random() * 3) + 1;
     for (let j = 0; j < numStories; j++) {
       await prisma.story.create({
         data: {
           characterId: character.id,
           mediaId: posterMedia.id,
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
           isActive: true,
         },
       });
@@ -1788,7 +2117,7 @@ async function main() {
   }
   console.log(`Created ${totalStories} stories`);
 
-  // Step 7: Create Reels for each character
+  // Step 8: Create Reels for each character
   console.log("Creating reels for characters...");
   let totalReels = 0;
 
@@ -1811,7 +2140,7 @@ async function main() {
   ];
 
   for (const character of characters) {
-    const numReels = Math.floor(Math.random() * 2) + 1; // 1-2 reels
+    const numReels = Math.floor(Math.random() * 2) + 1;
     for (let j = 0; j < numReels; j++) {
       await prisma.reel.create({
         data: {
@@ -1820,7 +2149,7 @@ async function main() {
           thumbnailId: posterMedia.id,
           title: getRandomItem(reelTitles),
           description: getRandomItem(reelDescriptions),
-          viewCount: Math.floor(Math.random() * 9900) + 100, // 100-10000
+          viewCount: Math.floor(Math.random() * 9900) + 100,
           isActive: true,
         },
       });
