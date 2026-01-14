@@ -64,6 +64,8 @@ export function AppContextProvider({
     refetch: refetchSubscription,
   } = api.user.getSubscription.useQuery(undefined, {
     enabled: !!session?.user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 
   // Token balance query (only when authenticated)
@@ -73,6 +75,8 @@ export function AppContextProvider({
     refetch: refetchTokens,
   } = api.user.getTokenBalance.useQuery(undefined, {
     enabled: !!session?.user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 
   // Refetch all session-related data

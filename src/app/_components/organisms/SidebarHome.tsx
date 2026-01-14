@@ -4,8 +4,11 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { PanelLeft, PanelLeftClose } from "lucide-react";
+import { PanelLeft, PanelLeftClose, Handshake } from "lucide-react";
 import Logo from "../atoms/logo";
+import DialogRequestAffiliation from "./DialogRequestAffiliation";
+import DialogAuth, { type DialogAuthVariant } from "./DialogAuth";
+import { useApp } from "@/app/_contexts/AppContext";
 import {
   Sidebar,
   SidebarHeader,
@@ -62,10 +65,44 @@ export const SidebarHome: React.FC<SidebarHomeProps> = ({
   hasActiveSubscription = false,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isAffiliateDialogOpen, setIsAffiliateDialogOpen] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [authDialogVariant, setAuthDialogVariant] =
+    useState<DialogAuthVariant>("sign-in");
+  const [pendingAffiliateFlow, setPendingAffiliateFlow] = useState(false);
   const pathname = usePathname();
+  const { isAuthenticated } = useApp();
 
   const handleCollapseToggle = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const handleAffiliateClick = () => {
+    if (isAuthenticated) {
+      // User is logged in, open affiliate dialog directly
+      setIsAffiliateDialogOpen(true);
+    } else {
+      // User is not logged in, start auth flow
+      setPendingAffiliateFlow(true);
+      setIsAuthDialogOpen(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    // After successful auth, check if we have pending affiliate flow
+    if (pendingAffiliateFlow) {
+      setPendingAffiliateFlow(false);
+      // Small delay to let auth dialog close smoothly
+      setTimeout(() => {
+        setIsAffiliateDialogOpen(true);
+      }, 100);
+    }
+  };
+
+  const handleAuthClose = () => {
+    setIsAuthDialogOpen(false);
+    // If user closes auth dialog without completing, reset pending flow
+    setPendingAffiliateFlow(false);
   };
 
   return (
@@ -184,6 +221,23 @@ export const SidebarHome: React.FC<SidebarHomeProps> = ({
           )}
 
           <SidebarSection>
+            {/* Affiliate Item */}
+            <SidebarItem onClick={handleAffiliateClick}>
+              <Handshake className="h-5 w-5" />
+              <AnimatePresence initial={false}>
+                {!isCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <SidebarLabel>Affiliate</SidebarLabel>
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </SidebarItem>
+
             {accountNavigation.map((item) => (
               <SidebarItem
                 key={item.name}
@@ -214,6 +268,21 @@ export const SidebarHome: React.FC<SidebarHomeProps> = ({
           </SidebarSection>
         </SidebarBody>
       </Sidebar>
+
+      {/* Affiliate Dialog */}
+      <DialogRequestAffiliation
+        open={isAffiliateDialogOpen}
+        onClose={() => setIsAffiliateDialogOpen(false)}
+      />
+
+      {/* Auth Dialog for non-logged-in users */}
+      <DialogAuth
+        open={isAuthDialogOpen}
+        onClose={handleAuthClose}
+        variant={authDialogVariant}
+        onVariantChange={setAuthDialogVariant}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </motion.div>
   );
 };

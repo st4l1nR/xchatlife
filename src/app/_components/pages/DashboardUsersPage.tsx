@@ -64,7 +64,10 @@ function DashboardUsersPageContent({
   const searchParams = useSearchParams();
 
   // Fetch roles for filter
-  const { data: rolesData } = api.role.getAll.useQuery();
+  const { data: rolesData } = api.role.getAll.useQuery(undefined, {
+    staleTime: 30 * 60 * 1000, // 30 minutes - roles rarely change
+    refetchOnWindowFocus: false,
+  });
 
   // Build role filter options from fetched data
   const roleFilterOptions = useMemo(() => {

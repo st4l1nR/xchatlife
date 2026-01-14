@@ -38,18 +38,55 @@ model account {
   user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model affiliate {
-  id             String     @id @default(cuid())
-  userId         String     @unique
-  referralCode   String     @unique
-  commissionRate Decimal    @db.Decimal(5, 4)
-  totalEarned    Decimal    @default(0) @db.Decimal(10, 2)
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  user           user       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  referral       referral[]
+// ==========================================
+// AFFILIATE ENUMS
+// ==========================================
 
+enum AffiliateStatus {
+  pending
+  approved
+  rejected
+}
+
+enum AffiliateType {
+  influencer
+  blogger
+  youtuber
+  social_media
+  website_owner
+  email_marketing
+  other
+}
+
+model affiliate {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+
+  // Application fields
+  firstName          String?
+  email              String
+  websiteUrl         String
+  telegram           String?
+  type               AffiliateType
+  introduction       String?         @db.Text
+  promotionalMethods String?         @db.Text
+  status             AffiliateStatus @default(pending)
+  rejectionReason    String?         @db.Text
+
+  // Approved affiliate fields (nullable until approved)
+  referralCode       String?         @unique
+  commissionRate     Decimal?        @db.Decimal(5, 4)
+  totalEarned        Decimal         @default(0) @db.Decimal(10, 2)
+  isActive           Boolean         @default(false)
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  approvedAt         DateTime?
+
+  user               user            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referral           referral[]
+
+  @@index([status])
   @@index([isActive])
   @@index([referralCode])
 }
@@ -454,6 +491,7 @@ model character_occupation {
 model character {
   id             String   @id @default(cuid())
   name           String
+  avatarId       String?
   posterId       String?
   videoId        String?
   genderId       String
@@ -483,6 +521,7 @@ model character {
 
   // Relations
   user                           user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  avatar                         media?                   @relation("character_avatarIdTomedia", fields: [avatarId], references: [id])
   poster                         media?                   @relation("character_posterIdTomedia", fields: [posterId], references: [id])
   video                          media?                   @relation("character_videoIdTomedia", fields: [videoId], references: [id])
   gender                         character_gender         @relation(fields: [genderId], references: [id])
@@ -500,6 +539,7 @@ model character {
   chat                           chat[]
   reel                           reel[]
   story                          story[]
+  private_content                private_content[]
   media                          media[]                  @relation("media_characterId")
   visual_novel_character         visual_novel_character[]
   visual_novel_node              visual_novel_node[]
@@ -641,6 +681,7 @@ model media {
   createdAt                           DateTime              @default(now())
   folder                              media_folder?         @relation(fields: [folderId], references: [id], onDelete: SetNull)
   character                           character?            @relation("media_characterId", fields: [characterId], references: [id], onDelete: SetNull)
+  character_character_avatarIdTomedia character[]           @relation("character_avatarIdTomedia")
   character_character_posterIdTomedia character[]           @relation("character_posterIdTomedia")
   character_character_videoIdTomedia  character[]           @relation("character_videoIdTomedia")
   variant_image                       character_variant[]   @relation("variant_image")
@@ -676,6 +717,8 @@ model media {
   reel_reel_videoIdTomedia            reel[]                @relation("reel_videoIdTomedia")
   story_story_mediaIdTomedia          story[]               @relation("story_mediaIdTomedia")
   story_story_thumbnailIdTomedia      story[]               @relation("story_thumbnailIdTomedia")
+  private_content_poster              private_content[]     @relation("private_content_poster")
+  private_content_media               private_content_media[]
   visual_novel_thumbnail              visual_novel[]        @relation("visual_novel_thumbnail")
   node_scenery                        visual_novel_node[]   @relation("node_scenery")
   node_character_image                visual_novel_node[]   @relation("node_character_image")
@@ -722,7 +765,7 @@ model story {
   mediaId     String
   thumbnailId String?
   sortOrder   Int       @default(0)
-  expiresAt   DateTime
+  expiresAt   DateTime? // Optional for permanent stories
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -732,6 +775,46 @@ model story {
   @@index([characterId])
   @@index([expiresAt])
   @@index([isActive])
+  @@index([mediaId])
+  @@index([sortOrder])
+}
+
+// ==========================================
+// PRIVATE CONTENT MODELS
+// ==========================================
+
+model private_content {
+  id          String                  @id @default(cuid())
+  characterId String
+  name        String
+  description String?                 @db.Text
+  tokenPrice  Int                     @default(0)
+  posterId    String?
+  sortOrder   Int                     @default(0)
+  isActive    Boolean                 @default(true)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  character  character               @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  poster     media?                  @relation("private_content_poster", fields: [posterId], references: [id])
+  mediaItems private_content_media[]
+
+  @@index([characterId])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model private_content_media {
+  id               String          @id @default(cuid())
+  privateContentId String
+  mediaId          String
+  sortOrder        Int             @default(0)
+  createdAt        DateTime        @default(now())
+
+  privateContent private_content @relation(fields: [privateContentId], references: [id], onDelete: Cascade)
+  media          media           @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([privateContentId])
   @@index([mediaId])
   @@index([sortOrder])
 }
@@ -1129,6 +1212,7 @@ enum TokenTransactionType {
   chat_message
   voice_message
   video_generation
+  private_content_unlock
   refund
   admin_adjustment
   promotional

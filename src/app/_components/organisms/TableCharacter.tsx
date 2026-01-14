@@ -26,6 +26,7 @@ import {
   EllipsisVerticalIcon,
   SparklesIcon,
   UserIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 
 export type CharacterStyleType = "anime" | "realistic";
@@ -59,6 +60,7 @@ export type TableCharacterProps = {
   onPageChange?: (page: number) => void;
   onDelete?: (id: string) => void;
   onView?: (id: string) => void;
+  onEdit?: (id: string) => void;
   onMore?: (id: string) => void;
 };
 
@@ -74,6 +76,7 @@ const TableCharacter: React.FC<TableCharacterProps> = ({
   onPageChange,
   onDelete,
   onView,
+  onEdit,
   onMore,
 }) => {
   const columnHelper = createColumnHelper<TableCharacterItem>();
@@ -178,6 +181,10 @@ const TableCharacter: React.FC<TableCharacterProps> = ({
               <EllipsisVerticalIcon className="size-4" />
             </DropdownButton>
             <DropdownMenu anchor="bottom end">
+              <DropdownItem onClick={() => onEdit?.(info.row.original.id)}>
+                <PencilIcon className="size-4" />
+                Edit
+              </DropdownItem>
               <DropdownItem onClick={() => onMore?.(info.row.original.id)}>
                 More options
               </DropdownItem>

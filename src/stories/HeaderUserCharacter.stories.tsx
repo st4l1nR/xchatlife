@@ -34,6 +34,10 @@ const meta = {
       control: "text",
       description: "Optional custom banner image URL",
     },
+    onUploadAvatar: {
+      action: "onUploadAvatar",
+      description: "Callback when avatar image is uploaded",
+    },
     className: {
       control: "text",
       description: "Additional CSS classes",
@@ -98,5 +102,26 @@ export const LongName: Story = {
     role: "Premium Member",
     location: "Munich, Germany",
     joinedDate: "December 2020",
+  },
+};
+
+export const WithUploadAvatar: Story = {
+  args: {
+    name: "Editable User",
+    avatarSrc:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    role: "Character",
+    joinedDate: "January 2025",
+    onUploadAvatar: (file: File) => {
+      console.log("Avatar uploaded:", file.name);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Hover over the avatar to see the upload overlay. Click to select a new image.",
+      },
+    },
   },
 };

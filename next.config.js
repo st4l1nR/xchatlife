@@ -12,6 +12,10 @@ const config = {
         protocol: "https",
         hostname: "pub-5085e00501634df38e5783f95d3fc3a8.r2.dev",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
   },
 };

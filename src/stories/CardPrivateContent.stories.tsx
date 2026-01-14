@@ -57,6 +57,11 @@ const meta = {
       action: "onUpdate",
       description: "Callback for edit button (shows pencil icon when provided)",
     },
+    onDelete: {
+      action: "onDelete",
+      description:
+        "Callback for delete button (shows trash icon when provided)",
+    },
   },
 } satisfies Meta<typeof CardPrivateContent>;
 
@@ -164,6 +169,50 @@ export const UnlockedWithEdit: Story = {
     bottomLikeCount: 3500,
     onClick: () => alert("Card clicked!"),
     onUpdate: () => alert("Edit clicked!"),
+  },
+};
+
+export const UnlockedWithDelete: Story = {
+  name: "Unlocked (With Delete)",
+  args: {
+    imageSrc: mockImage,
+    description: "Caught in the lockeroom",
+    likeCount: 2,
+    imageCount: 24,
+    locked: false,
+    bottomLikeCount: 3500,
+    onClick: () => alert("Card clicked!"),
+    onDelete: () => alert("Delete clicked!"),
+  },
+};
+
+export const UnlockedWithEditAndDelete: Story = {
+  name: "Unlocked (With Edit & Delete)",
+  args: {
+    imageSrc: mockImage,
+    description: "Caught in the lockeroom",
+    likeCount: 2,
+    imageCount: 24,
+    locked: false,
+    bottomLikeCount: 3500,
+    onClick: () => alert("Card clicked!"),
+    onUpdate: () => alert("Edit clicked!"),
+    onDelete: () => alert("Delete clicked!"),
+  },
+};
+
+export const LockedWithEditAndDelete: Story = {
+  name: "Locked (With Edit & Delete)",
+  args: {
+    imageSrc: mockImage,
+    description: "Sextape & Anal in my dorm room",
+    likeCount: 2,
+    imageCount: 37,
+    locked: true,
+    tokenCost: 140,
+    bottomLikeCount: 3800,
+    onUpdate: () => alert("Edit clicked!"),
+    onDelete: () => alert("Delete clicked!"),
   },
 };
 

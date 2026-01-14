@@ -305,6 +305,7 @@ export const characterRouter = createTRPCRouter({
       const character = await ctx.db.character.findUnique({
         where: { id: input.id },
         include: {
+          avatar: true,
           poster: true,
           video: true,
           gender: true,
@@ -359,6 +360,7 @@ export const characterRouter = createTRPCRouter({
           isActive: character.isActive,
           voice: character.voice,
           // Media URLs
+          avatarImage: character.avatar?.url,
           posterImage: character.poster?.url,
           posterVideo: character.video?.url,
           // Option IDs for dropdowns
@@ -600,6 +602,27 @@ export const characterRouter = createTRPCRouter({
       });
 
       return { success: true, characterId: character.id };
+    }),
+
+  /**
+   * Delete a character (admin only)
+   */
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const character = await ctx.db.character.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!character) {
+        throw new Error("Character not found");
+      }
+
+      await ctx.db.character.delete({
+        where: { id: input.id },
+      });
+
+      return { success: true };
     }),
 
   /**

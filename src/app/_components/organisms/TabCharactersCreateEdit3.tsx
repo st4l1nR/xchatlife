@@ -16,13 +16,32 @@ export type StoryUploadItem = MediaUploadItem & {
 export type TabCharactersCreateEdit3Props = {
   className?: string;
   defaultStories?: StoryUploadItem[];
+  onRequestDelete?: (id: string) => void;
 };
 
 const TabCharactersCreateEdit3: React.FC<TabCharactersCreateEdit3Props> = ({
   className,
   defaultStories = [],
+  onRequestDelete,
 }) => {
-  const { control } = useFormContext();
+  const { control, setValue, watch } = useFormContext();
+  const stories = (watch("stories") ?? defaultStories) as StoryUploadItem[];
+
+  const handleRemove = (id: string) => {
+    // Check if it's an existing story (persisted) vs new (temp ID)
+    const isExisting = !id.startsWith("story-");
+
+    if (isExisting && onRequestDelete) {
+      // Show confirmation dialog for existing stories
+      onRequestDelete(id);
+    } else {
+      // Just remove from local state for new items
+      setValue(
+        "stories",
+        stories.filter((item) => item.id !== id),
+      );
+    }
+  };
 
   return (
     <TabPanel className={clsx("space-y-6", className)}>
@@ -38,7 +57,7 @@ const TabCharactersCreateEdit3: React.FC<TabCharactersCreateEdit3Props> = ({
             <ListCardMediaUpload
               layout="grid"
               cols={3}
-              items={field.value ?? []}
+              items={stories}
               aspectRatio="9:16"
               accept={{
                 "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
@@ -51,15 +70,9 @@ const TabCharactersCreateEdit3: React.FC<TabCharactersCreateEdit3Props> = ({
                   file: file,
                   mediaType: file.type.startsWith("video/") ? "video" : "image",
                 };
-                field.onChange([...(field.value ?? []), newItem]);
+                field.onChange([...stories, newItem]);
               }}
-              onRemove={(id) => {
-                field.onChange(
-                  ((field.value ?? []) as StoryUploadItem[]).filter(
-                    (item: StoryUploadItem) => item.id !== id,
-                  ),
-                );
-              }}
+              onRemove={handleRemove}
               onReorder={(newItems) => {
                 field.onChange(newItems);
               }}

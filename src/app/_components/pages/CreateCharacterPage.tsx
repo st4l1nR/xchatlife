@@ -186,6 +186,7 @@ const CreateCharacterPage: React.FC = () => {
     resolver: zodResolver(characterFormSchema),
     defaultValues: {
       characterType: "girl",
+      style: "realistic",
       age: 21,
       isPublic: false,
     },
@@ -197,7 +198,10 @@ const CreateCharacterPage: React.FC = () => {
 
   // Fetch character variants for Step 1
   const { data: variantsData, isLoading: variantsLoading } =
-    api.options.getCharacterVariants.useQuery();
+    api.options.getCharacterVariants.useQuery(undefined, {
+      staleTime: 10 * 60 * 1000, // 10 minutes - static data
+      refetchOnWindowFocus: false,
+    });
 
   // Fetch variant-specific options (refetches when characterType or style changes)
   const {
@@ -211,6 +215,8 @@ const CreateCharacterPage: React.FC = () => {
     },
     {
       enabled: !!characterType && !!style,
+      staleTime: 10 * 60 * 1000, // 10 minutes - static data
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -223,6 +229,8 @@ const CreateCharacterPage: React.FC = () => {
       },
       {
         enabled: !!characterType && !!style,
+        staleTime: 10 * 60 * 1000, // 10 minutes - static data
+        refetchOnWindowFocus: false,
       },
     );
 
@@ -242,6 +250,23 @@ const CreateCharacterPage: React.FC = () => {
       setValue("occupationId", "");
     }
   }, [variantFetching, setValue]);
+
+  // Set initial posterUrl and videoUrl when variants load
+  useEffect(() => {
+    const variants = variantsData?.data?.variants;
+    const posterUrl = watch("posterUrl");
+
+    // Only set if variants loaded and posterUrl not already set
+    if (variants && variants.length > 0 && !posterUrl) {
+      const defaultVariant = variants.find(
+        (v) => v.gender === characterType && v.style === style && v.isActive,
+      );
+      if (defaultVariant) {
+        setValue("posterUrl", defaultVariant.imageSrc ?? undefined);
+        setValue("videoUrl", defaultVariant.videoSrc ?? undefined);
+      }
+    }
+  }, [variantsData, characterType, style, setValue, watch]);
 
   // Proceed to step 5 when user authenticates while dialog is open
   useEffect(() => {

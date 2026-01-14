@@ -3,7 +3,7 @@
 import React from "react";
 import clsx from "clsx";
 import Image from "next/image";
-import { ThumbsUp, Images, Lock, Gem, Pencil } from "lucide-react";
+import { ThumbsUp, Images, Lock, Gem, Pencil, Trash2 } from "lucide-react";
 import { Button } from "../atoms/button";
 
 // ============================================================================
@@ -34,6 +34,8 @@ export type CardPrivateContentProps = {
   onClick?: () => void;
   // Edit callback
   onUpdate?: () => void;
+  // Delete callback
+  onDelete?: () => void;
   // Bottom like count (shown outside card)
   bottomLikeCount?: number;
   // Media array for gallery view (when unlocked)
@@ -56,6 +58,7 @@ const CardPrivateContent: React.FC<CardPrivateContentProps> = ({
   isUnlocking,
   onClick,
   onUpdate,
+  onDelete,
   bottomLikeCount,
 }) => {
   const isClickable = !locked && onClick;
@@ -125,19 +128,36 @@ const CardPrivateContent: React.FC<CardPrivateContentProps> = ({
                 )}
               </div>
 
-              {/* Edit button (top-right) */}
-              {onUpdate && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUpdate();
-                  }}
-                  className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70"
-                  aria-label="Edit content"
-                >
-                  <Pencil className="size-4" />
-                </button>
+              {/* Action buttons (top-right) */}
+              {(onUpdate || onDelete) && (
+                <div className="absolute top-3 right-3 flex items-center gap-2">
+                  {onUpdate && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdate();
+                      }}
+                      className="flex size-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70"
+                      aria-label="Edit content"
+                    >
+                      <Pencil className="size-4" />
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
+                      }}
+                      className="flex size-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-red-500/70"
+                      aria-label="Delete content"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  )}
+                </div>
               )}
 
               {/* Locked state content */}
