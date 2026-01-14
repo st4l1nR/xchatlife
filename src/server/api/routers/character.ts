@@ -26,7 +26,6 @@ const createCharacterSchema = z.object({
   personalityId: z.string(),
   relationshipId: z.string(),
   occupationId: z.string(),
-  kinkIds: z.array(z.string()).min(1).max(3),
   // Other fields
   age: z.number().min(18).max(55),
   name: z.string().min(2).max(20),
@@ -196,11 +195,6 @@ export const characterRouter = createTRPCRouter({
           breastSize: true,
           occupation: true,
           relationship: true,
-          character_kink: {
-            include: {
-              kink: true,
-            },
-          },
         },
       });
 
@@ -208,10 +202,7 @@ export const characterRouter = createTRPCRouter({
         return null;
       }
 
-      return {
-        ...character,
-        kinks: character.character_kink.map((k) => k.kink),
-      };
+      return character;
     }),
 
   /**
@@ -226,10 +217,10 @@ export const characterRouter = createTRPCRouter({
 
       // Look up gender and style IDs by name
       const [genderOption, styleOption] = await Promise.all([
-        ctx.db.character_gender_option.findUnique({
+        ctx.db.character_gender.findUnique({
           where: { name: input.characterType },
         }),
-        ctx.db.character_style_option.findUnique({
+        ctx.db.character_style.findUnique({
           where: { name: input.style },
         }),
       ]);
@@ -295,9 +286,6 @@ export const characterRouter = createTRPCRouter({
             breastSizeId: input.breastSizeId,
             occupationId: input.occupationId,
             relationshipId: input.relationshipId,
-            character_kink: {
-              create: input.kinkIds.map((kinkId) => ({ kinkId })),
-            },
           },
         });
 
@@ -330,11 +318,6 @@ export const characterRouter = createTRPCRouter({
           breastSize: true,
           occupation: true,
           relationship: true,
-          character_kink: {
-            include: {
-              kink: true,
-            },
-          },
           reel: {
             include: {
               video: true,
@@ -388,8 +371,6 @@ export const characterRouter = createTRPCRouter({
           breastSizeId: character.breastSizeId,
           occupationId: character.occupationId,
           relationshipId: character.relationshipId,
-          // Kink IDs
-          kinkIds: character.character_kink.map((k) => k.kinkId),
           // Option labels for display
           ethnicity: character.ethnicity?.label,
           personality: character.personality?.label,
@@ -400,7 +381,6 @@ export const characterRouter = createTRPCRouter({
           breastSize: character.breastSize?.label,
           occupation: character.occupation?.label,
           relationship: character.relationship?.label,
-          kinks: character.character_kink.map((k) => k.kink.label),
           // Reels
           reels: character.reel.map((r) => ({
             id: r.id,
@@ -457,7 +437,6 @@ export const characterRouter = createTRPCRouter({
         breastSizeId: z.string().optional(),
         occupationId: z.string().optional(),
         relationshipId: z.string().optional(),
-        kinkIds: z.array(z.string()).min(1).max(3).optional(),
         // Media URLs (only update if provided)
         posterUrl: z.string().url().optional(),
         videoUrl: z.string().url().optional(),
@@ -483,7 +462,6 @@ export const characterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const {
         id,
-        kinkIds,
         posterUrl,
         videoUrl,
         firstName,
@@ -520,7 +498,7 @@ export const characterRouter = createTRPCRouter({
       let styleId: string | undefined;
 
       if (gender) {
-        const genderOption = await ctx.db.character_gender_option.findUnique({
+        const genderOption = await ctx.db.character_gender.findUnique({
           where: { name: gender },
         });
         if (!genderOption) {
@@ -530,7 +508,7 @@ export const characterRouter = createTRPCRouter({
       }
 
       if (style) {
-        const styleOption = await ctx.db.character_style_option.findUnique({
+        const styleOption = await ctx.db.character_style.findUnique({
           where: { name: style },
         });
         if (!styleOption) {
@@ -581,18 +559,6 @@ export const characterRouter = createTRPCRouter({
 
       // Update character in a transaction
       const character = await ctx.db.$transaction(async (tx) => {
-        // Update kinks if provided
-        if (kinkIds) {
-          // Delete existing kinks
-          await tx.character_kink.deleteMany({
-            where: { characterId: id },
-          });
-          // Create new kinks
-          await tx.character_kink.createMany({
-            data: kinkIds.map((kinkId) => ({ characterId: id, kinkId })),
-          });
-        }
-
         // Update reel order if provided
         if (reelOrder && reelOrder.length > 0) {
           await Promise.all(

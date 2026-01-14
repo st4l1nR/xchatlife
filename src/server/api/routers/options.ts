@@ -83,10 +83,10 @@ export const optionsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       // Find gender and style options by name
       const [genderOption, styleOption] = await Promise.all([
-        ctx.db.character_gender_option.findUnique({
+        ctx.db.character_gender.findUnique({
           where: { name: input.gender },
         }),
-        ctx.db.character_style_option.findUnique({
+        ctx.db.character_style.findUnique({
           where: { name: input.style },
         }),
       ]);
@@ -98,24 +98,7 @@ export const optionsRouter = createTRPCRouter({
         });
       }
 
-      // Find variant by genderId + styleId
-      const variant = await ctx.db.character_variant.findUnique({
-        where: {
-          genderId_styleId: {
-            genderId: genderOption.id,
-            styleId: styleOption.id,
-          },
-        },
-      });
-
-      if (!variant) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Variant not found",
-        });
-      }
-
-      // Fetch all variant-specific options in parallel
+      // Fetch all variant-specific options in parallel using genderId + styleId
       const [
         rawEthnicities,
         rawHairStyles,
@@ -124,8 +107,12 @@ export const optionsRouter = createTRPCRouter({
         rawBodyTypes,
         rawBreastSizes,
       ] = await Promise.all([
-        ctx.db.ethnicity_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_ethnicity.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -135,8 +122,12 @@ export const optionsRouter = createTRPCRouter({
             video: { select: { url: true } },
           },
         }),
-        ctx.db.hair_style_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_hair_style.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -146,8 +137,12 @@ export const optionsRouter = createTRPCRouter({
             video: { select: { url: true } },
           },
         }),
-        ctx.db.hair_color_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_hair_color.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -157,8 +152,12 @@ export const optionsRouter = createTRPCRouter({
             video: { select: { url: true } },
           },
         }),
-        ctx.db.eye_color_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_eye_color.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -168,8 +167,12 @@ export const optionsRouter = createTRPCRouter({
             video: { select: { url: true } },
           },
         }),
-        ctx.db.body_type_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_body_type.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -179,8 +182,12 @@ export const optionsRouter = createTRPCRouter({
             video: { select: { url: true } },
           },
         }),
-        ctx.db.breast_size_option.findMany({
-          where: { variantId: variant.id, isActive: true },
+        ctx.db.character_breast_size.findMany({
+          where: {
+            genderId: genderOption.id,
+            styleId: styleOption.id,
+            isActive: true,
+          },
           orderBy: { sortOrder: "asc" },
           select: {
             id: true,
@@ -210,7 +217,8 @@ export const optionsRouter = createTRPCRouter({
       return {
         success: true,
         data: {
-          variantId: variant.id,
+          genderId: genderOption.id,
+          styleId: styleOption.id,
           ethnicities: rawEthnicities.map(transformOption),
           hairStyles: rawHairStyles.map(transformOption),
           hairColors: rawHairColors.map(transformOption),
@@ -222,77 +230,121 @@ export const optionsRouter = createTRPCRouter({
     }),
 
   /**
+   * Get gender and style options
+   * Used for character edit form dropdowns
+   */
+  getGenderAndStyleOptions: publicProcedure.query(async ({ ctx }) => {
+    const [genders, styles] = await Promise.all([
+      ctx.db.character_gender.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, label: true, emoji: true },
+      }),
+      ctx.db.character_style.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, label: true, emoji: true },
+      }),
+    ]);
+    return {
+      success: true,
+      data: { genders, styles },
+    };
+  }),
+
+  /**
    * Get universal options (for step 5)
    * These options are the same for all variants
    */
-  getUniversalOptions: publicProcedure.query(async ({ ctx }) => {
-    // Fetch all universal options in parallel
-    const [rawPersonalities, rawRelationships, occupations, kinks] =
-      await Promise.all([
-        ctx.db.personality_option.findMany({
-          where: { isActive: true },
-          orderBy: { sortOrder: "asc" },
-          select: {
-            id: true,
-            name: true,
-            label: true,
-            image: { select: { url: true } },
-          },
+  getUniversalOptions: publicProcedure
+    .input(getVariantOptionsSchema)
+    .query(async ({ ctx, input }) => {
+      // Find gender and style options by name
+      const [genderOption, styleOption] = await Promise.all([
+        ctx.db.character_gender.findUnique({
+          where: { name: input.gender },
         }),
-        ctx.db.relationship_option.findMany({
-          where: { isActive: true },
-          orderBy: { sortOrder: "asc" },
-          select: {
-            id: true,
-            name: true,
-            label: true,
-            image: { select: { url: true } },
-          },
-        }),
-        ctx.db.occupation_option.findMany({
-          where: { isActive: true },
-          orderBy: { sortOrder: "asc" },
-          select: {
-            id: true,
-            name: true,
-            label: true,
-            emoji: true,
-          },
-        }),
-        ctx.db.kink_option.findMany({
-          where: { isActive: true },
-          orderBy: { sortOrder: "asc" },
-          select: {
-            id: true,
-            name: true,
-            label: true,
-          },
+        ctx.db.character_style.findUnique({
+          where: { name: input.style },
         }),
       ]);
 
-    // Transform personality and relationship options to include imageSrc
-    const personalities = rawPersonalities.map((p) => ({
-      id: p.id,
-      name: p.name,
-      label: p.label,
-      imageSrc: p.image?.url ?? null,
-    }));
+      if (!genderOption || !styleOption) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Gender or style not found",
+        });
+      }
 
-    const relationships = rawRelationships.map((r) => ({
-      id: r.id,
-      name: r.name,
-      label: r.label,
-      imageSrc: r.image?.url ?? null,
-    }));
+      // Fetch all universal options in parallel (filtered by gender + style)
+      const [rawPersonalities, rawRelationships, occupations] =
+        await Promise.all([
+          ctx.db.character_personality.findMany({
+            where: {
+              genderId: genderOption.id,
+              styleId: styleOption.id,
+              isActive: true,
+            },
+            orderBy: { sortOrder: "asc" },
+            select: {
+              id: true,
+              name: true,
+              label: true,
+              image: { select: { url: true } },
+            },
+          }),
+          ctx.db.character_relationship.findMany({
+            where: {
+              genderId: genderOption.id,
+              styleId: styleOption.id,
+              isActive: true,
+            },
+            orderBy: { sortOrder: "asc" },
+            select: {
+              id: true,
+              name: true,
+              label: true,
+              image: { select: { url: true } },
+            },
+          }),
+          ctx.db.character_occupation.findMany({
+            where: {
+              genderId: genderOption.id,
+              styleId: styleOption.id,
+              isActive: true,
+            },
+            orderBy: { sortOrder: "asc" },
+            select: {
+              id: true,
+              name: true,
+              label: true,
+              emoji: true,
+            },
+          }),
+        ]);
 
-    return {
-      success: true,
-      data: {
-        personalities,
-        relationships,
-        occupations,
-        kinks,
-      },
-    };
-  }),
+      // Transform personality and relationship options to include imageSrc
+      const personalities = rawPersonalities.map((p) => ({
+        id: p.id,
+        name: p.name,
+        label: p.label,
+        imageSrc: p.image?.url ?? null,
+      }));
+
+      const relationships = rawRelationships.map((r) => ({
+        id: r.id,
+        name: r.name,
+        label: r.label,
+        imageSrc: r.image?.url ?? null,
+      }));
+
+      return {
+        success: true,
+        data: {
+          personalities,
+          relationships,
+          occupations,
+        },
+      };
+    }),
 });

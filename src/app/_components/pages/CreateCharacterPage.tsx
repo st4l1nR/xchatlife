@@ -59,10 +59,6 @@ export const characterFormSchema = z.object({
   personalityId: z.string().min(1, "Please select a personality"),
   relationshipId: z.string().min(1, "Please select a relationship"),
   occupationId: z.string().min(1, "Please select an occupation"),
-  kinkIds: z
-    .array(z.string())
-    .min(1, "Select at least 1 kink")
-    .max(3, "Maximum 3 kinks"),
   voice: z.string().min(1, "Please select a voice"),
 
   // Visibility
@@ -98,7 +94,6 @@ export const step5Schema = z.object({
   personalityId: z.string().min(1, "Please select a personality"),
   relationshipId: z.string().min(1, "Please select a relationship"),
   occupationId: z.string().min(1, "Please select an occupation"),
-  kinkIds: z.array(z.string()).min(1).max(3),
   voice: z.string().min(1, "Please select a voice"),
 });
 
@@ -133,12 +128,6 @@ export type OccupationOption = {
   name: string;
   label: string;
   emoji?: string | null;
-};
-
-export type KinkOption = {
-  id: string;
-  name: string;
-  label: string;
 };
 
 // ============================================================================
@@ -198,7 +187,6 @@ const CreateCharacterPage: React.FC = () => {
     defaultValues: {
       characterType: "girl",
       age: 21,
-      kinkIds: [],
       isPublic: false,
     },
     mode: "onChange",
@@ -226,9 +214,17 @@ const CreateCharacterPage: React.FC = () => {
     },
   );
 
-  // Fetch universal options once (personalities, relationships, occupations, kinks)
+  // Fetch universal options (personalities, relationships, occupations) - filtered by gender + style
   const { data: universalOptions, isLoading: universalLoading } =
-    api.options.getUniversalOptions.useQuery();
+    api.options.getUniversalOptions.useQuery(
+      {
+        gender: (characterType ?? "girl") as CharacterGenderType,
+        style: (style ?? "realistic") as CharacterStyleType,
+      },
+      {
+        enabled: !!characterType && !!style,
+      },
+    );
 
   // Reset variant-specific form values when variant changes
   useEffect(() => {
@@ -240,6 +236,10 @@ const CreateCharacterPage: React.FC = () => {
       setValue("eyeColorId", "");
       setValue("bodyTypeId", "");
       setValue("breastSizeId", "");
+      // Also clear universal options since they're now filtered by gender+style
+      setValue("personalityId", "");
+      setValue("relationshipId", "");
+      setValue("occupationId", "");
     }
   }, [variantFetching, setValue]);
 
@@ -340,7 +340,6 @@ const CreateCharacterPage: React.FC = () => {
       personalityId: data.personalityId,
       relationshipId: data.relationshipId,
       occupationId: data.occupationId,
-      kinkIds: data.kinkIds,
       voice: data.voice,
       posterUrl: data.posterUrl,
       videoUrl: data.videoUrl,
@@ -404,7 +403,6 @@ const CreateCharacterPage: React.FC = () => {
             personalities={universalOptions?.data?.personalities ?? []}
             relationships={universalOptions?.data?.relationships ?? []}
             occupations={universalOptions?.data?.occupations ?? []}
-            kinks={universalOptions?.data?.kinks ?? []}
             loading={universalLoading}
           />
         );

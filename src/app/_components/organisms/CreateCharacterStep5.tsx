@@ -15,13 +15,11 @@ import type {
   PersonalityOption,
   RelationshipOption,
   OccupationOption,
-  KinkOption,
 } from "../pages/CreateCharacterPage";
 import { VOICE_OPTIONS } from "../pages/CreateCharacterPage";
 import DialogCreateCharacterPersonality from "./DialogCreateCharacterPersonality";
 import DialogCreateCharacterRelationship from "./DialogCreateCharacterRelationship";
 import DialogCreateCharacterOccupation from "./DialogCreateCharacterOccupation";
-import DialogCreateCharacterKinks from "./DialogCreateCharacterKinks";
 import DialogCreateCharacterVoice from "./DialogCreateCharacterVoice";
 
 type CreateCharacterStep5Props = {
@@ -33,7 +31,6 @@ type CreateCharacterStep5Props = {
   personalities: PersonalityOption[];
   relationships: RelationshipOption[];
   occupations: OccupationOption[];
-  kinks: KinkOption[];
   loading: boolean;
 };
 
@@ -214,20 +211,17 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
   personalities,
   relationships,
   occupations,
-  kinks,
   loading,
 }) => {
   const [showPersonalityDialog, setShowPersonalityDialog] = useState(false);
   const [showRelationshipDialog, setShowRelationshipDialog] = useState(false);
   const [showOccupationDialog, setShowOccupationDialog] = useState(false);
-  const [showKinksDialog, setShowKinksDialog] = useState(false);
   const [showVoiceDialog, setShowVoiceDialog] = useState(false);
 
   const name = watch("name") ?? "";
   const personalityId = watch("personalityId");
   const relationshipId = watch("relationshipId");
   const occupationId = watch("occupationId");
-  const kinkIds = watch("kinkIds") ?? [];
   const voice = watch("voice");
   const isPublic = watch("isPublic") ?? false;
 
@@ -273,17 +267,6 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
     return option
       ? `${option.emoji ?? ""} ${option.label}`.trim()
       : "Select...";
-  };
-
-  const getKinksLabel = () => {
-    if (loading) return "Loading...";
-    if (kinkIds.length === 0) return "Select...";
-    return kinkIds
-      .map((kinkId) => {
-        const kink = kinks.find((k) => k.id === kinkId);
-        return kink?.label ?? kinkId;
-      })
-      .join(", ");
   };
 
   const getVoiceLabel = () => {
@@ -412,34 +395,8 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
             )}
           </div>
 
-          {/* Kinks Button */}
+          {/* Voice Button */}
           <div>
-            <button
-              type="button"
-              onClick={() => setShowKinksDialog(true)}
-              disabled={loading}
-              className="bg-muted hover:bg-muted/80 relative flex w-full items-center justify-between overflow-hidden rounded-xl p-4 transition-colors disabled:opacity-50"
-            >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--color-primary)_0%,_transparent_70%)] opacity-15" />
-              <div className="relative text-left">
-                <p className="text-muted-foreground text-xs uppercase">
-                  What kinks are they into? (Max. 3)
-                </p>
-                <p className="text-foreground truncate font-semibold">
-                  {getKinksLabel()}
-                </p>
-              </div>
-              <ChevronRight className="text-muted-foreground relative h-5 w-5" />
-            </button>
-            {errors.kinkIds && (
-              <p className="text-destructive mt-1 text-base/6 sm:text-sm/6">
-                {errors.kinkIds.message}
-              </p>
-            )}
-          </div>
-
-          {/* Voice Button - spans full width */}
-          <div className="sm:col-span-2">
             <button
               type="button"
               onClick={() => setShowVoiceDialog(true)}
@@ -515,17 +472,6 @@ const CreateCharacterStep5: React.FC<CreateCharacterStep5Props> = ({
           setValue("occupationId", value, { shouldValidate: true })
         }
         options={occupations}
-        containerRef={containerRef}
-      />
-
-      <DialogCreateCharacterKinks
-        open={showKinksDialog}
-        onClose={() => setShowKinksDialog(false)}
-        value={kinkIds}
-        onChange={(value) =>
-          setValue("kinkIds", value, { shouldValidate: true })
-        }
-        kinksList={kinks}
         containerRef={containerRef}
       />
 

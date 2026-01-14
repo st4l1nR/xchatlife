@@ -135,11 +135,6 @@ export const chatRouter = createTRPCRouter({
               video: true,
               bodyType: true,
               ethnicity: true,
-              character_kink: {
-                include: {
-                  kink: true,
-                },
-              },
             },
           },
         },
@@ -162,13 +157,7 @@ export const chatRouter = createTRPCRouter({
 
       return {
         success: true,
-        data: {
-          ...chat,
-          character: {
-            ...chat.character,
-            kinks: chat.character.character_kink.map((k) => k.kink),
-          },
-        },
+        data: chat,
       };
     }),
 

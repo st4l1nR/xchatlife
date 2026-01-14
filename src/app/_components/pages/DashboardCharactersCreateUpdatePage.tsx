@@ -27,7 +27,6 @@ import TabCharactersCreateEdit3 from "../organisms/TabCharactersCreateEdit3";
 import TabCharactersCreateEdit4, {
   type PrivateContentItem,
 } from "../organisms/TabCharactersCreateEdit4";
-import type { TagOption } from "../molecules/InputTags";
 import type { MediaUploadItem } from "../organisms/ListCardMediaUpload";
 import type { StoryUploadItem } from "../organisms/TabCharactersCreateEdit3";
 import type { PrivateContentFormData } from "../organisms/DialogCreateUpdatePrivateContent";
@@ -46,7 +45,6 @@ const characterFormSchema = z.object({
   gender: z.string().optional(),
   description: z.string().optional(),
   style: z.string().optional(),
-  kinks: z.array(z.string()).max(3, "Maximum 3 kinks allowed").optional(),
   ethnicity: z.string().optional(),
   personality: z.string().optional(),
   hairStyle: z.string().optional(),
@@ -82,7 +80,6 @@ export type DashboardCharactersCreateUpdatePageMockData = {
     gender?: string;
     description?: string;
     style?: string;
-    kinks?: string[];
     ethnicity?: string;
     personality?: string;
     hairStyle?: string;
@@ -97,8 +94,8 @@ export type DashboardCharactersCreateUpdatePageMockData = {
     isPublic: boolean;
   };
   dropdownOptions: {
+    genderOptions: SelectOption[];
     styleOptions: SelectOption[];
-    kinksOptions: TagOption[];
     ethnicityOptions: SelectOption[];
     personalityOptions: SelectOption[];
     hairStyleOptions: SelectOption[];
@@ -151,25 +148,11 @@ function DashboardCharactersCreateUpdatePageContent({
       { enabled: !mock && Boolean(id) },
     );
 
-  // Fetch universal options (personalities, relationships, occupations, kinks)
-  const { data: universalOptionsData, isLoading: isLoadingUniversalOptions } =
-    api.options.getUniversalOptions.useQuery(undefined, { enabled: !mock });
-
-  // Fetch variant-specific options based on character's gender/style
-  const characterGender = characterData?.data?.gender as
-    | "girl"
-    | "men"
-    | "trans"
-    | undefined;
-  const characterStyle = characterData?.data?.style as
-    | "realistic"
-    | "anime"
-    | undefined;
-  const { data: variantOptionsData, isLoading: isLoadingVariantOptions } =
-    api.options.getVariantOptions.useQuery(
-      { gender: characterGender!, style: characterStyle! },
-      { enabled: !mock && Boolean(characterGender) && Boolean(characterStyle) },
-    );
+  // Fetch gender and style options
+  const { data: genderStyleData, isLoading: isLoadingGenderStyle } =
+    api.options.getGenderAndStyleOptions.useQuery(undefined, {
+      enabled: !mock,
+    });
 
   // ============================================================================
   // tRPC Mutations
@@ -189,59 +172,6 @@ function DashboardCharactersCreateUpdatePageContent({
   // ============================================================================
   // Transform API data to component format
   // ============================================================================
-
-  // Transform universal options to SelectOption format
-  const transformedUniversalOptions = useMemo(() => {
-    if (!universalOptionsData?.data) return null;
-    const data = universalOptionsData.data;
-    return {
-      personalityOptions: data.personalities.map((p) => ({
-        value: p.id,
-        label: p.label,
-      })),
-      relationshipOptions: data.relationships.map((r) => ({
-        value: r.id,
-        label: r.label,
-      })),
-      occupationOptions: data.occupations.map((o) => ({
-        value: o.id,
-        label: o.label,
-      })),
-      kinksOptions: data.kinks.map((k) => ({ value: k.id, label: k.label })),
-    };
-  }, [universalOptionsData]);
-
-  // Transform variant options to SelectOption format
-  const transformedVariantOptions = useMemo(() => {
-    if (!variantOptionsData?.data) return null;
-    const data = variantOptionsData.data;
-    return {
-      ethnicityOptions: data.ethnicities.map((e) => ({
-        value: e.id,
-        label: e.label,
-      })),
-      hairStyleOptions: data.hairStyles.map((h) => ({
-        value: h.id,
-        label: h.label,
-      })),
-      hairColorOptions: data.hairColors.map((h) => ({
-        value: h.id,
-        label: h.label,
-      })),
-      eyeColorOptions: data.eyeColors.map((e) => ({
-        value: e.id,
-        label: e.label,
-      })),
-      bodyTypeOptions: data.bodyTypes.map((b) => ({
-        value: b.id,
-        label: b.label,
-      })),
-      breastSizeOptions: data.breastSizes.map((b) => ({
-        value: b.id,
-        label: b.label,
-      })),
-    };
-  }, [variantOptionsData]);
 
   // Transform character data for reels
   const transformedReels = useMemo((): MediaUploadItem[] | undefined => {
@@ -293,7 +223,6 @@ function DashboardCharactersCreateUpdatePageContent({
         gender: mock.character.gender,
         description: mock.character.description,
         style: mock.character.style,
-        kinks: mock.character.kinks,
         ethnicity: mock.character.ethnicity,
         personality: mock.character.personality,
         hairStyle: mock.character.hairStyle,
@@ -319,7 +248,6 @@ function DashboardCharactersCreateUpdatePageContent({
         gender: data.gender,
         description: "",
         style: data.style,
-        kinks: data.kinkIds,
         ethnicity: data.ethnicityId,
         personality: data.personalityId,
         hairStyle: data.hairStyleId,
@@ -343,7 +271,6 @@ function DashboardCharactersCreateUpdatePageContent({
       gender: "",
       description: "",
       style: "",
-      kinks: [],
       ethnicity: "",
       personality: "",
       hairStyle: "",
@@ -373,6 +300,92 @@ function DashboardCharactersCreateUpdatePageContent({
   const { handleSubmit, watch, setValue, reset } = methods;
   const isPublic = watch("isPublic");
 
+  // Watch gender and style for variant options query
+  const watchedGender = watch("gender") as "girl" | "men" | "trans" | undefined;
+  const watchedStyle = watch("style") as "realistic" | "anime" | undefined;
+
+  // Fetch variant-specific options based on watched gender/style
+  const { data: variantOptionsData, isLoading: isLoadingVariantOptions } =
+    api.options.getVariantOptions.useQuery(
+      { gender: watchedGender!, style: watchedStyle! },
+      { enabled: !mock && Boolean(watchedGender) && Boolean(watchedStyle) },
+    );
+
+  // Fetch universal options (personalities, relationships, occupations)
+  const { data: universalOptionsData, isLoading: isLoadingUniversalOptions } =
+    api.options.getUniversalOptions.useQuery(
+      { gender: watchedGender!, style: watchedStyle! },
+      { enabled: !mock && Boolean(watchedGender) && Boolean(watchedStyle) },
+    );
+
+  // Transform gender and style options to SelectOption format
+  const transformedGenderStyleOptions = useMemo(() => {
+    if (!genderStyleData?.data) return null;
+    const data = genderStyleData.data;
+    return {
+      genderOptions: data.genders.map((g) => ({
+        value: g.name,
+        label: g.label,
+      })),
+      styleOptions: data.styles.map((s) => ({
+        value: s.name,
+        label: s.label,
+      })),
+    };
+  }, [genderStyleData]);
+
+  // Transform variant options to SelectOption format
+  const transformedVariantOptions = useMemo(() => {
+    if (!variantOptionsData?.data) return null;
+    const data = variantOptionsData.data;
+    return {
+      ethnicityOptions: data.ethnicities.map((e) => ({
+        value: e.id,
+        label: e.label,
+      })),
+      hairStyleOptions: data.hairStyles.map((h) => ({
+        value: h.id,
+        label: h.label,
+      })),
+      hairColorOptions: data.hairColors.map((h) => ({
+        value: h.id,
+        label: h.label,
+      })),
+      eyeColorOptions: data.eyeColors.map((e) => ({
+        value: e.id,
+        label: e.label,
+      })),
+      bodyTypeOptions: data.bodyTypes.map((b) => ({
+        value: b.id,
+        label: b.label,
+      })),
+      breastSizeOptions: data.breastSizes.map((b) => ({
+        value: b.id,
+        label: b.label,
+      })),
+    };
+  }, [variantOptionsData]);
+
+  // Transform universal options to SelectOption format
+  const transformedUniversalOptions = useMemo(() => {
+    if (!universalOptionsData?.data) return null;
+    const data = universalOptionsData.data;
+    return {
+      personalityOptions: data.personalities.map((p) => ({
+        value: p.id,
+        label: p.label,
+      })),
+      relationshipOptions: data.relationships.map((r) => ({
+        value: r.id,
+        label: r.label,
+      })),
+      occupationOptions: data.occupations.map((o) => ({
+        value: o.id,
+        label: o.label,
+      })),
+    };
+  }, [universalOptionsData]);
+
   // Reset form when character data loads
   useEffect(() => {
     if (characterData?.data && !mock) {
@@ -384,7 +397,6 @@ function DashboardCharactersCreateUpdatePageContent({
         gender: data.gender,
         description: "",
         style: data.style,
-        kinks: data.kinkIds,
         ethnicity: data.ethnicityId,
         personality: data.personalityId,
         hairStyle: data.hairStyleId,
@@ -405,8 +417,9 @@ function DashboardCharactersCreateUpdatePageContent({
   const isLoadingData =
     !mock &&
     ((isEditMode && isLoadingCharacter) ||
+      isLoadingGenderStyle ||
       isLoadingUniversalOptions ||
-      (characterGender && characterStyle && isLoadingVariantOptions));
+      (watchedGender && watchedStyle && isLoadingVariantOptions));
 
   // Get header props from form values or mock
   const firstName = watch("firstName");
@@ -484,8 +497,6 @@ function DashboardCharactersCreateUpdatePageContent({
             breastSizeId: data.breastSize || undefined,
             occupationId: data.occupation || undefined,
             relationshipId: data.relationship || undefined,
-            kinkIds:
-              data.kinks && data.kinks.length > 0 ? data.kinks : undefined,
             // Reorder arrays
             reelOrder:
               reelOrder && reelOrder.length > 0 ? reelOrder : undefined,
@@ -597,16 +608,10 @@ function DashboardCharactersCreateUpdatePageContent({
   // Render
   // ============================================================================
 
-  // Style options (static for now, can be made dynamic if needed)
-  const styleOptions: SelectOption[] = [
-    { value: "realistic", label: "Realistic" },
-    { value: "anime", label: "Anime" },
-  ];
-
   // Get dropdown options from mock, API, or use empty arrays
   const dropdownOptions = mock?.dropdownOptions ?? {
-    styleOptions,
-    kinksOptions: transformedUniversalOptions?.kinksOptions ?? [],
+    genderOptions: transformedGenderStyleOptions?.genderOptions ?? [],
+    styleOptions: transformedGenderStyleOptions?.styleOptions ?? [],
     ethnicityOptions: transformedVariantOptions?.ethnicityOptions ?? [],
     personalityOptions: transformedUniversalOptions?.personalityOptions ?? [],
     hairStyleOptions: transformedVariantOptions?.hairStyleOptions ?? [],

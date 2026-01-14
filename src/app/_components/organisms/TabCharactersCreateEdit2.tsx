@@ -56,7 +56,7 @@ const TabCharactersCreateEdit2: React.FC<TabCharactersCreateEdit2Props> = ({
             <>
               <ListCardMediaUpload
                 layout="grid"
-                cols={2}
+                cols={3}
                 items={reels}
                 aspectRatio="9:16"
                 accept={{ "video/*": [".mp4", ".webm", ".mov"] }}

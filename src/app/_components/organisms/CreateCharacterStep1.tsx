@@ -62,7 +62,6 @@ const CreateCharacterStep1: React.FC<CreateCharacterStep1Props> = ({
     setValue("personalityId", "");
     setValue("relationshipId", "");
     setValue("occupationId", "");
-    setValue("kinkIds", []);
     setValue("voice", "");
   };
 
