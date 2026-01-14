@@ -6,7 +6,6 @@ import { TabPanel } from "@headlessui/react";
 import { useFormContext, Controller } from "react-hook-form";
 import HeaderUserCharacter from "./HeaderUserCharacter";
 import CardMediaUpload from "../molecules/CardMediaUpload";
-import InputTags, { type TagOption } from "../molecules/InputTags";
 import { Input } from "../atoms/input";
 import { Textarea } from "../atoms/textarea";
 import { Field, Label, ErrorMessage } from "../atoms/fieldset";
@@ -29,8 +28,8 @@ export type TabCharactersCreateEdit1Props = {
   defaultPosterImage?: string;
   defaultPosterVideo?: string;
   // Dropdown options (passed from parent)
+  genderOptions: SelectOption[];
   styleOptions: SelectOption[];
-  kinksOptions: TagOption[];
   ethnicityOptions: SelectOption[];
   personalityOptions: SelectOption[];
   hairStyleOptions: SelectOption[];
@@ -54,8 +53,8 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
   defaultPosterImage,
   defaultPosterVideo,
   // Dropdown options
+  genderOptions,
   styleOptions,
-  kinksOptions,
   ethnicityOptions,
   personalityOptions,
   hairStyleOptions,
@@ -168,11 +167,22 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
 
           <Field>
             <Label>Gender</Label>
-            <Input
-              type="text"
-              placeholder="Enter gender"
-              {...register("gender")}
-              data-invalid={errors.gender ? true : undefined}
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <Listbox
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  placeholder="Select gender"
+                >
+                  {genderOptions.map((option) => (
+                    <ListboxOption key={option.value} value={option.value}>
+                      <ListboxLabel>{option.label}</ListboxLabel>
+                    </ListboxOption>
+                  ))}
+                </Listbox>
+              )}
             />
             {errors.gender && (
               <ErrorMessage>{errors.gender.message as string}</ErrorMessage>
@@ -227,25 +237,6 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
             {errors.style && (
               <ErrorMessage>{errors.style.message as string}</ErrorMessage>
             )}
-          </Field>
-
-          {/* Kinks (max 3) */}
-          <Field>
-            <Label>Kinks (max 3)</Label>
-            <Controller
-              name="kinks"
-              control={control}
-              render={({ field, fieldState }) => (
-                <InputTags
-                  options={kinksOptions}
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                  maxItems={3}
-                  placeholder="Select kinks"
-                  error={fieldState.error?.message}
-                />
-              )}
-            />
           </Field>
 
           {/* Ethnicity */}

@@ -37,7 +37,7 @@ const TabCharactersCreateEdit3: React.FC<TabCharactersCreateEdit3Props> = ({
           render={({ field }) => (
             <ListCardMediaUpload
               layout="grid"
-              cols={2}
+              cols={3}
               items={field.value ?? []}
               aspectRatio="9:16"
               accept={{

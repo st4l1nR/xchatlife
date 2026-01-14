@@ -6,19 +6,16 @@ import type { DashboardCharactersCreateUpdatePageMockData } from "@/app/_compone
 // Mock Dropdown Options
 // ============================================================================
 
+const genderOptions = [
+  { value: "girl", label: "Girl" },
+  { value: "men", label: "Men" },
+  { value: "trans", label: "Trans" },
+];
+
 const styleOptions = [
   { value: "anime", label: "Anime" },
   { value: "realistic", label: "Realistic" },
   { value: "cartoon", label: "Cartoon" },
-];
-
-const kinksOptions = [
-  { value: "romantic", label: "Romantic" },
-  { value: "adventurous", label: "Adventurous" },
-  { value: "mysterious", label: "Mysterious" },
-  { value: "playful", label: "Playful" },
-  { value: "dominant", label: "Dominant" },
-  { value: "submissive", label: "Submissive" },
 ];
 
 const ethnicityOptions = [
@@ -92,8 +89,8 @@ const relationshipOptions = [
 ];
 
 const dropdownOptions = {
+  genderOptions,
   styleOptions,
-  kinksOptions,
   ethnicityOptions,
   personalityOptions,
   hairStyleOptions,
@@ -125,7 +122,6 @@ const mockCharacterEdit: DashboardCharactersCreateUpdatePageMockData["character"
     description:
       "A cheerful and adventurous character who loves to explore new places and meet new people. Always ready for an adventure!",
     style: "anime",
-    kinks: ["romantic", "adventurous"],
     ethnicity: "latin",
     personality: "cheerful",
     hairStyle: "long",

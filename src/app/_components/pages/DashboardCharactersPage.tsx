@@ -253,7 +253,7 @@ function DashboardCharactersPageContent({
   }, []);
 
   return (
-    <div className={clsx("space-y-6", className)}>
+    <div className={clsx("space-y-6 p-5", className)}>
       {/* Filters Card */}
       <div className="bg-muted rounded-lg p-6">
         <h2 className="text-foreground mb-4 text-lg font-semibold">Filters</h2>
@@ -323,6 +323,7 @@ function DashboardCharactersPageContent({
             color="primary"
             onClick={() => setIsCreateDialogOpen(true)}
             className="shrink-0"
+            href="/dashboard/characters/create-update"
           >
             <Plus data-slot="icon" />
             Add New Character

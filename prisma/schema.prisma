@@ -55,16 +55,18 @@ model affiliate {
 }
 
 // ==========================================
-// CHARACTER GENDER & STYLE OPTIONS
+// CHARACTER GENDER & STYLE
 // ==========================================
 
-model character_gender_option {
+model character_gender {
   id          String   @id @default(cuid())
   name        String   @unique // "girl", "men", "trans"
   label       String // Display name e.g., "Girl", "Men", "Trans"
-  imageId     String? // Media ID for preview image
-  videoId     String? // Media ID for preview video
+  title       String?
   description String?
+  emoji       String? // e.g., "👩", "👨", "⚧️"
+  imageId     String?
+  videoId     String?
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -75,19 +77,32 @@ model character_gender_option {
   characters         character[]
   character_variants character_variant[]
 
+  // Relations to option tables
+  ethnicities   character_ethnicity[]
+  hairStyles    character_hair_style[]
+  hairColors    character_hair_color[]
+  eyeColors     character_eye_color[]
+  bodyTypes     character_body_type[]
+  breastSizes   character_breast_size[]
+  personalities character_personality[]
+  relationships character_relationship[]
+  occupations   character_occupation[]
+
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model character_style_option {
+model character_style {
   id          String   @id @default(cuid())
   name        String   @unique // "realistic", "anime"
   label       String // Display name e.g., "Realistic", "Anime"
-  imageId     String? // Media ID for preview image
-  videoId     String? // Media ID for preview video
+  title       String?
   description String?
+  emoji       String?
+  imageId     String?
+  videoId     String?
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -98,6 +113,17 @@ model character_style_option {
   characters         character[]
   character_variants character_variant[]
 
+  // Relations to option tables
+  ethnicities   character_ethnicity[]
+  hairStyles    character_hair_style[]
+  hairColors    character_hair_color[]
+  eyeColors     character_eye_color[]
+  bodyTypes     character_body_type[]
+  breastSizes   character_breast_size[]
+  personalities character_personality[]
+  relationships character_relationship[]
+  occupations   character_occupation[]
+
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
@@ -105,35 +131,30 @@ model character_style_option {
 }
 
 // ==========================================
-// CHARACTER VARIANT (for option grouping)
+// CHARACTER VARIANT (intersection of gender + style)
 // ==========================================
 
 model character_variant {
-  id        String  @id @default(cuid())
-  genderId  String
-  styleId   String
-  name      String  @unique // "girl-realistic", "girl-anime", etc.
-  label     String  @default("") // Display name e.g., "Realistic", "Anime"
-  imageId   String? // Media ID for preview image
-  videoId   String? // Media ID for preview video
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  genderId    String
+  styleId     String
+  name        String   @unique // "girl-realistic", "girl-anime", etc.
+  label       String   @default("")
+  title       String?
+  description String?
+  emoji       String?
+  imageId     String?
+  videoId     String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  gender character_gender_option @relation(fields: [genderId], references: [id])
-  style  character_style_option  @relation(fields: [styleId], references: [id])
-  image  media?                  @relation("variant_image", fields: [imageId], references: [id])
-  video  media?                  @relation("variant_video", fields: [videoId], references: [id])
-
-  // Relations to variant-specific option tables
-  ethnicities ethnicity_option[]
-  hairStyles  hair_style_option[]
-  hairColors  hair_color_option[]
-  eyeColors   eye_color_option[]
-  bodyTypes   body_type_option[]
-  breastSizes breast_size_option[]
+  gender character_gender @relation(fields: [genderId], references: [id])
+  style  character_style  @relation(fields: [styleId], references: [id])
+  image  media?           @relation("variant_image", fields: [imageId], references: [id])
+  video  media?           @relation("variant_video", fields: [videoId], references: [id])
 
   @@unique([genderId, styleId])
   @@index([isActive])
@@ -144,234 +165,286 @@ model character_variant {
 }
 
 // ==========================================
-// OPTION TABLES (Dynamic Enums for Admin)
+// CHARACTER OPTION TABLES
 // ==========================================
 
-// --- Universal options (same for all variants) ---
-
-model kink_option {
-  id             String           @id @default(cuid())
-  name           String           @unique
-  label          String           // Display name
-  description    String?
-  sortOrder      Int              @default(0)
-  isActive       Boolean          @default(true)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  character_kink character_kink[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-model personality_option {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  label       String      // Display name
-  imageId     String?     // Media ID for image
+model character_ethnicity {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int         @default(0)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  image     media?      @relation("personality_image", fields: [imageId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("ethnicity_image", fields: [imageId], references: [id])
+  video     media?           @relation("ethnicity_video", fields: [videoId], references: [id])
   character character[]
 
-  @@index([isActive])
-  @@index([sortOrder])
-  @@index([imageId])
-}
-
-model relationship_option {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  label       String      // Display name
-  imageId     String?     // Media ID for image
-  description String?
-  sortOrder   Int         @default(0)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  image     media?      @relation("relationship_image", fields: [imageId], references: [id])
-  character character[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-  @@index([imageId])
-}
-
-model occupation_option {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  label       String      // Display name
-  emoji       String?     // Emoji character like "🎓"
-  description String?
-  sortOrder   Int         @default(0)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  character   character[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-// --- Variant-specific options (different per character type + style) ---
-
-model ethnicity_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "caucasian"
-  label       String            // e.g., "Caucasian"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
-  description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("ethnicity_image", fields: [imageId], references: [id])
-  video     media?            @relation("ethnicity_video", fields: [videoId], references: [id])
-  character character[]
-
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model hair_style_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "straight"
-  label       String            // e.g., "Straight"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
+model character_hair_style {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("hair_style_image", fields: [imageId], references: [id])
-  video     media?            @relation("hair_style_video", fields: [videoId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("hair_style_image", fields: [imageId], references: [id])
+  video     media?           @relation("hair_style_video", fields: [videoId], references: [id])
   character character[]
 
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model hair_color_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "brunette"
-  label       String            // e.g., "Brunette"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
+model character_hair_color {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("hair_color_image", fields: [imageId], references: [id])
-  video     media?            @relation("hair_color_video", fields: [videoId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("hair_color_image", fields: [imageId], references: [id])
+  video     media?           @relation("hair_color_video", fields: [videoId], references: [id])
   character character[]
 
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model eye_color_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "brown"
-  label       String            // e.g., "Brown"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
+model character_eye_color {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("eye_color_image", fields: [imageId], references: [id])
-  video     media?            @relation("eye_color_video", fields: [videoId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("eye_color_image", fields: [imageId], references: [id])
+  video     media?           @relation("eye_color_video", fields: [videoId], references: [id])
   character character[]
 
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model body_type_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "athletic"
-  label       String            // e.g., "Athletic"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
+model character_body_type {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("body_type_image", fields: [imageId], references: [id])
-  video     media?            @relation("body_type_video", fields: [videoId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("body_type_image", fields: [imageId], references: [id])
+  video     media?           @relation("body_type_video", fields: [videoId], references: [id])
   character character[]
 
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
   @@index([imageId])
   @@index([videoId])
 }
 
-model breast_size_option {
-  id          String            @id @default(cuid())
-  name        String            // e.g., "medium"
-  label       String            // e.g., "Medium"
-  variantId   String            // Links to character_variant
-  imageId     String            // Media ID for image
-  videoId     String?           // Media ID for video (optional)
+model character_breast_size {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
   description String?
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  variant   character_variant @relation(fields: [variantId], references: [id])
-  image     media             @relation("breast_size_image", fields: [imageId], references: [id])
-  video     media?            @relation("breast_size_video", fields: [videoId], references: [id])
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("breast_size_image", fields: [imageId], references: [id])
+  video     media?           @relation("breast_size_video", fields: [videoId], references: [id])
   character character[]
 
-  @@unique([name, variantId])
-  @@index([variantId])
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
   @@index([isActive])
   @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
+}
+
+model character_personality {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
+  description String?
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("personality_image", fields: [imageId], references: [id])
+  video     media?           @relation("personality_video", fields: [videoId], references: [id])
+  character character[]
+
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
+}
+
+model character_relationship {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
+  description String?
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("relationship_image", fields: [imageId], references: [id])
+  video     media?           @relation("relationship_video", fields: [videoId], references: [id])
+  character character[]
+
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
+}
+
+model character_occupation {
+  id          String   @id @default(cuid())
+  name        String
+  label       String
+  title       String?
+  description String?
+  emoji       String?
+  genderId    String
+  styleId     String
+  imageId     String?
+  videoId     String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  gender    character_gender @relation(fields: [genderId], references: [id])
+  style     character_style  @relation(fields: [styleId], references: [id])
+  image     media?           @relation("occupation_image", fields: [imageId], references: [id])
+  video     media?           @relation("occupation_video", fields: [videoId], references: [id])
+  character character[]
+
+  @@unique([name, genderId, styleId])
+  @@index([genderId])
+  @@index([styleId])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([imageId])
+  @@index([videoId])
 }
 
 // ==========================================
@@ -379,7 +452,7 @@ model breast_size_option {
 // ==========================================
 
 model character {
-  id             String              @id @default(cuid())
+  id             String   @id @default(cuid())
   name           String
   posterId       String?
   videoId        String?
@@ -387,15 +460,15 @@ model character {
   styleId        String
   age            Int
   voice          String
-  isPublic       Boolean             @default(false)
-  isActive       Boolean             @default(true)
-  isLive         Boolean             @default(false)
-  chatCount      Int                 @default(0)
-  likeCount      Int                 @default(0)
-  messageCount   Int                 @default(0)
-  viewCount      Int                 @default(0)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  isPublic       Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  isLive         Boolean  @default(false)
+  chatCount      Int      @default(0)
+  likeCount      Int      @default(0)
+  messageCount   Int      @default(0)
+  viewCount      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   createdById    String
   // Foreign keys for option tables
   ethnicityId    String
@@ -412,18 +485,17 @@ model character {
   user                           user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   poster                         media?                   @relation("character_posterIdTomedia", fields: [posterId], references: [id])
   video                          media?                   @relation("character_videoIdTomedia", fields: [videoId], references: [id])
-  gender                         character_gender_option  @relation(fields: [genderId], references: [id])
-  style                          character_style_option   @relation(fields: [styleId], references: [id])
-  ethnicity                      ethnicity_option         @relation(fields: [ethnicityId], references: [id])
-  personality                    personality_option       @relation(fields: [personalityId], references: [id])
-  hairStyle                      hair_style_option        @relation(fields: [hairStyleId], references: [id])
-  hairColor                      hair_color_option        @relation(fields: [hairColorId], references: [id])
-  eyeColor                       eye_color_option         @relation(fields: [eyeColorId], references: [id])
-  bodyType                       body_type_option         @relation(fields: [bodyTypeId], references: [id])
-  breastSize                     breast_size_option       @relation(fields: [breastSizeId], references: [id])
-  occupation                     occupation_option        @relation(fields: [occupationId], references: [id])
-  relationship                   relationship_option      @relation(fields: [relationshipId], references: [id])
-  character_kink                 character_kink[]
+  gender                         character_gender         @relation(fields: [genderId], references: [id])
+  style                          character_style          @relation(fields: [styleId], references: [id])
+  ethnicity                      character_ethnicity      @relation(fields: [ethnicityId], references: [id])
+  personality                    character_personality    @relation(fields: [personalityId], references: [id])
+  hairStyle                      character_hair_style     @relation(fields: [hairStyleId], references: [id])
+  hairColor                      character_hair_color     @relation(fields: [hairColorId], references: [id])
+  eyeColor                       character_eye_color      @relation(fields: [eyeColorId], references: [id])
+  bodyType                       character_body_type      @relation(fields: [bodyTypeId], references: [id])
+  breastSize                     character_breast_size    @relation(fields: [breastSizeId], references: [id])
+  occupation                     character_occupation     @relation(fields: [occupationId], references: [id])
+  relationship                   character_relationship   @relation(fields: [relationshipId], references: [id])
   character_image                character_image[]
   chat                           chat[]
   reel                           reel[]
@@ -449,13 +521,13 @@ model character {
 }
 
 model character_image {
-  id                String    @id @default(cuid())
+  id                String   @id @default(cuid())
   userId            String
   characterId       String
   mediaId           String
   prompt            String
-  canConvertToVideo Boolean   @default(false)
-  createdAt         DateTime  @default(now())
+  canConvertToVideo Boolean  @default(false)
+  createdAt         DateTime @default(now())
 
   user      user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   character character @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -464,19 +536,6 @@ model character_image {
   @@index([userId])
   @@index([characterId])
   @@index([createdAt])
-}
-
-model character_kink {
-  id          String      @id @default(cuid())
-  characterId String
-  kinkId      String
-  createdAt   DateTime    @default(now())
-  character   character   @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  kink        kink_option @relation(fields: [kinkId], references: [id])
-
-  @@unique([characterId, kinkId])
-  @@index([characterId])
-  @@index([kinkId])
 }
 
 // ==========================================
@@ -588,24 +647,28 @@ model media {
   variant_video                       character_variant[]   @relation("variant_video")
 
   // Option table relations
-  gender_image       character_gender_option[] @relation("gender_image")
-  gender_video       character_gender_option[] @relation("gender_video")
-  style_image        character_style_option[]  @relation("style_image")
-  style_video        character_style_option[]  @relation("style_video")
-  personality_image  personality_option[]      @relation("personality_image")
-  relationship_image relationship_option[]     @relation("relationship_image")
-  ethnicity_image    ethnicity_option[]        @relation("ethnicity_image")
-  ethnicity_video    ethnicity_option[]        @relation("ethnicity_video")
-  hair_style_image   hair_style_option[]       @relation("hair_style_image")
-  hair_style_video   hair_style_option[]       @relation("hair_style_video")
-  hair_color_image   hair_color_option[]       @relation("hair_color_image")
-  hair_color_video   hair_color_option[]       @relation("hair_color_video")
-  eye_color_image    eye_color_option[]        @relation("eye_color_image")
-  eye_color_video    eye_color_option[]        @relation("eye_color_video")
-  body_type_image    body_type_option[]        @relation("body_type_image")
-  body_type_video    body_type_option[]        @relation("body_type_video")
-  breast_size_image  breast_size_option[]      @relation("breast_size_image")
-  breast_size_video  breast_size_option[]      @relation("breast_size_video")
+  gender_image       character_gender[]       @relation("gender_image")
+  gender_video       character_gender[]       @relation("gender_video")
+  style_image        character_style[]        @relation("style_image")
+  style_video        character_style[]        @relation("style_video")
+  ethnicity_image    character_ethnicity[]    @relation("ethnicity_image")
+  ethnicity_video    character_ethnicity[]    @relation("ethnicity_video")
+  hair_style_image   character_hair_style[]   @relation("hair_style_image")
+  hair_style_video   character_hair_style[]   @relation("hair_style_video")
+  hair_color_image   character_hair_color[]   @relation("hair_color_image")
+  hair_color_video   character_hair_color[]   @relation("hair_color_video")
+  eye_color_image    character_eye_color[]    @relation("eye_color_image")
+  eye_color_video    character_eye_color[]    @relation("eye_color_video")
+  body_type_image    character_body_type[]    @relation("body_type_image")
+  body_type_video    character_body_type[]    @relation("body_type_video")
+  breast_size_image  character_breast_size[]  @relation("breast_size_image")
+  breast_size_video  character_breast_size[]  @relation("breast_size_video")
+  personality_image  character_personality[]  @relation("personality_image")
+  personality_video  character_personality[]  @relation("personality_video")
+  relationship_image character_relationship[] @relation("relationship_image")
+  relationship_video character_relationship[] @relation("relationship_video")
+  occupation_image   character_occupation[]   @relation("occupation_image")
+  occupation_video   character_occupation[]   @relation("occupation_video")
 
   character_image                     character_image[]
   collection                          collection[]
