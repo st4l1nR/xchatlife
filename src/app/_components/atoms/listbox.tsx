@@ -106,6 +106,8 @@ export function Listbox<T>({
           "bg-card/75 backdrop-blur-xl",
           // Shadows
           "ring-border shadow-lg ring-1",
+          // Z-index to appear above dialogs (which use z-50)
+          "z-[60]",
           // Transitions
           "transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none",
         )}

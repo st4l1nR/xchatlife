@@ -8,34 +8,49 @@ import ListCardMediaUpload, {
   type MediaUploadItem,
 } from "./ListCardMediaUpload";
 
+// Extended type that includes File for new uploads
+export type ReelUploadItem = MediaUploadItem & {
+  file?: File;
+};
+
 export type TabCharactersCreateEdit2Props = {
   className?: string;
-  defaultReels?: MediaUploadItem[];
+  defaultReels?: ReelUploadItem[];
+  onRequestDelete?: (id: string) => void;
 };
 
 const TabCharactersCreateEdit2: React.FC<TabCharactersCreateEdit2Props> = ({
   className,
   defaultReels = [],
+  onRequestDelete,
 }) => {
   const { control, setValue, watch } = useFormContext();
-  const reels = watch("reels") ?? defaultReels;
+  const reels = (watch("reels") ?? defaultReels) as ReelUploadItem[];
 
   const handleAdd = (file: File) => {
-    const newItem: MediaUploadItem = {
+    const newItem: ReelUploadItem = {
       id: `reel-${Date.now()}`,
       url: URL.createObjectURL(file),
       mediaType: file.type.startsWith("video/") ? "video" : "image",
+      file, // Keep file reference for upload
     };
     setValue("reels", [...reels, newItem]);
   };
 
   const handleRemove = (id: string) => {
-    setValue(
-      "reels",
-      (reels as MediaUploadItem[]).filter(
-        (item: MediaUploadItem) => item.id !== id,
-      ),
-    );
+    // Check if it's an existing reel (persisted) vs new (temp ID)
+    const isExisting = !id.startsWith("reel-");
+
+    if (isExisting && onRequestDelete) {
+      // Show confirmation dialog for existing reels
+      onRequestDelete(id);
+    } else {
+      // Just remove from local state for new items
+      setValue(
+        "reels",
+        reels.filter((item) => item.id !== id),
+      );
+    }
   };
 
   const handleReorder = (newItems: MediaUploadItem[]) => {

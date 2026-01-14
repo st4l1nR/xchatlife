@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { Users, MapPin, Calendar } from "lucide-react";
+import { Users, MapPin, Calendar, Camera } from "lucide-react";
 import { Avatar } from "../atoms/avatar";
 
 export type HeaderUserCharacterProps = {
@@ -12,6 +12,7 @@ export type HeaderUserCharacterProps = {
   location?: string;
   joinedDate?: string;
   bannerSrc?: string;
+  onUploadAvatar?: (file: File) => void;
 };
 
 const HeaderUserCharacter: React.FC<HeaderUserCharacterProps> = ({
@@ -22,7 +23,25 @@ const HeaderUserCharacter: React.FC<HeaderUserCharacterProps> = ({
   location,
   joinedDate,
   bannerSrc,
+  onUploadAvatar,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarClick = () => {
+    if (onUploadAvatar) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onUploadAvatar) {
+      onUploadAvatar(file);
+    }
+    // Reset input to allow selecting the same file again
+    e.target.value = "";
+  };
+
   return (
     <div className={clsx("bg-card overflow-hidden rounded-2xl", className)}>
       {/* Banner Image */}
@@ -40,12 +59,32 @@ const HeaderUserCharacter: React.FC<HeaderUserCharacterProps> = ({
       <div className="relative px-4 pt-14 pb-4 sm:px-6 sm:pt-16 sm:pb-6">
         {/* Avatar - positioned absolutely to overlap */}
         <div className="absolute -top-12 left-4 sm:-top-14 sm:left-6">
-          <div className="rounded-full bg-violet-500 p-1">
+          <div
+            className={clsx(
+              "group relative rounded-full bg-violet-500 p-1",
+              onUploadAvatar && "cursor-pointer",
+            )}
+            onClick={handleAvatarClick}
+          >
             <Avatar
               src={avatarSrc}
               alt={name}
               initials={name.charAt(0).toUpperCase()}
               className="border-card size-22 border-3 sm:size-26"
+            />
+            {/* Upload overlay */}
+            {onUploadAvatar && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                <Camera className="size-6 text-white" />
+              </div>
+            )}
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
             />
           </div>
         </div>

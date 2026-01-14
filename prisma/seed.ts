@@ -47,13 +47,10 @@ const CUSTOMER_PERMISSIONS = {
 };
 
 // ============================================================================
-// R2 Base URL - All assets are stored in R2
+// R2 Base URL - Hardcoded production URL (public assets for seed)
 // ============================================================================
 
-const R2_BASE_URL = process.env.R2_PUBLIC_URL;
-if (!R2_BASE_URL) {
-  throw new Error("R2_PUBLIC_URL environment variable is required for seeding");
-}
+const R2_BASE_URL = "https://pub-5085e00501634df38e5783f95d3fc3a8.r2.dev";
 
 // ============================================================================
 // Character Gender & Style Option Data

@@ -14,7 +14,7 @@ const storyCreateSchema = z.object({
   characterId: z.string(),
   mediaId: z.string(),
   thumbnailId: z.string().optional(),
-  expiresInHours: z.number().min(1).max(168).default(24), // Default 24 hours, max 1 week
+  expiresInHours: z.number().min(1).max(168).optional(), // Optional - if not provided, story is permanent
 });
 
 const storyUpdateSchema = z.object({
@@ -58,13 +58,14 @@ export const storyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const now = new Date();
 
-      // Get all active stories that haven't expired
+      // Get all active stories that haven't expired OR are permanent (no expiration)
       const stories = await ctx.db.story.findMany({
         where: {
           isActive: true,
-          expiresAt: {
-            gt: now,
-          },
+          OR: [
+            { expiresAt: null }, // Permanent stories
+            { expiresAt: { gt: now } }, // Non-expired stories
+          ],
           character: {
             isActive: true,
             isPublic: true,
@@ -162,9 +163,10 @@ export const storyRouter = createTRPCRouter({
         where: {
           characterId: input.characterId,
           isActive: true,
-          expiresAt: {
-            gt: now,
-          },
+          OR: [
+            { expiresAt: null }, // Permanent stories
+            { expiresAt: { gt: now } }, // Non-expired stories
+          ],
         },
         include: {
           media: true,
@@ -186,8 +188,12 @@ export const storyRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { expiresInHours, ...storyData } = input;
 
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + expiresInHours);
+      // Calculate expiresAt only if expiresInHours is provided
+      let expiresAt: Date | null = null;
+      if (expiresInHours !== undefined) {
+        expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + expiresInHours);
+      }
 
       const story = await ctx.db.story.create({
         data: {

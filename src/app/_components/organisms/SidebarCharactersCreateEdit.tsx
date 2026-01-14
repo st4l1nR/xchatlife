@@ -16,44 +16,55 @@ const TABS = [
 
 export type SidebarCharactersCreateEditProps = {
   className?: string;
+  isEditMode?: boolean;
 };
 
 const SidebarCharactersCreateEdit: React.FC<
   SidebarCharactersCreateEditProps
-> = ({ className }) => {
+> = ({ className, isEditMode = false }) => {
   return (
     <div className={clsx("flex flex-col", className)}>
       <h3 className="text-muted-foreground mb-2 px-3 text-xs font-medium">
         Getting Started
       </h3>
       <Headless.TabList className="flex flex-col gap-0.5">
-        {TABS.map((tab) => (
-          <Headless.Tab
-            key={tab.key}
-            className={({ selected }) =>
-              clsx(
-                "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors outline-none",
-                selected
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted",
-              )
-            }
-          >
-            {({ selected }) => (
-              <>
-                <tab.icon
-                  className={clsx(
-                    "h-5 w-5 shrink-0",
-                    selected
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground",
-                  )}
-                />
-                <span>{tab.label}</span>
-              </>
-            )}
-          </Headless.Tab>
-        ))}
+        {TABS.map((tab) => {
+          // Disable reels, stories, and private-content tabs in create mode
+          const isDisabled = !isEditMode && tab.key !== "profile";
+
+          return (
+            <Headless.Tab
+              key={tab.key}
+              disabled={isDisabled}
+              className={({ selected }) =>
+                clsx(
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors outline-none",
+                  isDisabled
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer",
+                  selected
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted",
+                  isDisabled && "hover:bg-transparent",
+                )
+              }
+            >
+              {({ selected }) => (
+                <>
+                  <tab.icon
+                    className={clsx(
+                      "h-5 w-5 shrink-0",
+                      selected
+                        ? "text-primary-foreground"
+                        : "text-muted-foreground",
+                    )}
+                  />
+                  <span>{tab.label}</span>
+                </>
+              )}
+            </Headless.Tab>
+          );
+        })}
       </Headless.TabList>
     </div>
   );

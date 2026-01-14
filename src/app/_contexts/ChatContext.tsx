@@ -168,7 +168,11 @@ export function ChatContextProvider({
 
   // Fetch chats list
   const { data: chatsData, isLoading: chatsLoading } =
-    api.chat.getChats.useQuery(undefined, { enabled: !mock });
+    api.chat.getChats.useQuery(undefined, {
+      enabled: !mock,
+      staleTime: 60 * 1000, // 1 minute
+      refetchOnWindowFocus: false,
+    });
   const chats = useMemo(
     () => mock?.chats ?? chatsData?.data?.chats ?? [],
     [mock?.chats, chatsData],
@@ -178,7 +182,11 @@ export function ChatContextProvider({
   // Fetch chat details (for character info)
   const { data: chatData } = api.chat.getChatById.useQuery(
     { chatId: selectedChatId! },
-    { enabled: !mock && !!selectedChatId },
+    {
+      enabled: !mock && !!selectedChatId,
+      staleTime: 60 * 1000, // 1 minute
+      refetchOnWindowFocus: false,
+    },
   );
 
   // Map character data from getChatById response
@@ -224,7 +232,11 @@ export function ChatContextProvider({
   const { data: messagesData, isLoading: messagesLoading } =
     api.chat.getMessages.useQuery(
       { chatId: selectedChatId! },
-      { enabled: !mock && !!selectedChatId },
+      {
+        enabled: !mock && !!selectedChatId,
+        staleTime: 30 * 1000, // 30 seconds for messages (more frequent)
+        refetchOnWindowFocus: false,
+      },
     );
 
   // Map API messages to CardMessageProps format
@@ -279,15 +291,18 @@ export function ChatContextProvider({
       // Invalidate messages query to refetch with new message
       void utils.chat.getMessages.invalidate({ chatId: message.chatId });
 
-      // Also update chats list to reflect last message
-      void utils.chat.getChats.invalidate();
+      // Only invalidate chats list if the message is from a different chat
+      // This prevents unnecessary refetches when chatting in the current chat
+      if (message.chatId !== selectedChatId) {
+        void utils.chat.getChats.invalidate();
+      }
 
       // Reset sending state when we receive a response
       if (!message.isFromUser) {
         setIsSendingMessage(false);
       }
     },
-    [utils.chat.getMessages, utils.chat.getChats],
+    [utils.chat.getMessages, utils.chat.getChats, selectedChatId],
   );
 
   const handleTokensUpdated = useCallback(

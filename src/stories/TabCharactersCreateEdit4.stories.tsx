@@ -92,6 +92,7 @@ function InteractiveWrapper({
   children: _children,
   onCreatePrivateContent,
   onUpdatePrivateContent,
+  onRequestDelete,
   ...props
 }: {
   children?: React.ReactNode;
@@ -99,6 +100,7 @@ function InteractiveWrapper({
   loading?: boolean;
   onCreatePrivateContent?: (data: PrivateContentFormData) => void;
   onUpdatePrivateContent?: (id: string, data: PrivateContentFormData) => void;
+  onRequestDelete?: (id: string) => void;
   isCreating?: boolean;
   isUpdating?: boolean;
 }) {
@@ -129,6 +131,7 @@ function InteractiveWrapper({
         {...props}
         onCreatePrivateContent={handleCreate}
         onUpdatePrivateContent={handleUpdate}
+        onRequestDelete={onRequestDelete}
         isCreating={isCreating}
         isUpdating={isUpdating}
       />
@@ -156,10 +159,16 @@ const meta = {
       control: "boolean",
       description: "Loading state when updating existing content",
     },
+    onRequestDelete: {
+      action: "onRequestDelete",
+      description:
+        "Callback when user requests to delete private content (triggers confirmation dialog)",
+    },
   },
   args: {
     onCreatePrivateContent: fn(),
     onUpdatePrivateContent: fn(),
+    onRequestDelete: fn(),
   },
   decorators: [
     (Story) => (
@@ -260,6 +269,32 @@ export const SingleItem: Story = {
     docs: {
       description: {
         story: "Shows the component with a single private content item.",
+      },
+    },
+  },
+};
+
+export const WithDeleteConfirmation: Story = {
+  render: (args) => (
+    <InteractiveWrapper
+      privateContents={samplePrivateContents}
+      onCreatePrivateContent={args.onCreatePrivateContent}
+      onUpdatePrivateContent={args.onUpdatePrivateContent}
+      onRequestDelete={(id) => {
+        const item = samplePrivateContents.find((c) => c.id === id);
+        alert(`Delete requested for: ${item?.name ?? id}`);
+      }}
+    />
+  ),
+  args: {
+    privateContents: samplePrivateContents,
+    loading: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates delete confirmation flow. Click the trash icon on any card to trigger the onRequestDelete callback.",
       },
     },
   },
