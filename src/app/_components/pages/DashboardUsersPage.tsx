@@ -231,20 +231,10 @@ function DashboardUsersPageContent({
     // Transform API data to match TableUserItem type
     const users: TableUserItem[] =
       usersData?.data?.users.map((user) => {
-        // Cast to access additional fields from API
-        const userWithRelations = user as typeof user & {
-          customRole?: { id: string; name: string } | null;
-          subscription?: {
-            id: string;
-            billingCycle: string;
-            status: string;
-          } | null;
-        };
-
         // Map billingCycle to subscription type
         let subscription: UserSubscriptionType = "none";
-        if (userWithRelations.subscription?.billingCycle) {
-          const cycle = userWithRelations.subscription.billingCycle;
+        if (user.subscription?.billingCycle) {
+          const cycle = user.subscription.billingCycle;
           if (cycle === "annually") {
             subscription = "yearly";
           } else if (cycle === "monthly") {
@@ -257,7 +247,7 @@ function DashboardUsersPageContent({
           name: user.name,
           username: user.email.split("@")[0] ?? user.email,
           avatarSrc: user.image ?? undefined,
-          customRoleName: userWithRelations.customRole?.name,
+          customRoleName: user.customRole?.name,
           subscription,
           status: "active" as UserStatusType,
         };
