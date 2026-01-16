@@ -49,3 +49,4 @@ storybook-static
 /specs
 generated/
 tmpclaude-*
+.mcp.json
