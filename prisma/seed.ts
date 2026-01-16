@@ -1,4 +1,4 @@
-import { PrismaClient, MediaType } from "../generated/prisma";
+import { PrismaClient, MediaType, FinancialType } from "../generated/prisma";
 import * as dotenv from "dotenv";
 import { hashPassword } from "better-auth/crypto";
 
@@ -1311,6 +1311,158 @@ const BREAST_SIZE_DATA: OptionData[] = [
 ];
 
 // ============================================================================
+// FINANCIAL CATEGORIES
+// ============================================================================
+
+const FINANCIAL_CATEGORY_DATA: {
+  name: string;
+  label: string;
+  type: FinancialType;
+  group: string;
+  description: string;
+}[] = [
+  // ========== REVENUE ==========
+  {
+    name: "subscription",
+    label: "Subscription",
+    type: FinancialType.income,
+    group: "revenue",
+    description: "Pagos de suscripción de usuarios",
+  },
+  {
+    name: "token_purchase",
+    label: "Token Purchase",
+    type: FinancialType.income,
+    group: "revenue",
+    description: "Compra de tokens adicionales",
+  },
+
+  // ========== AFFILIATES ==========
+  {
+    name: "affiliate_payout",
+    label: "Affiliate Payout",
+    type: FinancialType.expense,
+    group: "affiliates",
+    description: "Pago realizado a afiliado",
+  },
+  {
+    name: "affiliate_commission",
+    label: "Affiliate Commission",
+    type: FinancialType.expense,
+    group: "affiliates",
+    description: "Comisión pendiente registrada",
+  },
+
+  // ========== INFRASTRUCTURE ==========
+  {
+    name: "hosting",
+    label: "Hosting",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Vercel, Railway, servidores",
+  },
+  {
+    name: "database",
+    label: "Database",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Prisma, Planetscale, Supabase",
+  },
+  {
+    name: "storage",
+    label: "Storage",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "S3, Cloudflare R2, almacenamiento",
+  },
+  {
+    name: "domain",
+    label: "Domain",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Dominios y DNS",
+  },
+
+  // ========== AI / APIs ==========
+  {
+    name: "ai_chat",
+    label: "AI Chat",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "LLM para chat (OpenAI, Anthropic)",
+  },
+  {
+    name: "ai_image",
+    label: "AI Image",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "Generación de imágenes (Runpod, Replicate)",
+  },
+  {
+    name: "ai_video",
+    label: "AI Video",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "Generación de video",
+  },
+  {
+    name: "ai_voice",
+    label: "AI Voice",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "TTS, voz (ElevenLabs)",
+  },
+
+  // ========== PAYMENTS ==========
+  {
+    name: "payment_fee",
+    label: "Payment Fee",
+    type: FinancialType.expense,
+    group: "payments",
+    description: "Fees de CoinGate, Stripe, procesadores",
+  },
+  {
+    name: "refund",
+    label: "Refund",
+    type: FinancialType.expense,
+    group: "payments",
+    description: "Reembolsos a usuarios",
+  },
+
+  // ========== MARKETING ==========
+  {
+    name: "marketing",
+    label: "Marketing",
+    type: FinancialType.expense,
+    group: "marketing",
+    description: "Ads, promociones, influencers",
+  },
+
+  // ========== OTHER ==========
+  {
+    name: "software",
+    label: "Software",
+    type: FinancialType.expense,
+    group: "other",
+    description: "Licencias, herramientas (Figma, etc.)",
+  },
+  {
+    name: "other_income",
+    label: "Other Income",
+    type: FinancialType.income,
+    group: "other",
+    description: "Otros ingresos",
+  },
+  {
+    name: "other_expense",
+    label: "Other Expense",
+    type: FinancialType.expense,
+    group: "other",
+    description: "Otros gastos",
+  },
+];
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -1828,6 +1980,36 @@ async function seedOptionTables(
   };
 }
 
+async function seedFinancialCategories(): Promise<void> {
+  console.log("Seeding financial categories...");
+
+  for (let i = 0; i < FINANCIAL_CATEGORY_DATA.length; i++) {
+    const data = FINANCIAL_CATEGORY_DATA[i]!;
+    await prisma.financial_category.upsert({
+      where: { name: data.name },
+      update: {
+        label: data.label,
+        type: data.type,
+        group: data.group,
+        description: data.description,
+        sortOrder: i,
+      },
+      create: {
+        name: data.name,
+        label: data.label,
+        type: data.type,
+        group: data.group,
+        description: data.description,
+        sortOrder: i,
+      },
+    });
+  }
+
+  console.log(
+    `✓ Seeded ${FINANCIAL_CATEGORY_DATA.length} financial categories`,
+  );
+}
+
 // ============================================================================
 // Main Seed Function
 // ============================================================================
@@ -1968,6 +2150,9 @@ async function main() {
       `Found existing admin user: ${adminUser.email} (${adminUser.id})`,
     );
   }
+
+  // Step 0.5: Seed financial categories
+  await seedFinancialCategories();
 
   // Step 1: Seed genders and styles first
   const { genders, styles } = await seedGendersAndStyles();

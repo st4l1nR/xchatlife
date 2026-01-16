@@ -1,7 +1,9 @@
+import { verifyAdmin } from "@/lib/dal";
 import DashboardAffiliatesPage from "@/app/_components/pages/DashboardAffiliatesPage";
-import React from "react";
 
-const Page = () => {
+const Page = async () => {
+  await verifyAdmin();
+
   return <DashboardAffiliatesPage />;
 };
 
