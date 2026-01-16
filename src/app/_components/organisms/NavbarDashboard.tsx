@@ -167,7 +167,7 @@ export const NavbarDashboard = forwardRef<
             )}
 
             <DropdownItem href="/dashboard/settings">
-              <Settings className="size-4" data-slot="icon" />
+              <Settings data-slot="icon" />
               <DropdownLabel>Settings</DropdownLabel>
             </DropdownItem>
 

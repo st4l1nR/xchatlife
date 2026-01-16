@@ -6,6 +6,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
 import TableReferral from "../organisms/TableReferral";
+import StatsAffiliates from "../molecules/StatsAffiliates";
 import { Input, InputGroup } from "../atoms/input";
 import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
 import { Button } from "../atoms/button";
@@ -310,32 +311,17 @@ function DashboardReferralsPageContent({
   return (
     <div className={clsx("space-y-6 p-5", className)}>
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="bg-muted rounded-lg p-4">
-          <p className="text-muted-foreground text-sm">Total Referrals</p>
-          <p className="text-foreground text-2xl font-bold">
-            {processedData.totalDocs}
-          </p>
-        </div>
-        <div className="bg-muted rounded-lg p-4">
-          <p className="text-muted-foreground text-sm">Pending Conversion</p>
-          <p className="text-2xl font-bold text-amber-600">
-            {summaryStats.pendingCount}
-          </p>
-        </div>
-        <div className="bg-muted rounded-lg p-4">
-          <p className="text-muted-foreground text-sm">Awaiting Payment</p>
-          <p className="text-2xl font-bold text-blue-600">
-            {summaryStats.convertedCount}
-          </p>
-        </div>
-        <div className="bg-muted rounded-lg p-4">
-          <p className="text-muted-foreground text-sm">Pending Payout</p>
-          <p className="text-2xl font-bold text-green-600">
-            ${summaryStats.pendingPayment.toFixed(2)}
-          </p>
-        </div>
-      </div>
+      <StatsAffiliates
+        stats={[
+          { label: "Total Referrals", value: processedData.totalDocs },
+          { label: "Pending Conversion", value: summaryStats.pendingCount },
+          { label: "Awaiting Payment", value: summaryStats.convertedCount },
+          {
+            label: "Pending Payout",
+            value: `$${summaryStats.pendingPayment.toFixed(2)}`,
+          },
+        ]}
+      />
 
       {/* Filters Card */}
       <div className="bg-muted rounded-lg p-6">

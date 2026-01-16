@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Body,
   Button,
@@ -12,7 +13,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-import { env } from "@/env";
+import { EMAIL_LOGO_URL } from "@/server/email/constants";
 
 type InvitationEmailProps = {
   inviteLink: string;
@@ -28,8 +29,6 @@ const InvitationEmail = ({
   invitedBy,
 }: InvitationEmailProps) => {
   const previewText = `You've been invited to join XChatLife`;
-  const appUrl = env.NEXT_PUBLIC_APP_URL ?? "https://xchatlife.com";
-  const logoUrl = `${appUrl}/images/logo.png`;
 
   const roleDisplay =
     role === "superadmin"
@@ -44,7 +43,7 @@ const InvitationEmail = ({
         <Container style={container}>
           <Section style={logoSection}>
             <Img
-              src={logoUrl}
+              src={EMAIL_LOGO_URL}
               width="48"
               height="48"
               alt="XChatLife"

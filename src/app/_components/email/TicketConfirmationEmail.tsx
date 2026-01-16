@@ -14,19 +14,40 @@ import {
 } from "@react-email/components";
 import { EMAIL_LOGO_URL } from "@/server/email/constants";
 
-type AffiliateApprovalEmailProps = {
-  referralCode: string;
-  firstName?: string;
-  commissionRate?: number;
+type TicketConfirmationEmailProps = {
+  ticketId: string;
+  subject: string;
+  category: string;
+  priority: string;
+  userName?: string;
 };
 
-const AffiliateApprovalEmail = ({
-  referralCode,
-  firstName,
-  commissionRate = 0.4,
-}: AffiliateApprovalEmailProps) => {
-  const previewText = `Congratulations! Your affiliate application has been approved`;
-  const commissionPercentage = Math.round(commissionRate * 100);
+const TicketConfirmationEmail = ({
+  ticketId,
+  subject,
+  category,
+  priority,
+  userName,
+}: TicketConfirmationEmailProps) => {
+  const previewText = `We received your support ticket - ${subject}`;
+
+  const categoryDisplay = category.charAt(0).toUpperCase() + category.slice(1);
+  const priorityDisplay = priority.charAt(0).toUpperCase() + priority.slice(1);
+
+  const getPriorityColor = (p: string) => {
+    switch (p.toLowerCase()) {
+      case "urgent":
+        return "#dc2626";
+      case "high":
+        return "#ea580c";
+      case "normal":
+        return "#2563eb";
+      case "low":
+        return "#16a34a";
+      default:
+        return "#525252";
+    }
+  };
 
   return (
     <Html>
@@ -45,48 +66,59 @@ const AffiliateApprovalEmail = ({
           </Section>
 
           <Heading style={heading}>
-            Congratulations{firstName ? `, ${firstName}` : ""}!
+            We&apos;ve Received Your Ticket
+            {userName ? `, ${userName}` : ""}!
           </Heading>
 
           <Text style={paragraph}>
-            Your affiliate application has been <strong>approved</strong>.
-            Welcome to the XChatLife Affiliate Program!
+            Thank you for reaching out. We&apos;ve received your support request
+            and our team will review it shortly.
           </Text>
 
-          <Section style={codeSection}>
-            <Text style={codeLabel}>Your Referral Code</Text>
-            <Text style={codeValue}>{referralCode}</Text>
+          <Section style={ticketSection}>
+            <Text style={ticketLabel}>Ticket Reference</Text>
+            <Text style={ticketIdValue}>
+              #{ticketId.slice(-8).toUpperCase()}
+            </Text>
           </Section>
 
-          <Text style={paragraph}>
-            Share this code with your audience to earn{" "}
-            <strong>{commissionPercentage}% commission</strong> on all recurring
-            subscriptions and token purchases made by users who sign up with
-            your code.
-          </Text>
+          <Section style={detailsSection}>
+            <Text style={detailRow}>
+              <span style={detailLabel}>Subject:</span>{" "}
+              <span style={detailValue}>{subject}</span>
+            </Text>
+            <Text style={detailRow}>
+              <span style={detailLabel}>Category:</span>{" "}
+              <span style={detailValue}>{categoryDisplay}</span>
+            </Text>
+            <Text style={detailRow}>
+              <span style={detailLabel}>Priority:</span>{" "}
+              <span
+                style={{ ...detailValue, color: getPriorityColor(priority) }}
+              >
+                {priorityDisplay}
+              </span>
+            </Text>
+          </Section>
 
           <Hr style={hr} />
 
-          <Text style={subheading}>How to Get Started</Text>
+          <Text style={subheading}>What Happens Next?</Text>
 
           <Text style={listItem}>
-            1. Share your referral code on your website, social media, or
-            content
+            1. Our support team will review your ticket within 24 hours
           </Text>
           <Text style={listItem}>
-            2. When users sign up using your code, they become your referrals
+            2. You&apos;ll receive an email notification when we respond
           </Text>
           <Text style={listItem}>
-            3. Earn {commissionPercentage}% commission on their purchases
-          </Text>
-          <Text style={listItem}>
-            4. Track your earnings and referrals in your dashboard
+            3. You can track your ticket status in your dashboard
           </Text>
 
           <Hr style={hr} />
 
           <Text style={footer}>
-            If you have any questions, feel free to contact our support team.
+            Please save your ticket reference number for future correspondence.
           </Text>
 
           <Text style={footer}>
@@ -101,7 +133,7 @@ const AffiliateApprovalEmail = ({
   );
 };
 
-export default AffiliateApprovalEmail;
+export default TicketConfirmationEmail;
 
 const main = {
   backgroundColor: "#f6f9fc",
@@ -143,7 +175,7 @@ const paragraph = {
   margin: "0 0 16px",
 };
 
-const codeSection = {
+const ticketSection = {
   backgroundColor: "#f3f0ff",
   borderRadius: "8px",
   padding: "24px",
@@ -151,7 +183,7 @@ const codeSection = {
   textAlign: "center" as const,
 };
 
-const codeLabel = {
+const ticketLabel = {
   color: "#7c3aed",
   fontSize: "14px",
   fontWeight: "500",
@@ -160,12 +192,36 @@ const codeLabel = {
   letterSpacing: "0.5px",
 };
 
-const codeValue = {
+const ticketIdValue = {
   color: "#1a1a1a",
-  fontSize: "32px",
+  fontSize: "28px",
   fontWeight: "700",
   margin: "0",
   letterSpacing: "2px",
+};
+
+const detailsSection = {
+  backgroundColor: "#f9fafb",
+  borderRadius: "8px",
+  padding: "16px 20px",
+  margin: "24px 0",
+};
+
+const detailRow = {
+  color: "#525252",
+  fontSize: "14px",
+  lineHeight: "28px",
+  margin: "0",
+};
+
+const detailLabel = {
+  color: "#6b7280",
+  fontWeight: "500",
+};
+
+const detailValue = {
+  color: "#1a1a1a",
+  fontWeight: "600",
 };
 
 const subheading = {

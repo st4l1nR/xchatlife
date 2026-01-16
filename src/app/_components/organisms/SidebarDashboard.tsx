@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import * as Headless from "@headlessui/react";
@@ -51,6 +51,7 @@ export const SidebarDashboard: React.FC<SidebarDashboardProps> = ({
     new Set(defaultExpandedSections),
   );
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Get current user role
   const { data: userData } = api.auth.getCurrentUser.useQuery();
@@ -73,19 +74,42 @@ export const SidebarDashboard: React.FC<SidebarDashboardProps> = ({
     });
   };
 
+  // Check if a nav href matches the current URL (including query params)
+  const isHrefActive = (href: string): boolean => {
+    const [hrefPath, hrefQuery] = href.split("?");
+
+    // Check if pathname matches
+    const pathMatches =
+      pathname === hrefPath || pathname.startsWith(hrefPath + "/");
+    if (!pathMatches) return false;
+
+    // If href has no query params, just check pathname
+    if (!hrefQuery) {
+      // For base paths, only match if current URL also has no relevant params
+      // This prevents "/dashboard/tickets" from being active when "?status=open" is set
+      if (href === pathname && searchParams.toString() === "") return true;
+      if (href === pathname) return false; // Has params but href doesn't
+      return pathname.startsWith(hrefPath + "/");
+    }
+
+    // If href has query params, check if they match current searchParams
+    const hrefParams = new URLSearchParams(hrefQuery);
+    for (const [key, value] of hrefParams.entries()) {
+      if (searchParams.get(key) !== value) return false;
+    }
+    return true;
+  };
+
   const isChildActive = (
     children: DashboardNavChild[] | undefined,
   ): boolean => {
     if (!children) return false;
-    return children.some(
-      (child) =>
-        pathname === child.href || pathname.startsWith(child.href + "/"),
-    );
+    return children.some((child) => isHrefActive(child.href));
   };
 
   const isSectionActive = (item: DashboardNavItem): boolean => {
     if (item.href) {
-      return pathname === item.href || pathname.startsWith(item.href + "/");
+      return isHrefActive(item.href);
     }
     return isChildActive(item.children);
   };
@@ -254,9 +278,7 @@ export const SidebarDashboard: React.FC<SidebarDashboardProps> = ({
                           >
                             <div className="border-sidebar-border ml-4 border-l pt-1 pl-3">
                               {item.children.map((child) => {
-                                const isChildCurrent =
-                                  pathname === child.href ||
-                                  pathname.startsWith(child.href + "/");
+                                const isChildCurrent = isHrefActive(child.href);
 
                                 return (
                                   <Link
