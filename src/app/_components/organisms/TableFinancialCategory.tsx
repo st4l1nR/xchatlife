@@ -56,8 +56,8 @@ const GROUP_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-const getTypeColor = (type: FinancialTypeValue): "green" | "red" => {
-  return type === "income" ? "green" : "red";
+const getTypeColor = (type: FinancialTypeValue): "emerald" | "rose" => {
+  return type === "income" ? "emerald" : "rose";
 };
 
 const getTypeIcon = (type: FinancialTypeValue) => {
@@ -151,7 +151,7 @@ const TableFinancialCategory: React.FC<TableFinancialCategoryProps> = ({
       header: "Status",
       enableSorting: true,
       cell: (info) => (
-        <Badge color={info.getValue() ? "green" : "zinc"}>
+        <Badge color={info.getValue() ? "emerald" : "zinc"}>
           {info.getValue() ? "Active" : "Inactive"}
         </Badge>
       ),
@@ -186,7 +186,7 @@ const TableFinancialCategory: React.FC<TableFinancialCategoryProps> = ({
           <button
             type="button"
             onClick={() => onDelete?.(info.row.original.id)}
-            className="rounded p-1.5 text-red-600 transition-colors hover:bg-red-100 dark:hover:bg-red-900/30"
+            className="rounded p-1.5 text-rose-500 transition-colors hover:bg-rose-50 dark:hover:bg-rose-900/20"
             aria-label="Delete category"
             title="Delete"
           >
