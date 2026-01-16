@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import FlowCanvas from "@/app/_components/organisms/FlowCanvas";
-import type { FlowNode, FlowEdge } from "@/app/_components/organisms/FlowContext";
+import type {
+  FlowNode,
+  FlowEdge,
+} from "@/app/_components/organisms/FlowContext";
 
 // ============================================================================
 // Mock Data

@@ -3,7 +3,9 @@ import DashboardFinancialTransactionsPage from "@/app/_components/pages/Dashboar
 import type { TableFinancialTransactionItem } from "@/app/_components/organisms/TableFinancialTransaction";
 
 // Generate mock transactions for testing
-const generateMockTransactions = (count: number): TableFinancialTransactionItem[] => {
+const generateMockTransactions = (
+  count: number,
+): TableFinancialTransactionItem[] => {
   const types = ["income", "expense"] as const;
   const currencies = ["USD", "EUR", "GBP"] as const;
   const unitTypes = ["message", "image", "video", "audio", null] as const;
@@ -59,9 +61,10 @@ const generateMockTransactions = (count: number): TableFinancialTransactionItem[
     const date = new Date();
     date.setDate(date.getDate() - i);
 
-    const amountValue = type === "income"
-      ? Math.floor(Math.random() * 500) + 10
-      : Math.floor(Math.random() * 200) + 5;
+    const amountValue =
+      type === "income"
+        ? Math.floor(Math.random() * 500) + 10
+        : Math.floor(Math.random() * 200) + 5;
     const amount = amountValue.toFixed(2);
 
     const unitType = unitTypes[i % unitTypes.length];
@@ -236,7 +239,7 @@ export const OnlyIncome: Story = {
     mock: {
       transactions: mockTransactions50.filter((t) => t.type === "income"),
       summary: calculateSummary(
-        mockTransactions50.filter((t) => t.type === "income")
+        mockTransactions50.filter((t) => t.type === "income"),
       ),
       categories: mockCategories,
       providers: mockProviders,
@@ -265,7 +268,7 @@ export const OnlyExpense: Story = {
     mock: {
       transactions: mockTransactions50.filter((t) => t.type === "expense"),
       summary: calculateSummary(
-        mockTransactions50.filter((t) => t.type === "expense")
+        mockTransactions50.filter((t) => t.type === "expense"),
       ),
       categories: mockCategories,
       providers: mockProviders,
@@ -344,7 +347,8 @@ export const NegativeBalance: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Scenario showing negative net balance (expenses exceed income).",
+        story:
+          "Scenario showing negative net balance (expenses exceed income).",
       },
     },
   },

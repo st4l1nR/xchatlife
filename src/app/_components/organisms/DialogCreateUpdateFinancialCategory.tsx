@@ -70,7 +70,7 @@ const financialCategorySchema = z.object({
     .max(100, "Name must be 100 characters or less")
     .regex(
       /^[a-z0-9_]+$/,
-      "Name must be lowercase letters, numbers, and underscores only"
+      "Name must be lowercase letters, numbers, and underscores only",
     ),
   label: z
     .string()
@@ -101,7 +101,7 @@ const DialogCreateUpdateFinancialCategory: React.FC<
     },
     onError: (error) => {
       toast.error(
-        error.message || "Failed to create category. Please try again."
+        error.message || "Failed to create category. Please try again.",
       );
     },
   });
@@ -115,7 +115,7 @@ const DialogCreateUpdateFinancialCategory: React.FC<
     },
     onError: (error) => {
       toast.error(
-        error.message || "Failed to update category. Please try again."
+        error.message || "Failed to update category. Please try again.",
       );
     },
   });
@@ -132,7 +132,7 @@ const DialogCreateUpdateFinancialCategory: React.FC<
       sortOrder: existingCategory?.sortOrder ?? 0,
       isActive: existingCategory?.isActive ?? true,
     }),
-    [existingCategory]
+    [existingCategory],
   );
 
   const {

@@ -28,32 +28,32 @@ const NodeChoice: React.FC<NodeChoiceProps> = ({ data, selected }) => {
   return (
     <div
       className={clsx(
-        "flex min-w-40 max-w-56 items-center gap-2 rounded-lg border border-border bg-muted px-4 py-3 shadow-md transition-all",
-        selected && "ring-2 ring-primary",
+        "border-border bg-muted flex max-w-56 min-w-40 items-center gap-2 rounded-lg border px-4 py-3 shadow-md transition-all",
+        selected && "ring-primary ring-2",
       )}
     >
       {/* Target handle (input) */}
       <Handle
         type="target"
         position={Position.Left}
-        className="!h-3 !w-3 !border-2 !border-background !bg-muted-foreground"
+        className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
       />
 
       {/* Index badge */}
       {index !== undefined && (
-        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
+        <span className="bg-primary/20 text-primary flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
           {index}
         </span>
       )}
 
       {/* Choice text */}
-      <span className="flex-1 text-sm text-foreground">{text}</span>
+      <span className="text-foreground flex-1 text-sm">{text}</span>
 
       {/* Source handle (output) */}
       <Handle
         type="source"
         position={Position.Right}
-        className="!h-3 !w-3 !border-2 !border-background !bg-primary"
+        className="!border-background !bg-primary !h-3 !w-3 !border-2"
       />
     </div>
   );

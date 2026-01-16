@@ -267,7 +267,9 @@ export const Interactive: Story = {
           open={isOpen}
           onClose={() => setIsOpen(false)}
           mode={mode}
-          existingTransaction={mode === "update" ? sampleExpenseTransaction : undefined}
+          existingTransaction={
+            mode === "update" ? sampleExpenseTransaction : undefined
+          }
           onSuccess={() => setIsOpen(false)}
         />
       </div>

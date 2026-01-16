@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import {
-  createTRPCRouter,
-  adminProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, adminProcedure } from "@/server/api/trpc";
 
 // Enum matching Prisma schema
 const FinancialType = z.enum(["income", "expense"]);
@@ -55,21 +52,15 @@ export const financialCategoryRouter = createTRPCRouter({
         group: z.string().optional(),
         isActive: z.boolean().optional(),
         search: z.string().optional(),
-        sortBy: z.enum(["name", "label", "sortOrder", "createdAt"]).default("sortOrder"),
+        sortBy: z
+          .enum(["name", "label", "sortOrder", "createdAt"])
+          .default("sortOrder"),
         sortOrder: z.enum(["asc", "desc"]).default("asc"),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const {
-        page,
-        limit,
-        type,
-        group,
-        isActive,
-        search,
-        sortBy,
-        sortOrder,
-      } = input;
+      const { page, limit, type, group, isActive, search, sortBy, sortOrder } =
+        input;
       const skip = (page - 1) * limit;
 
       const where = {

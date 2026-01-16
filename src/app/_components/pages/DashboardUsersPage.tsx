@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import TableUser from "../organisms/TableUser";
 import DialogCreateUpdateUser from "../organisms/DialogCreateUpdateUser";
 import DialogDeleteUser from "../organisms/DialogDeleteUser";
+import DialogResendInvite from "../organisms/DialogResendInvite";
+import type { ExistingUser } from "../organisms/DialogCreateUpdateUser";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
 import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
@@ -95,6 +97,13 @@ function DashboardUsersPageContent({
     id: string;
     name: string;
   } | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState<ExistingUser | null>(null);
+  const [isResendDialogOpen, setIsResendDialogOpen] = useState(false);
+  const [userToResendInvite, setUserToResendInvite] = useState<{
+    email: string;
+    roleId: string;
+  } | null>(null);
 
   // Update URL params helper
   const updateParams = useCallback(
@@ -180,6 +189,24 @@ function DashboardUsersPageContent({
     },
     onError: (error) => {
       toast.error(error.message ?? "Failed to delete user");
+    },
+  });
+
+  // Resend invite mutation (creates new invitation token)
+  const resendInvite = api.admin.inviteUser.useMutation({
+    onSuccess: (data) => {
+      toast.success("Invitation sent successfully!");
+      if (data.data.inviteLink) {
+        toast.success(`Dev mode - Invite link: ${data.data.inviteLink}`, {
+          duration: 10000,
+        });
+      }
+      void utils.admin.getUsers.invalidate();
+      setIsResendDialogOpen(false);
+      setUserToResendInvite(null);
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to send invitation");
     },
   });
 
@@ -313,6 +340,61 @@ function DashboardUsersPageContent({
     [router],
   );
 
+  // Handle edit user (open dialog to change role)
+  const handleEdit = useCallback(
+    (id: string) => {
+      // Find user from API data (not processed data which may have different structure)
+      const apiUsers = usersData?.data?.users;
+      const user = apiUsers?.find((u) => u.id === id);
+      if (user) {
+        const userWithRelations = user as typeof user & {
+          customRole?: { id: string; name: string } | null;
+        };
+        setUserToEdit({
+          id: user.id,
+          firstName: user.name?.split(" ")[0] ?? "",
+          lastName: user.name?.split(" ").slice(1).join(" ") ?? "",
+          email: user.email,
+          roleId: userWithRelations.customRole?.id ?? "",
+          roleName: userWithRelations.customRole?.name,
+        });
+        setIsEditDialogOpen(true);
+      }
+    },
+    [usersData],
+  );
+
+  // Handle resend invite
+  const handleResendInvite = useCallback(
+    (id: string) => {
+      // Find user to get their email and role
+      const apiUsers = usersData?.data?.users;
+      const user = apiUsers?.find((u) => u.id === id);
+      if (!user) return;
+
+      const userWithRelations = user as typeof user & {
+        customRole?: { id: string; name: string } | null;
+      };
+
+      setUserToResendInvite({
+        email: user.email,
+        roleId: userWithRelations.customRole?.id ?? "",
+      });
+      setIsResendDialogOpen(true);
+    },
+    [usersData],
+  );
+
+  // Confirm resend invite
+  const handleConfirmResend = useCallback(() => {
+    if (userToResendInvite) {
+      resendInvite.mutate({
+        email: userToResendInvite.email,
+        roleId: userToResendInvite.roleId,
+      });
+    }
+  }, [userToResendInvite, resendInvite]);
+
   return (
     <div className={clsx("space-y-6 p-5", className)}>
       {/* Filters Card */}
@@ -403,6 +485,8 @@ function DashboardUsersPageContent({
         onPageChange={handlePageChange}
         onDelete={handleDelete}
         onView={handleView}
+        onEdit={handleEdit}
+        onResendInvite={handleResendInvite}
       />
 
       {/* Invite Dialog */}
@@ -423,6 +507,33 @@ function DashboardUsersPageContent({
         onConfirm={handleConfirmDelete}
         loading={deleteUser.isPending}
         userName={userToDelete?.name}
+      />
+
+      {/* Edit User Dialog */}
+      <DialogCreateUpdateUser
+        open={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setUserToEdit(null);
+        }}
+        mode="update"
+        existingUser={userToEdit ?? undefined}
+        onSuccess={() => {
+          setIsEditDialogOpen(false);
+          setUserToEdit(null);
+        }}
+      />
+
+      {/* Resend Invite Confirmation Dialog */}
+      <DialogResendInvite
+        open={isResendDialogOpen}
+        onClose={() => {
+          setIsResendDialogOpen(false);
+          setUserToResendInvite(null);
+        }}
+        onConfirm={handleConfirmResend}
+        loading={resendInvite.isPending}
+        email={userToResendInvite?.email}
       />
     </div>
   );

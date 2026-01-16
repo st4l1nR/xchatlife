@@ -47,14 +47,14 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
   return (
     <div
       className={clsx(
-        "relative w-56 overflow-hidden rounded-lg border border-border bg-muted shadow-md transition-all",
-        selected && "ring-2 ring-primary",
+        "border-border bg-muted relative w-56 overflow-hidden rounded-lg border shadow-md transition-all",
+        selected && "ring-primary ring-2",
       )}
     >
       <Handle
         type="target"
         position={Position.Top}
-        className="!h-3 !w-3 !border-2 !border-background !bg-muted-foreground"
+        className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
       />
 
       {/* Scenery thumbnail */}
@@ -66,7 +66,7 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-muted/80" />
+          <div className="to-muted/80 absolute inset-0 bg-gradient-to-b from-transparent" />
         </div>
       )}
 
@@ -84,10 +84,10 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
               src={characterAvatarSrc}
               alt={characterName ?? "Character"}
               initials={characterName?.charAt(0).toUpperCase()}
-              className="size-8 border-2 border-background shadow-sm"
+              className="border-background size-8 border-2 shadow-sm"
             />
             {characterName && (
-              <span className="text-sm font-medium text-foreground">
+              <span className="text-foreground text-sm font-medium">
                 {characterName}
               </span>
             )}
@@ -98,7 +98,7 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
         {dialogue && (
           <p
             className={clsx(
-              "text-sm text-foreground",
+              "text-foreground text-sm",
               (characterName ?? characterAvatarSrc) && "mt-2",
             )}
           >
@@ -108,14 +108,14 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
 
         {/* Fallback for empty scene */}
         {!dialogue && !characterName && !sceneryImageSrc && (
-          <p className="text-sm italic text-muted-foreground">Empty scene</p>
+          <p className="text-muted-foreground text-sm italic">Empty scene</p>
         )}
       </div>
 
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!h-3 !w-3 !border-2 !border-background !bg-muted-foreground"
+        className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
       />
     </div>
   );

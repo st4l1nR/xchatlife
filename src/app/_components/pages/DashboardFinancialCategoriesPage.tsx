@@ -128,7 +128,7 @@ function DashboardFinancialCategoriesPageContent({
       });
       router.push(`${pathname}?${params.toString()}`);
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
   // Filter handlers
@@ -136,42 +136,42 @@ function DashboardFinancialCategoriesPageContent({
     (value: string) => {
       updateParams({ type: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleGroupChange = useCallback(
     (value: string) => {
       updateParams({ group: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleStatusChange = useCallback(
     (value: string) => {
       updateParams({ status: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchInputValue(e.target.value);
     },
-    []
+    [],
   );
 
   const handlePageSizeChange = useCallback(
     (value: string) => {
       updateParams({ size: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handlePageChange = useCallback(
     (page: number) => {
       updateParams({ page: page.toString() });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const utils = api.useUtils();
@@ -194,7 +194,7 @@ function DashboardFinancialCategoriesPageContent({
       },
       {
         enabled: !mock,
-      }
+      },
     );
 
   // Delete mutation
@@ -232,7 +232,7 @@ function DashboardFinancialCategoriesPageContent({
           (c) =>
             c.name.toLowerCase().includes(searchLower) ||
             c.label.toLowerCase().includes(searchLower) ||
-            c.description?.toLowerCase().includes(searchLower)
+            c.description?.toLowerCase().includes(searchLower),
         );
       }
 
@@ -241,7 +241,7 @@ function DashboardFinancialCategoriesPageContent({
       const startIndex = (pageParam - 1) * pageSize;
       const paginatedCategories = filtered.slice(
         startIndex,
-        startIndex + pageSize
+        startIndex + pageSize,
       );
 
       return {
@@ -307,7 +307,7 @@ function DashboardFinancialCategoriesPageContent({
         setIsCreateDialogOpen(true);
       }
     },
-    [processedData.categories]
+    [processedData.categories],
   );
 
   const handleDelete = useCallback(
@@ -318,7 +318,7 @@ function DashboardFinancialCategoriesPageContent({
         setIsDeleteDialogOpen(true);
       }
     },
-    [processedData.categories]
+    [processedData.categories],
   );
 
   const handleConfirmDelete = useCallback(() => {

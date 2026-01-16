@@ -36,7 +36,11 @@ export const NegativeBalance: Story = {
     stats: [
       { label: "Total Income", value: "$1,200.00", variant: "income" },
       { label: "Total Expense", value: "$3,500.00", variant: "expense" },
-      { label: "Net Balance", value: "-$2,300.00", variant: "balance-negative" },
+      {
+        label: "Net Balance",
+        value: "-$2,300.00",
+        variant: "balance-negative",
+      },
       { label: "Total Transactions", value: 42, variant: "neutral" },
     ],
   },
@@ -47,7 +51,11 @@ export const HighVolume: Story = {
     stats: [
       { label: "Total Income", value: "$1,234,567.89", variant: "income" },
       { label: "Total Expense", value: "$456,789.12", variant: "expense" },
-      { label: "Net Balance", value: "$777,778.77", variant: "balance-positive" },
+      {
+        label: "Net Balance",
+        value: "$777,778.77",
+        variant: "balance-positive",
+      },
       { label: "Total Transactions", value: 15432, variant: "neutral" },
     ],
   },

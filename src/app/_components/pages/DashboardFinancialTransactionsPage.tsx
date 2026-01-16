@@ -135,7 +135,7 @@ function DashboardFinancialTransactionsPageContent({
       });
       router.push(`${pathname}?${params.toString()}`);
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
   // Filter handlers
@@ -143,42 +143,42 @@ function DashboardFinancialTransactionsPageContent({
     (value: string) => {
       updateParams({ type: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleCategoryChange = useCallback(
     (value: string) => {
       updateParams({ category: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleProviderChange = useCallback(
     (value: string) => {
       updateParams({ provider: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchInputValue(e.target.value);
     },
-    []
+    [],
   );
 
   const handlePageSizeChange = useCallback(
     (value: string) => {
       updateParams({ size: value, page: "1" });
     },
-    [updateParams]
+    [updateParams],
   );
 
   const handlePageChange = useCallback(
     (page: number) => {
       updateParams({ page: page.toString() });
     },
-    [updateParams]
+    [updateParams],
   );
 
   // Fetch categories for filter dropdown
@@ -187,17 +187,19 @@ function DashboardFinancialTransactionsPageContent({
       isActive: true,
       limit: 100,
     },
-    { enabled: !mock }
+    { enabled: !mock },
   );
 
   // Fetch providers for filter dropdown
   const { data: providersData } =
-    api.financialTransaction.getProviders.useQuery(undefined, { enabled: !mock });
+    api.financialTransaction.getProviders.useQuery(undefined, {
+      enabled: !mock,
+    });
 
   // Fetch summary stats
   const { data: summaryData } = api.financialTransaction.getSummary.useQuery(
     undefined,
-    { enabled: !mock }
+    { enabled: !mock },
   );
 
   // Build category filter options dynamically
@@ -257,7 +259,7 @@ function DashboardFinancialTransactionsPageContent({
         categoryId: categoryParam || undefined,
         provider: providerParam || undefined,
       },
-      { enabled: !mock }
+      { enabled: !mock },
     );
 
   const utils = api.useUtils();
@@ -296,7 +298,7 @@ function DashboardFinancialTransactionsPageContent({
           (t) =>
             t.description?.toLowerCase().includes(searchLower) ||
             t.categoryLabel?.toLowerCase().includes(searchLower) ||
-            t.provider?.toLowerCase().includes(searchLower)
+            t.provider?.toLowerCase().includes(searchLower),
         );
       }
 
@@ -305,7 +307,7 @@ function DashboardFinancialTransactionsPageContent({
       const startIndex = (pageParam - 1) * pageSize;
       const paginatedTransactions = filtered.slice(
         startIndex,
-        startIndex + pageSize
+        startIndex + pageSize,
       );
 
       return {
@@ -342,13 +344,22 @@ function DashboardFinancialTransactionsPageContent({
       totalDocs: transactionsData?.data?.pagination?.total ?? 0,
       pagination: transactionsData?.data?.pagination,
     };
-  }, [mock, transactionsData, typeParam, categoryParam, providerParam, searchParam, pageParam, sizeParam]);
+  }, [
+    mock,
+    transactionsData,
+    typeParam,
+    categoryParam,
+    providerParam,
+    searchParam,
+    pageParam,
+    sizeParam,
+  ]);
 
   // Action handlers
   const handleEdit = useCallback(
     (id: string) => {
       const transaction = transactionsData?.data?.transactions.find(
-        (t) => t.id === id
+        (t) => t.id === id,
       );
       if (transaction) {
         setSelectedTransaction({
@@ -372,7 +383,7 @@ function DashboardFinancialTransactionsPageContent({
         setIsEditDialogOpen(true);
       }
     },
-    [transactionsData]
+    [transactionsData],
   );
 
   const handleDelete = useCallback((id: string) => {

@@ -43,7 +43,7 @@ const formatValue = (value: string | number): string => {
 
 const getIconForVariant = (
   variant: StatsFinancialTransactionsVariant,
-  customIcon?: LucideIcon
+  customIcon?: LucideIcon,
 ): LucideIcon => {
   if (customIcon) return customIcon;
 
@@ -63,7 +63,7 @@ const getIconForVariant = (
 };
 
 const getIconContainerClasses = (
-  variant: StatsFinancialTransactionsVariant
+  variant: StatsFinancialTransactionsVariant,
 ): string => {
   switch (variant) {
     case "income":
@@ -92,7 +92,9 @@ const getIconClasses = (variant: StatsFinancialTransactionsVariant): string => {
   }
 };
 
-const getValueClasses = (variant: StatsFinancialTransactionsVariant): string => {
+const getValueClasses = (
+  variant: StatsFinancialTransactionsVariant,
+): string => {
   switch (variant) {
     case "balance-positive":
       return "text-emerald-600 dark:text-emerald-400";
@@ -111,7 +113,7 @@ const StatsFinancialTransactions: React.FC<StatsFinancialTransactionsProps> = ({
     <div
       className={clsx(
         "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4",
-        className
+        className,
       )}
     >
       {stats.map((stat, index) => {
@@ -124,7 +126,7 @@ const StatsFinancialTransactions: React.FC<StatsFinancialTransactionsProps> = ({
               <div
                 className={clsx(
                   "rounded-full p-2",
-                  getIconContainerClasses(variant)
+                  getIconContainerClasses(variant),
                 )}
               >
                 <Icon className={clsx("size-5", getIconClasses(variant))} />
@@ -134,7 +136,7 @@ const StatsFinancialTransactions: React.FC<StatsFinancialTransactionsProps> = ({
                 <p
                   className={clsx(
                     "text-lg font-semibold",
-                    getValueClasses(variant)
+                    getValueClasses(variant),
                   )}
                 >
                   {formatValue(stat.value)}

@@ -36,7 +36,10 @@ const updateTransactionSchema = z.object({
   userId: z.string().cuid().nullable().optional(),
   affiliateId: z.string().cuid().nullable().optional(),
   referralId: z.string().cuid().nullable().optional(),
-  unitType: z.enum(["message", "image", "video", "audio"]).nullable().optional(),
+  unitType: z
+    .enum(["message", "image", "video", "audio"])
+    .nullable()
+    .optional(),
   unitCount: z.number().int().positive().nullable().optional(),
   unitCost: z.number().positive().nullable().optional(),
   externalId: z.string().max(255).nullable().optional(),
@@ -331,226 +334,240 @@ export const financialTransactionRouter = createTRPCRouter({
   /**
    * Create a new transaction
    */
-  create: adminProcedure.input(createTransactionSchema).mutation(async ({ ctx, input }) => {
-    // Verify category exists and get its type
-    const category = await ctx.db.financial_category.findUnique({
-      where: { id: input.categoryId },
-    });
-
-    if (!category) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Category not found",
-      });
-    }
-
-    // Verify user if provided
-    if (input.userId) {
-      const user = await ctx.db.user.findUnique({
-        where: { id: input.userId },
-      });
-      if (!user) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User not found",
-        });
-      }
-    }
-
-    // Verify affiliate if provided
-    if (input.affiliateId) {
-      const affiliate = await ctx.db.affiliate.findUnique({
-        where: { id: input.affiliateId },
-      });
-      if (!affiliate) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Affiliate not found",
-        });
-      }
-    }
-
-    // Verify referral if provided
-    if (input.referralId) {
-      const referral = await ctx.db.referral.findUnique({
-        where: { id: input.referralId },
-      });
-      if (!referral) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Referral not found",
-        });
-      }
-    }
-
-    const transaction = await ctx.db.financial_transaction.create({
-      data: {
-        categoryId: input.categoryId,
-        type: category.type, // Inherit type from category
-        amount: input.amount,
-        currency: input.currency,
-        description: input.description,
-        userId: input.userId,
-        affiliateId: input.affiliateId,
-        referralId: input.referralId,
-        unitType: input.unitType,
-        unitCount: input.unitCount,
-        unitCost: input.unitCost,
-        externalId: input.externalId,
-        provider: input.provider,
-        metadata: input.metadata as Prisma.InputJsonValue | undefined,
-        notes: input.notes,
-        periodStart: input.periodStart ? new Date(input.periodStart) : undefined,
-        periodEnd: input.periodEnd ? new Date(input.periodEnd) : undefined,
-        createdBy: ctx.session.user.id,
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            label: true,
-          },
-        },
-      },
-    });
-
-    return {
-      success: true,
-      data: {
-        id: transaction.id,
-        categoryId: transaction.categoryId,
-        categoryLabel: transaction.category.label,
-        type: transaction.type,
-        amount: transaction.amount.toString(),
-        currency: transaction.currency,
-        description: transaction.description,
-        createdAt: transaction.createdAt.toISOString(),
-      },
-    };
-  }),
-
-  /**
-   * Update an existing transaction
-   */
-  update: adminProcedure.input(updateTransactionSchema).mutation(async ({ ctx, input }) => {
-    const { id, ...updateData } = input;
-
-    // Check if transaction exists
-    const existingTransaction = await ctx.db.financial_transaction.findUnique({
-      where: { id },
-    });
-
-    if (!existingTransaction) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Transaction not found",
-      });
-    }
-
-    // If categoryId is being updated, get the new category's type
-    let newType = existingTransaction.type;
-    if (updateData.categoryId) {
+  create: adminProcedure
+    .input(createTransactionSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Verify category exists and get its type
       const category = await ctx.db.financial_category.findUnique({
-        where: { id: updateData.categoryId },
+        where: { id: input.categoryId },
       });
+
       if (!category) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Category not found",
         });
       }
-      newType = category.type;
-    }
 
-    // Build update data
-    const dataToUpdate: Prisma.financial_transactionUpdateInput = {
-      type: newType,
-    };
+      // Verify user if provided
+      if (input.userId) {
+        const user = await ctx.db.user.findUnique({
+          where: { id: input.userId },
+        });
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+      }
 
-    if (updateData.categoryId !== undefined) {
-      dataToUpdate.category = { connect: { id: updateData.categoryId } };
-    }
-    if (updateData.amount !== undefined) {
-      dataToUpdate.amount = updateData.amount;
-    }
-    if (updateData.currency !== undefined) {
-      dataToUpdate.currency = updateData.currency;
-    }
-    if (updateData.description !== undefined) {
-      dataToUpdate.description = updateData.description;
-    }
-    if (updateData.userId !== undefined) {
-      dataToUpdate.user = updateData.userId ? { connect: { id: updateData.userId } } : { disconnect: true };
-    }
-    if (updateData.affiliateId !== undefined) {
-      dataToUpdate.affiliate = updateData.affiliateId
-        ? { connect: { id: updateData.affiliateId } }
-        : { disconnect: true };
-    }
-    if (updateData.referralId !== undefined) {
-      dataToUpdate.referral = updateData.referralId
-        ? { connect: { id: updateData.referralId } }
-        : { disconnect: true };
-    }
-    if (updateData.unitType !== undefined) {
-      dataToUpdate.unitType = updateData.unitType;
-    }
-    if (updateData.unitCount !== undefined) {
-      dataToUpdate.unitCount = updateData.unitCount;
-    }
-    if (updateData.unitCost !== undefined) {
-      dataToUpdate.unitCost = updateData.unitCost;
-    }
-    if (updateData.externalId !== undefined) {
-      dataToUpdate.externalId = updateData.externalId;
-    }
-    if (updateData.provider !== undefined) {
-      dataToUpdate.provider = updateData.provider;
-    }
-    if (updateData.metadata !== undefined) {
-      dataToUpdate.metadata = updateData.metadata
-        ? (updateData.metadata as Prisma.InputJsonValue)
-        : Prisma.JsonNull;
-    }
-    if (updateData.notes !== undefined) {
-      dataToUpdate.notes = updateData.notes;
-    }
-    if (updateData.periodStart !== undefined) {
-      dataToUpdate.periodStart = updateData.periodStart ? new Date(updateData.periodStart) : null;
-    }
-    if (updateData.periodEnd !== undefined) {
-      dataToUpdate.periodEnd = updateData.periodEnd ? new Date(updateData.periodEnd) : null;
-    }
+      // Verify affiliate if provided
+      if (input.affiliateId) {
+        const affiliate = await ctx.db.affiliate.findUnique({
+          where: { id: input.affiliateId },
+        });
+        if (!affiliate) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Affiliate not found",
+          });
+        }
+      }
 
-    const transaction = await ctx.db.financial_transaction.update({
-      where: { id },
-      data: dataToUpdate,
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            label: true,
+      // Verify referral if provided
+      if (input.referralId) {
+        const referral = await ctx.db.referral.findUnique({
+          where: { id: input.referralId },
+        });
+        if (!referral) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Referral not found",
+          });
+        }
+      }
+
+      const transaction = await ctx.db.financial_transaction.create({
+        data: {
+          categoryId: input.categoryId,
+          type: category.type, // Inherit type from category
+          amount: input.amount,
+          currency: input.currency,
+          description: input.description,
+          userId: input.userId,
+          affiliateId: input.affiliateId,
+          referralId: input.referralId,
+          unitType: input.unitType,
+          unitCount: input.unitCount,
+          unitCost: input.unitCost,
+          externalId: input.externalId,
+          provider: input.provider,
+          metadata: input.metadata as Prisma.InputJsonValue | undefined,
+          notes: input.notes,
+          periodStart: input.periodStart
+            ? new Date(input.periodStart)
+            : undefined,
+          periodEnd: input.periodEnd ? new Date(input.periodEnd) : undefined,
+          createdBy: ctx.session.user.id,
+        },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              label: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return {
-      success: true,
-      data: {
-        id: transaction.id,
-        categoryId: transaction.categoryId,
-        categoryLabel: transaction.category.label,
-        type: transaction.type,
-        amount: transaction.amount.toString(),
-        currency: transaction.currency,
-        description: transaction.description,
-        createdAt: transaction.createdAt.toISOString(),
-      },
-    };
-  }),
+      return {
+        success: true,
+        data: {
+          id: transaction.id,
+          categoryId: transaction.categoryId,
+          categoryLabel: transaction.category.label,
+          type: transaction.type,
+          amount: transaction.amount.toString(),
+          currency: transaction.currency,
+          description: transaction.description,
+          createdAt: transaction.createdAt.toISOString(),
+        },
+      };
+    }),
+
+  /**
+   * Update an existing transaction
+   */
+  update: adminProcedure
+    .input(updateTransactionSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+
+      // Check if transaction exists
+      const existingTransaction = await ctx.db.financial_transaction.findUnique(
+        {
+          where: { id },
+        },
+      );
+
+      if (!existingTransaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Transaction not found",
+        });
+      }
+
+      // If categoryId is being updated, get the new category's type
+      let newType = existingTransaction.type;
+      if (updateData.categoryId) {
+        const category = await ctx.db.financial_category.findUnique({
+          where: { id: updateData.categoryId },
+        });
+        if (!category) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Category not found",
+          });
+        }
+        newType = category.type;
+      }
+
+      // Build update data
+      const dataToUpdate: Prisma.financial_transactionUpdateInput = {
+        type: newType,
+      };
+
+      if (updateData.categoryId !== undefined) {
+        dataToUpdate.category = { connect: { id: updateData.categoryId } };
+      }
+      if (updateData.amount !== undefined) {
+        dataToUpdate.amount = updateData.amount;
+      }
+      if (updateData.currency !== undefined) {
+        dataToUpdate.currency = updateData.currency;
+      }
+      if (updateData.description !== undefined) {
+        dataToUpdate.description = updateData.description;
+      }
+      if (updateData.userId !== undefined) {
+        dataToUpdate.user = updateData.userId
+          ? { connect: { id: updateData.userId } }
+          : { disconnect: true };
+      }
+      if (updateData.affiliateId !== undefined) {
+        dataToUpdate.affiliate = updateData.affiliateId
+          ? { connect: { id: updateData.affiliateId } }
+          : { disconnect: true };
+      }
+      if (updateData.referralId !== undefined) {
+        dataToUpdate.referral = updateData.referralId
+          ? { connect: { id: updateData.referralId } }
+          : { disconnect: true };
+      }
+      if (updateData.unitType !== undefined) {
+        dataToUpdate.unitType = updateData.unitType;
+      }
+      if (updateData.unitCount !== undefined) {
+        dataToUpdate.unitCount = updateData.unitCount;
+      }
+      if (updateData.unitCost !== undefined) {
+        dataToUpdate.unitCost = updateData.unitCost;
+      }
+      if (updateData.externalId !== undefined) {
+        dataToUpdate.externalId = updateData.externalId;
+      }
+      if (updateData.provider !== undefined) {
+        dataToUpdate.provider = updateData.provider;
+      }
+      if (updateData.metadata !== undefined) {
+        dataToUpdate.metadata = updateData.metadata
+          ? (updateData.metadata as Prisma.InputJsonValue)
+          : Prisma.JsonNull;
+      }
+      if (updateData.notes !== undefined) {
+        dataToUpdate.notes = updateData.notes;
+      }
+      if (updateData.periodStart !== undefined) {
+        dataToUpdate.periodStart = updateData.periodStart
+          ? new Date(updateData.periodStart)
+          : null;
+      }
+      if (updateData.periodEnd !== undefined) {
+        dataToUpdate.periodEnd = updateData.periodEnd
+          ? new Date(updateData.periodEnd)
+          : null;
+      }
+
+      const transaction = await ctx.db.financial_transaction.update({
+        where: { id },
+        data: dataToUpdate,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              label: true,
+            },
+          },
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          id: transaction.id,
+          categoryId: transaction.categoryId,
+          categoryLabel: transaction.category.label,
+          type: transaction.type,
+          amount: transaction.amount.toString(),
+          currency: transaction.currency,
+          description: transaction.description,
+          createdAt: transaction.createdAt.toISOString(),
+        },
+      };
+    }),
 
   /**
    * Delete a transaction
@@ -559,9 +576,11 @@ export const financialTransactionRouter = createTRPCRouter({
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
       // Check if transaction exists
-      const existingTransaction = await ctx.db.financial_transaction.findUnique({
-        where: { id: input.id },
-      });
+      const existingTransaction = await ctx.db.financial_transaction.findUnique(
+        {
+          where: { id: input.id },
+        },
+      );
 
       if (!existingTransaction) {
         throw new TRPCError({
@@ -605,19 +624,21 @@ export const financialTransactionRouter = createTRPCRouter({
         }
       }
 
-      const [incomeResult, expenseResult, transactionCount] = await Promise.all([
-        ctx.db.financial_transaction.aggregate({
-          where: { ...where, type: "income" },
-          _sum: { amount: true },
-          _count: true,
-        }),
-        ctx.db.financial_transaction.aggregate({
-          where: { ...where, type: "expense" },
-          _sum: { amount: true },
-          _count: true,
-        }),
-        ctx.db.financial_transaction.count({ where }),
-      ]);
+      const [incomeResult, expenseResult, transactionCount] = await Promise.all(
+        [
+          ctx.db.financial_transaction.aggregate({
+            where: { ...where, type: "income" },
+            _sum: { amount: true },
+            _count: true,
+          }),
+          ctx.db.financial_transaction.aggregate({
+            where: { ...where, type: "expense" },
+            _sum: { amount: true },
+            _count: true,
+          }),
+          ctx.db.financial_transaction.count({ where }),
+        ],
+      );
 
       const totalIncome = Number(incomeResult._sum.amount ?? 0);
       const totalExpense = Number(expenseResult._sum.amount ?? 0);

@@ -29,7 +29,10 @@ import type { NodeChoiceData } from "./NodeChoice";
 
 export type FlowNodeType = "start" | "end" | "scene" | "choice";
 
-export type FlowNodeData = NodeSceneData | NodeChoiceData | Record<string, never>;
+export type FlowNodeData =
+  | NodeSceneData
+  | NodeChoiceData
+  | Record<string, never>;
 
 export type FlowNode = Node<FlowNodeData>;
 export type FlowEdge = Edge;
@@ -177,7 +180,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
     setNodes((nds) => nds.filter((n) => n.id !== nodeId));
     // Also remove connected edges
     setEdges((eds) =>
-      eds.filter((e) => e.source !== nodeId && e.target !== nodeId)
+      eds.filter((e) => e.source !== nodeId && e.target !== nodeId),
     );
     // Clear selection if the removed node was selected
     setSelectedNodeId((current) => (current === nodeId ? null : current));
@@ -189,34 +192,34 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
         nds.map((n) =>
           n.id === nodeId
             ? { ...n, data: { ...n.data, ...data } as FlowNodeData }
-            : n
-        )
+            : n,
+        ),
       );
     },
-    []
+    [],
   );
 
   const updateNodePosition = useCallback(
     (nodeId: string, position: XYPosition) => {
       setNodes((nds) =>
-        nds.map((n) => (n.id === nodeId ? { ...n, position } : n))
+        nds.map((n) => (n.id === nodeId ? { ...n, position } : n)),
       );
     },
-    []
+    [],
   );
 
   const getNodeById = useCallback(
     (nodeId: string): FlowNode | undefined => {
       return nodes.find((n) => n.id === nodeId);
     },
-    [nodes]
+    [nodes],
   );
 
   const getNodesByType = useCallback(
     (type: FlowNodeType): FlowNode[] => {
       return nodes.filter((n) => n.type === type);
     },
-    [nodes]
+    [nodes],
   );
 
   // ============================================================================
@@ -237,7 +240,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
       setEdges((eds) => [...eds, newEdge]);
       return id;
     },
-    []
+    [],
   );
 
   const removeEdge = useCallback((edgeId: string) => {
@@ -249,14 +252,14 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
     (nodeId: string): FlowEdge[] => {
       return edges.filter((e) => e.source === nodeId || e.target === nodeId);
     },
-    [edges]
+    [edges],
   );
 
   const getEdgeById = useCallback(
     (edgeId: string): FlowEdge | undefined => {
       return edges.find((e) => e.id === edgeId);
     },
-    [edges]
+    [edges],
   );
 
   // ============================================================================
@@ -329,7 +332,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
 
       return newNodeId;
     },
-    [nodes]
+    [nodes],
   );
 
   const addChoiceAfterNode = useCallback(
@@ -363,13 +366,17 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
 
       return newNodeId;
     },
-    [nodes]
+    [nodes],
   );
 
   const duplicateNode = useCallback(
     (nodeId: string): string | null => {
       const sourceNode = nodes.find((n) => n.id === nodeId);
-      if (!sourceNode || sourceNode.type === "start" || sourceNode.type === "end") {
+      if (
+        !sourceNode ||
+        sourceNode.type === "start" ||
+        sourceNode.type === "end"
+      ) {
         return null;
       }
 
@@ -387,7 +394,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
       setNodes((nds) => [...nds, newNode]);
       return newNodeId;
     },
-    [nodes]
+    [nodes],
   );
 
   const insertSceneOnEdge = useCallback(
@@ -437,7 +444,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
       setNodes((nds) => [...nds, newNode]);
       return newNodeId;
     },
-    [edges, nodes]
+    [edges, nodes],
   );
 
   // ============================================================================
@@ -517,7 +524,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
       addChoiceAfterNode,
       duplicateNode,
       insertSceneOnEdge,
-    ]
+    ],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

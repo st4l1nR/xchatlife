@@ -61,7 +61,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
           ? "cursor-not-allowed opacity-50"
           : destructive
             ? "text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
-            : "text-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+            : "text-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
       )}
     >
       <Icon
@@ -71,7 +71,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
             ? "text-muted-foreground"
             : destructive
               ? "text-destructive group-hover:text-destructive group-focus:text-destructive"
-              : "text-muted-foreground group-hover:text-primary-foreground group-focus:text-primary-foreground"
+              : "text-muted-foreground group-hover:text-primary-foreground group-focus:text-primary-foreground",
         )}
       />
       <span className="flex-1">{label}</span>
@@ -83,7 +83,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
               ? "text-muted-foreground"
               : destructive
                 ? "text-destructive/70 group-hover:text-destructive/90 group-focus:text-destructive/90"
-                : "text-muted-foreground group-hover:text-primary-foreground/70 group-focus:text-primary-foreground/70"
+                : "text-muted-foreground group-hover:text-primary-foreground/70 group-focus:text-primary-foreground/70",
           )}
         >
           {shortcut}
@@ -98,7 +98,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
 // ============================================================================
 
 const MenuDivider: React.FC = () => {
-  return <div className="my-1 h-px bg-border" />;
+  return <div className="bg-border my-1 h-px" />;
 };
 
 // ============================================================================
@@ -199,8 +199,8 @@ const FlowContextMenu: React.FC<FlowContextMenuProps> = ({
       ref={menuRef}
       className={clsx(
         "fixed z-50 min-w-[180px] rounded-xl p-1",
-        "bg-popover shadow-lg ring-1 ring-border",
-        "animate-in fade-in-0 zoom-in-95"
+        "bg-popover ring-border shadow-lg ring-1",
+        "animate-in fade-in-0 zoom-in-95",
       )}
       style={{
         left: position.x,
@@ -228,7 +228,9 @@ const FlowContextMenu: React.FC<FlowContextMenuProps> = ({
         // Node context menu
         <>
           {/* Add Scene After - available for start, scene, choice */}
-          {(nodeType === "start" || nodeType === "scene" || nodeType === "choice") && (
+          {(nodeType === "start" ||
+            nodeType === "scene" ||
+            nodeType === "choice") && (
             <MenuItem
               icon={DocumentPlusIcon}
               label="Add Scene After"

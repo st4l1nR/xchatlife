@@ -55,10 +55,10 @@ type ContextMenuState = {
 // Inner Component (uses context)
 // ============================================================================
 
-const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHandler }> = ({
-  className,
-  onNodeClick,
-}) => {
+const FlowCanvasInner: React.FC<{
+  className?: string;
+  onNodeClick?: NodeMouseHandler;
+}> = ({ className, onNodeClick }) => {
   const {
     nodes,
     edges,
@@ -88,7 +88,7 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
       selectNode(node.id);
       onNodeClick?.(event, node);
     },
-    [selectNode, onNodeClick]
+    [selectNode, onNodeClick],
   );
 
   // Handle edge click
@@ -96,7 +96,7 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
     (_event, edge) => {
       selectEdge(edge.id);
     },
-    [selectEdge]
+    [selectEdge],
   );
 
   // Handle pane click - clear selection and close context menu
@@ -106,31 +106,25 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
   }, [clearSelection]);
 
   // Handle node context menu (right-click)
-  const handleNodeContextMenu: NodeMouseHandler = useCallback(
-    (event, node) => {
-      event.preventDefault();
-      setContextMenu({
-        id: node.id,
-        type: "node",
-        nodeType: node.type as FlowNodeType,
-        position: { x: event.clientX, y: event.clientY },
-      });
-    },
-    []
-  );
+  const handleNodeContextMenu: NodeMouseHandler = useCallback((event, node) => {
+    event.preventDefault();
+    setContextMenu({
+      id: node.id,
+      type: "node",
+      nodeType: node.type as FlowNodeType,
+      position: { x: event.clientX, y: event.clientY },
+    });
+  }, []);
 
   // Handle edge context menu (right-click)
-  const handleEdgeContextMenu: EdgeMouseHandler = useCallback(
-    (event, edge) => {
-      event.preventDefault();
-      setContextMenu({
-        id: edge.id,
-        type: "edge",
-        position: { x: event.clientX, y: event.clientY },
-      });
-    },
-    []
-  );
+  const handleEdgeContextMenu: EdgeMouseHandler = useCallback((event, edge) => {
+    event.preventDefault();
+    setContextMenu({
+      id: edge.id,
+      type: "edge",
+      position: { x: event.clientX, y: event.clientY },
+    });
+  }, []);
 
   // Close context menu
   const handleCloseContextMenu = useCallback(() => {
@@ -142,21 +136,21 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
     (nodeId: string) => {
       addSceneAfterNode(nodeId);
     },
-    [addSceneAfterNode]
+    [addSceneAfterNode],
   );
 
   const handleAddChoiceAfter = useCallback(
     (nodeId: string) => {
       addChoiceAfterNode(nodeId);
     },
-    [addChoiceAfterNode]
+    [addChoiceAfterNode],
   );
 
   const handleDuplicate = useCallback(
     (nodeId: string) => {
       duplicateNode(nodeId);
     },
-    [duplicateNode]
+    [duplicateNode],
   );
 
   const handleDelete = useCallback(
@@ -172,14 +166,14 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
         }
       }
     },
-    [contextMenu, removeNode, removeEdge, getNodeById]
+    [contextMenu, removeNode, removeEdge, getNodeById],
   );
 
   const handleInsertSceneOnEdge = useCallback(
     (edgeId: string) => {
       insertSceneOnEdge(edgeId);
     },
-    [insertSceneOnEdge]
+    [insertSceneOnEdge],
   );
 
   // Keyboard shortcuts
@@ -217,7 +211,14 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNodeId, selectedEdgeId, removeNode, removeEdge, duplicateNode, getNodeById]);
+  }, [
+    selectedNodeId,
+    selectedEdgeId,
+    removeNode,
+    removeEdge,
+    duplicateNode,
+    getNodeById,
+  ]);
 
   // Register custom node types
   const nodeTypes = useMemo(
@@ -227,7 +228,7 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
       scene: NodeScene,
       choice: NodeChoice,
     }),
-    []
+    [],
   );
 
   // Default edge options
@@ -236,7 +237,7 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
       type: "smoothstep",
       animated: false,
     }),
-    []
+    [],
   );
 
   // MiniMap node color
@@ -275,7 +276,7 @@ const FlowCanvasInner: React.FC<{ className?: string; onNodeClick?: NodeMouseHan
           size={1}
           className="!bg-background"
         />
-        <Controls className="!border-border !bg-muted !shadow-md [&>button]:!border-border [&>button]:!bg-muted [&>button]:hover:!bg-background [&>button>svg]:!fill-foreground" />
+        <Controls className="!border-border !bg-muted [&>button]:!border-border [&>button]:!bg-muted [&>button]:hover:!bg-background [&>button>svg]:!fill-foreground !shadow-md" />
         <MiniMap
           nodeColor={getNodeColor}
           className="!border-border !bg-muted"

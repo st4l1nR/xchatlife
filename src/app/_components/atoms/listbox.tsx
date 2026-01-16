@@ -94,6 +94,8 @@ export function Listbox<T>({
         transition
         anchor="selection start"
         className={clsx(
+          // Z-index to appear above dialogs (which use z-50)
+          "z-60",
           // Anchor positioning
           "[--anchor-offset:-1.625rem] [--anchor-padding:--spacing(4)] sm:[--anchor-offset:-1.375rem]",
           // Base styles

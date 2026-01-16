@@ -79,10 +79,9 @@ const transactionSchema = z.object({
   unitCount: z
     .string()
     .optional()
-    .refine(
-      (val) => !val || (!isNaN(parseInt(val)) && parseInt(val) > 0),
-      { message: "Unit count must be a positive number" }
-    ),
+    .refine((val) => !val || (!isNaN(parseInt(val)) && parseInt(val) > 0), {
+      message: "Unit count must be a positive number",
+    }),
   notes: z.string().max(1000).optional().or(z.literal("")),
   periodStart: z.string().optional().or(z.literal("")),
   periodEnd: z.string().optional().or(z.literal("")),
@@ -105,7 +104,7 @@ const DialogCreateUpdateFinancialTransaction: React.FC<
   // Fetch categories for dropdown
   const { data: categoriesData } = api.financialCategory.getAll.useQuery(
     { isActive: true, limit: 100 },
-    { enabled: open }
+    { enabled: open },
   );
 
   const categories = categoriesData?.data?.categories ?? [];
@@ -164,7 +163,7 @@ const DialogCreateUpdateFinancialTransaction: React.FC<
         ? existingTransaction.periodEnd.split("T")[0]
         : "",
     }),
-    [existingTransaction]
+    [existingTransaction],
   );
 
   const {
@@ -189,7 +188,7 @@ const DialogCreateUpdateFinancialTransaction: React.FC<
   // Watch categoryId to show category type indicator
   const selectedCategoryId = watch("categoryId");
   const selectedCategory = categories.find(
-    (cat) => cat.id === selectedCategoryId
+    (cat) => cat.id === selectedCategoryId,
   );
 
   const onFormSubmit = (data: TransactionSchemaType) => {
@@ -276,7 +275,7 @@ const DialogCreateUpdateFinancialTransaction: React.FC<
                           </ListboxOption>
                         ))}
                       </React.Fragment>
-                    )
+                    ),
                   )}
                 </Listbox>
               )}
@@ -290,7 +289,7 @@ const DialogCreateUpdateFinancialTransaction: React.FC<
                   "mt-1 text-sm",
                   selectedCategory.type === "income"
                     ? "text-emerald-500"
-                    : "text-rose-500"
+                    : "text-rose-500",
                 )}
               >
                 This is an {selectedCategory.type} category

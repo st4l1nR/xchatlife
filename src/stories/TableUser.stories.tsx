@@ -13,7 +13,8 @@ const meta: Meta<typeof TableUser> = {
   argTypes: {
     onDelete: { action: "delete" },
     onView: { action: "view" },
-    onResendInvitation: { action: "resendInvitation" },
+    onEdit: { action: "edit" },
+    onResendInvite: { action: "resendInvite" },
     onPageChange: { action: "pageChange" },
   },
 };

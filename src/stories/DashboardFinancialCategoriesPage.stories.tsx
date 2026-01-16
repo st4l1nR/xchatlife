@@ -3,7 +3,9 @@ import DashboardFinancialCategoriesPage from "@/app/_components/pages/DashboardF
 import type { TableFinancialCategoryItem } from "@/app/_components/organisms/TableFinancialCategory";
 
 // Generate mock categories for testing
-const generateMockCategories = (count: number): TableFinancialCategoryItem[] => {
+const generateMockCategories = (
+  count: number,
+): TableFinancialCategoryItem[] => {
   const types = ["income", "expense"] as const;
   const groups = [
     "affiliates",
@@ -129,8 +131,12 @@ const generateMockCategories = (count: number): TableFinancialCategoryItem[] => 
 
     return {
       id: `cat-${i + 1}`,
-      name: i < categoryTemplates.length ? template.name : `${template.name}_${i}`,
-      label: i < categoryTemplates.length ? template.label : `${template.label} ${i}`,
+      name:
+        i < categoryTemplates.length ? template.name : `${template.name}_${i}`,
+      label:
+        i < categoryTemplates.length
+          ? template.label
+          : `${template.label} ${i}`,
       type: template.type,
       group: template.group,
       description: template.description,

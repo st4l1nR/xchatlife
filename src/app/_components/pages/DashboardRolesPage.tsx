@@ -15,7 +15,10 @@ import ListCardRole from "@/app/_components/organisms/ListCardRole";
 import TableUser from "@/app/_components/organisms/TableUser";
 import DialogCreateUpdateRole from "@/app/_components/organisms/DialogCreateUpdateRole";
 import DialogCreateUpdateUser from "@/app/_components/organisms/DialogCreateUpdateUser";
+import DialogResendInvite from "@/app/_components/organisms/DialogResendInvite";
+import DialogDeleteUser from "@/app/_components/organisms/DialogDeleteUser";
 import { api } from "@/trpc/react";
+import toast from "react-hot-toast";
 import type { CardRoleProps } from "@/app/_components/molecules/CardRole";
 import type { TableUserItem } from "@/app/_components/organisms/TableUser";
 import type {
@@ -225,6 +228,20 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
 
+  // State for resend invite dialog
+  const [resendDialogOpen, setResendDialogOpen] = useState(false);
+  const [userToResendInvite, setUserToResendInvite] = useState<{
+    email: string;
+    roleId: string;
+  } | null>(null);
+
+  // State for delete user dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
   // Open create role dialog if ?create=true is in URL
   useEffect(() => {
     if (searchParams.get("create") === "true") {
@@ -252,6 +269,40 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
       },
       { enabled: !mock },
     );
+
+  const utils = api.useUtils();
+
+  // Resend invite mutation (creates a new invitation)
+  const resendInvite = api.admin.inviteUser.useMutation({
+    onSuccess: (data) => {
+      toast.success("Invitation sent successfully!");
+      if (data.data.inviteLink) {
+        toast.success(`Dev mode - Invite link: ${data.data.inviteLink}`, {
+          duration: 10000,
+        });
+      }
+      void utils.admin.getInvitations.invalidate();
+      setResendDialogOpen(false);
+      setUserToResendInvite(null);
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to send invitation");
+    },
+  });
+
+  // Delete user mutation
+  const deleteUser = api.admin.deleteUser.useMutation({
+    onSuccess: () => {
+      toast.success("User deleted successfully");
+      void utils.admin.getUsers.invalidate();
+      void utils.role.getAll.invalidate();
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to delete user");
+    },
+  });
 
   // Use mock data or API data
   const roles: CardRoleProps[] =
@@ -323,6 +374,11 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
   };
 
   const handleViewUser = (id: string) => {
+    // Navigate to user detail page
+    router.push(`/dashboard/users/${id}`);
+  };
+
+  const handleEditUser = (id: string) => {
     // Find the user and open edit dialog
     const user = usersData?.data?.users?.find((u) => u.id === id);
     if (user) {
@@ -339,9 +395,38 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
     }
   };
 
+  const handleResendInvite = (id: string) => {
+    // Find user to get their email and role
+    const user = usersData?.data?.users?.find((u) => u.id === id);
+    if (!user) return;
+
+    setUserToResendInvite({
+      email: user.email,
+      roleId: user.customRole?.id ?? "",
+    });
+    setResendDialogOpen(true);
+  };
+
+  const handleConfirmResend = () => {
+    if (userToResendInvite) {
+      resendInvite.mutate({
+        email: userToResendInvite.email,
+        roleId: userToResendInvite.roleId,
+      });
+    }
+  };
+
   const handleDeleteUser = (id: string) => {
-    // TODO: Implement delete user functionality
-    console.log("Delete user:", id);
+    // Find user to get their name for the confirmation dialog
+    const user = usersData?.data?.users?.find((u) => u.id === id);
+    setUserToDelete({ id, name: user?.name ?? "Unknown" });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (userToDelete) {
+      deleteUser.mutate({ userId: userToDelete.id });
+    }
   };
 
   return (
@@ -444,6 +529,8 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
           onPageChange={setPage}
           onView={handleViewUser}
           onDelete={handleDeleteUser}
+          onEdit={handleEditUser}
+          onResendInvite={handleResendInvite}
         />
       </section>
 
@@ -460,6 +547,28 @@ const DashboardRolesPage: React.FC<DashboardRolesPageProps> = ({
         onClose={() => setUserDialogOpen(false)}
         mode={userDialogMode}
         existingUser={selectedUser}
+      />
+
+      <DialogResendInvite
+        open={resendDialogOpen}
+        onClose={() => {
+          setResendDialogOpen(false);
+          setUserToResendInvite(null);
+        }}
+        onConfirm={handleConfirmResend}
+        loading={resendInvite.isPending}
+        email={userToResendInvite?.email}
+      />
+
+      <DialogDeleteUser
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setUserToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        loading={deleteUser.isPending}
+        userName={userToDelete?.name}
       />
     </div>
   );

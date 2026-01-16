@@ -19,8 +19,7 @@ const meta = {
     mode: {
       control: "select",
       options: ["create", "update"],
-      description:
-        "Whether to create a new category or update an existing one",
+      description: "Whether to create a new category or update an existing one",
     },
   },
   args: {
@@ -258,7 +257,9 @@ export const Interactive: Story = {
           open={isOpen}
           onClose={() => setIsOpen(false)}
           mode={mode}
-          existingCategory={mode === "update" ? sampleIncomeCategory : undefined}
+          existingCategory={
+            mode === "update" ? sampleIncomeCategory : undefined
+          }
           onSuccess={() => setIsOpen(false)}
         />
       </div>
