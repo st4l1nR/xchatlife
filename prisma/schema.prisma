@@ -38,18 +38,56 @@ model account {
   user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model affiliate {
-  id             String     @id @default(cuid())
-  userId         String     @unique
-  referralCode   String     @unique
-  commissionRate Decimal    @db.Decimal(5, 4)
-  totalEarned    Decimal    @default(0) @db.Decimal(10, 2)
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  user           user       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  referral       referral[]
+// ==========================================
+// AFFILIATE ENUMS
+// ==========================================
 
+enum AffiliateStatus {
+  pending
+  approved
+  rejected
+}
+
+enum AffiliateType {
+  influencer
+  blogger
+  youtuber
+  social_media
+  website_owner
+  email_marketing
+  other
+}
+
+model affiliate {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+
+  // Application fields
+  firstName          String?
+  email              String
+  websiteUrl         String
+  telegram           String?
+  type               AffiliateType
+  introduction       String?         @db.Text
+  promotionalMethods String?         @db.Text
+  status             AffiliateStatus @default(pending)
+  rejectionReason    String?         @db.Text
+
+  // Approved affiliate fields (nullable until approved)
+  referralCode       String?         @unique
+  commissionRate     Decimal?        @db.Decimal(5, 4)
+  totalEarned        Decimal         @default(0) @db.Decimal(10, 2)
+  isActive           Boolean         @default(false)
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  approvedAt         DateTime?
+
+  user                  user                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referral              referral[]
+  financial_transaction financial_transaction[]
+
+  @@index([status])
   @@index([isActive])
   @@index([referralCode])
 }
@@ -454,6 +492,7 @@ model character_occupation {
 model character {
   id             String   @id @default(cuid())
   name           String
+  avatarId       String?
   posterId       String?
   videoId        String?
   genderId       String
@@ -483,6 +522,7 @@ model character {
 
   // Relations
   user                           user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  avatar                         media?                   @relation("character_avatarIdTomedia", fields: [avatarId], references: [id])
   poster                         media?                   @relation("character_posterIdTomedia", fields: [posterId], references: [id])
   video                          media?                   @relation("character_videoIdTomedia", fields: [videoId], references: [id])
   gender                         character_gender         @relation(fields: [genderId], references: [id])
@@ -500,6 +540,7 @@ model character {
   chat                           chat[]
   reel                           reel[]
   story                          story[]
+  private_content                private_content[]
   media                          media[]                  @relation("media_characterId")
   visual_novel_character         visual_novel_character[]
   visual_novel_node              visual_novel_node[]
@@ -641,6 +682,7 @@ model media {
   createdAt                           DateTime              @default(now())
   folder                              media_folder?         @relation(fields: [folderId], references: [id], onDelete: SetNull)
   character                           character?            @relation("media_characterId", fields: [characterId], references: [id], onDelete: SetNull)
+  character_character_avatarIdTomedia character[]           @relation("character_avatarIdTomedia")
   character_character_posterIdTomedia character[]           @relation("character_posterIdTomedia")
   character_character_videoIdTomedia  character[]           @relation("character_videoIdTomedia")
   variant_image                       character_variant[]   @relation("variant_image")
@@ -676,6 +718,8 @@ model media {
   reel_reel_videoIdTomedia            reel[]                @relation("reel_videoIdTomedia")
   story_story_mediaIdTomedia          story[]               @relation("story_mediaIdTomedia")
   story_story_thumbnailIdTomedia      story[]               @relation("story_thumbnailIdTomedia")
+  private_content_poster              private_content[]     @relation("private_content_poster")
+  private_content_media               private_content_media[]
   visual_novel_thumbnail              visual_novel[]        @relation("visual_novel_thumbnail")
   node_scenery                        visual_novel_node[]   @relation("node_scenery")
   node_character_image                visual_novel_node[]   @relation("node_character_image")
@@ -722,7 +766,7 @@ model story {
   mediaId     String
   thumbnailId String?
   sortOrder   Int       @default(0)
-  expiresAt   DateTime
+  expiresAt   DateTime? // Optional for permanent stories
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   character   character @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -732,6 +776,46 @@ model story {
   @@index([characterId])
   @@index([expiresAt])
   @@index([isActive])
+  @@index([mediaId])
+  @@index([sortOrder])
+}
+
+// ==========================================
+// PRIVATE CONTENT MODELS
+// ==========================================
+
+model private_content {
+  id          String                  @id @default(cuid())
+  characterId String
+  name        String
+  description String?                 @db.Text
+  tokenPrice  Int                     @default(0)
+  posterId    String?
+  sortOrder   Int                     @default(0)
+  isActive    Boolean                 @default(true)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  character  character               @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  poster     media?                  @relation("private_content_poster", fields: [posterId], references: [id])
+  mediaItems private_content_media[]
+
+  @@index([characterId])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model private_content_media {
+  id               String          @id @default(cuid())
+  privateContentId String
+  mediaId          String
+  sortOrder        Int             @default(0)
+  createdAt        DateTime        @default(now())
+
+  privateContent private_content @relation(fields: [privateContentId], references: [id], onDelete: Cascade)
+  media          media           @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([privateContentId])
   @@index([mediaId])
   @@index([sortOrder])
 }
@@ -853,26 +937,43 @@ model visual_novel_media {
 // ==========================================
 
 model ticket {
-  id           String         @id @default(cuid())
+  id           String            @id @default(cuid())
   userId       String
   assignedToId String?
   subject      String
   description  String
-  status       TicketStatus   @default(open)
-  priority     TicketPriority @default(normal)
-  category     TicketCategory @default(other)
+  status       TicketStatus      @default(open)
+  priority     TicketPriority    @default(normal)
+  category     TicketCategory    @default(other)
   resolvedAt   DateTime?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  user         user           @relation("ticket_user", fields: [userId], references: [id], onDelete: Cascade)
-  assignedTo   user?          @relation("ticket_assigned", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  user         user              @relation("ticket_user", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo   user?             @relation("ticket_assigned", fields: [assignedToId], references: [id], onDelete: SetNull)
   replies      ticket_reply[]
+  activities   ticket_activity[]
 
   @@index([userId])
   @@index([assignedToId])
   @@index([status])
   @@index([priority])
   @@index([category])
+  @@index([createdAt])
+}
+
+model ticket_activity {
+  id        String             @id @default(cuid())
+  ticketId  String
+  userId    String
+  type      TicketActivityType
+  content   String?            @db.Text
+  metadata  Json?
+  createdAt DateTime           @default(now())
+  ticket    ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([userId])
   @@index([createdAt])
 }
 
@@ -907,8 +1008,78 @@ model referral {
   affiliate      affiliate      @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   user           user           @relation(fields: [referredUserId], references: [id], onDelete: Cascade)
 
+  financial_transaction financial_transaction[]
+
   @@index([affiliateId])
   @@index([status])
+}
+
+// ==========================================
+// FINANCIAL LEDGER SYSTEM
+// ==========================================
+
+model financial_category {
+  id          String        @id @default(cuid())
+  name        String        @unique // Unique identifier (slug)
+  label       String // Display name
+  type        FinancialType // income | expense
+  group       String // Grouping (affiliates, infrastructure, ai, etc.)
+  description String? // Optional description
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  transactions financial_transaction[]
+
+  @@index([type])
+  @@index([group])
+  @@index([isActive])
+}
+
+model financial_transaction {
+  id          String        @id @default(cuid())
+  categoryId  String
+  type        FinancialType // Denormalized for fast queries
+  amount      Decimal       @db.Decimal(10, 4) // 4 decimals for small costs
+  currency    String        @default("USD")
+  description String
+
+  // Optional references
+  userId      String? // Related user
+  affiliateId String? // Related affiliate
+  referralId  String? // Related referral
+
+  // For unit costs (AI)
+  unitType  String? // "message", "image", "video", "audio"
+  unitCount Int? // Quantity
+  unitCost  Decimal? @db.Decimal(10, 6) // Cost per unit
+
+  // Metadata
+  externalId String? // External ID (invoice, etc.)
+  provider   String? // "runpod", "vercel", "prisma", etc.
+  metadata   Json?
+  notes      String?
+
+  // Period (for monthly expenses)
+  periodStart DateTime?
+  periodEnd   DateTime?
+
+  createdAt DateTime @default(now())
+  createdBy String? // Admin who created
+
+  // Relations
+  category  financial_category @relation(fields: [categoryId], references: [id])
+  user      user?              @relation(fields: [userId], references: [id])
+  affiliate affiliate?         @relation(fields: [affiliateId], references: [id])
+  referral  referral?          @relation(fields: [referralId], references: [id])
+
+  @@index([categoryId])
+  @@index([type])
+  @@index([userId])
+  @@index([affiliateId])
+  @@index([provider])
+  @@index([createdAt])
 }
 
 model session {
@@ -976,38 +1147,40 @@ model role_custom {
 // ==========================================
 
 model user {
-  id                  String              @id @default(cuid())
-  name                String
-  email               String              @unique
-  emailVerified       Boolean             @default(false)
-  image               String?
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @default(now()) @updatedAt
-  avatar              String?
-  nickname            String?
-  gender              String?
-  language            Language            @default(english)
-  notifications       Boolean             @default(true)
-  customRoleId        String?
-  tokenBalance        Int                 @default(0)
-  customRole          role_custom?        @relation("UserCustomRole", fields: [customRoleId], references: [id])
-  Post                Post[]
-  account             account[]
-  affiliate           affiliate?
-  character           character[]
-  character_image     character_image[]
-  chat                chat[]
-  collection          collection[]
-  referral            referral?
-  session             session[]
-  subscription        subscription?
-  token_transaction   token_transaction[]
-  media_folder        media_folder[]
-  visual_novel        visual_novel[]
-  tickets_created     ticket[]            @relation("ticket_user")
-  tickets_assigned    ticket[]            @relation("ticket_assigned")
-  ticket_reply        ticket_reply[]
-  invitations_created invitation[]        @relation("invitation_creator")
+  id                    String                  @id @default(cuid())
+  name                  String
+  email                 String                  @unique
+  emailVerified         Boolean                 @default(false)
+  image                 String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now()) @updatedAt
+  avatar                String?
+  nickname              String?
+  gender                String?
+  language              Language                @default(english)
+  notifications         Boolean                 @default(true)
+  customRoleId          String?
+  tokenBalance          Int                     @default(0)
+  customRole            role_custom?            @relation("UserCustomRole", fields: [customRoleId], references: [id])
+  Post                  Post[]
+  account               account[]
+  affiliate             affiliate?
+  character             character[]
+  character_image       character_image[]
+  chat                  chat[]
+  collection            collection[]
+  referral              referral?
+  session               session[]
+  subscription          subscription?
+  token_transaction     token_transaction[]
+  financial_transaction financial_transaction[]
+  media_folder          media_folder[]
+  visual_novel          visual_novel[]
+  tickets_created       ticket[]                @relation("ticket_user")
+  tickets_assigned      ticket[]                @relation("ticket_assigned")
+  ticket_reply          ticket_reply[]
+  ticket_activity       ticket_activity[]
+  invitations_created   invitation[]            @relation("invitation_creator")
 
   @@index([language])
   @@index([customRoleId])
@@ -1122,6 +1295,14 @@ enum TicketCategory {
   other
 }
 
+enum TicketActivityType {
+  note
+  status_change
+  priority_change
+  assigned
+  created
+}
+
 enum TokenTransactionType {
   subscription_renewal
   purchase
@@ -1129,7 +1310,13 @@ enum TokenTransactionType {
   chat_message
   voice_message
   video_generation
+  private_content_unlock
   refund
   admin_adjustment
   promotional
+}
+
+enum FinancialType {
+  income
+  expense
 }

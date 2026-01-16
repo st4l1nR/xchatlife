@@ -347,4 +347,226 @@ export const optionsRouter = createTRPCRouter({
         },
       };
     }),
+
+  /**
+   * Get all character options in a single call
+   * Fetches ALL options upfront so filtering can happen on the frontend
+   * without additional queries when gender/style changes
+   *
+   * OPTIMIZATION: Queries are executed in groups of 3-4 to avoid exceeding
+   * the connection pool limit of Prisma Postgres free tier
+   */
+  getAllCharacterOptions: publicProcedure.query(async ({ ctx }) => {
+    // Group 1: Base options (2 queries + media relations)
+    const [genders, styles] = await Promise.all([
+      ctx.db.character_gender.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, label: true, emoji: true },
+      }),
+      ctx.db.character_style.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, label: true, emoji: true },
+      }),
+    ]);
+
+    // Group 2: Variant options part 1 (3 queries + media relations)
+    const [rawEthnicities, rawHairStyles, rawHairColors] = await Promise.all([
+      ctx.db.character_ethnicity.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+      ctx.db.character_hair_style.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+      ctx.db.character_hair_color.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+    ]);
+
+    // Group 3: Variant options part 2 (3 queries + media relations)
+    const [rawEyeColors, rawBodyTypes, rawBreastSizes] = await Promise.all([
+      ctx.db.character_eye_color.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+      ctx.db.character_body_type.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+      ctx.db.character_breast_size.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          label: true,
+          genderId: true,
+          styleId: true,
+          image: { select: { url: true } },
+          video: { select: { url: true } },
+        },
+      }),
+    ]);
+
+    // Group 4: Universal options (3 queries + media relations)
+    const [rawPersonalities, rawRelationships, rawOccupations] =
+      await Promise.all([
+        ctx.db.character_personality.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          select: {
+            id: true,
+            name: true,
+            label: true,
+            genderId: true,
+            styleId: true,
+            image: { select: { url: true } },
+          },
+        }),
+        ctx.db.character_relationship.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          select: {
+            id: true,
+            name: true,
+            label: true,
+            genderId: true,
+            styleId: true,
+            image: { select: { url: true } },
+          },
+        }),
+        ctx.db.character_occupation.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          select: {
+            id: true,
+            name: true,
+            label: true,
+            genderId: true,
+            styleId: true,
+            emoji: true,
+          },
+        }),
+      ]);
+
+    // Transform variant options (keep genderId/styleId for filtering)
+    const transformVariantOption = (opt: {
+      id: string;
+      name: string;
+      label: string;
+      genderId: string;
+      styleId: string;
+      image: { url: string } | null;
+      video: { url: string } | null;
+    }) => ({
+      id: opt.id,
+      name: opt.name,
+      label: opt.label,
+      genderId: opt.genderId,
+      styleId: opt.styleId,
+      imageSrc: opt.image?.url ?? "",
+      videoSrc: opt.video?.url ?? null,
+    });
+
+    // Transform universal options with image (keep genderId/styleId for filtering)
+    const transformUniversalOption = (opt: {
+      id: string;
+      name: string;
+      label: string;
+      genderId: string;
+      styleId: string;
+      image: { url: string } | null;
+    }) => ({
+      id: opt.id,
+      name: opt.name,
+      label: opt.label,
+      genderId: opt.genderId,
+      styleId: opt.styleId,
+      imageSrc: opt.image?.url ?? null,
+    });
+
+    // Transform occupation (keep genderId/styleId for filtering)
+    const transformOccupation = (opt: {
+      id: string;
+      name: string;
+      label: string;
+      genderId: string;
+      styleId: string;
+      emoji: string | null;
+    }) => ({
+      id: opt.id,
+      name: opt.name,
+      label: opt.label,
+      genderId: opt.genderId,
+      styleId: opt.styleId,
+      emoji: opt.emoji,
+    });
+
+    return {
+      success: true,
+      data: {
+        genders,
+        styles,
+        // All options with genderId/styleId for frontend filtering
+        ethnicities: rawEthnicities.map(transformVariantOption),
+        hairStyles: rawHairStyles.map(transformVariantOption),
+        hairColors: rawHairColors.map(transformVariantOption),
+        eyeColors: rawEyeColors.map(transformVariantOption),
+        bodyTypes: rawBodyTypes.map(transformVariantOption),
+        breastSizes: rawBreastSizes.map(transformVariantOption),
+        personalities: rawPersonalities.map(transformUniversalOption),
+        relationships: rawRelationships.map(transformUniversalOption),
+        occupations: rawOccupations.map(transformOccupation),
+      },
+    };
+  }),
 });

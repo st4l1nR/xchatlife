@@ -29,6 +29,7 @@ export type MediaUploadItem = {
   id: string;
   url?: string;
   mediaType?: "image" | "video";
+  file?: File; // File object for regenerating preview on tab switch
 };
 
 export type ListCardMediaUploadProps = {
@@ -90,6 +91,7 @@ const SortableMediaItem: React.FC<SortableMediaItemProps> = ({
       <CardMediaUpload
         defaultMedia={item.url}
         defaultMediaType={item.mediaType}
+        file={item.file}
         aspectRatio={aspectRatio}
         enablePreview={true}
         onRemove={onRemove ? () => onRemove(item.id) : undefined}

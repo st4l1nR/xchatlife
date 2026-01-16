@@ -9,13 +9,14 @@ import React, {
 } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { TabGroup, TabPanels } from "@headlessui/react";
 import toast from "react-hot-toast";
 
 import { api } from "@/trpc/react";
+import { useMediaUpload } from "@/hooks/useMediaUpload";
 import { Button } from "../atoms/button";
 import { Spinner } from "../atoms/spinner";
 import SidebarCharactersCreateEdit from "../organisms/SidebarCharactersCreateEdit";
@@ -27,8 +28,10 @@ import TabCharactersCreateEdit3 from "../organisms/TabCharactersCreateEdit3";
 import TabCharactersCreateEdit4, {
   type PrivateContentItem,
 } from "../organisms/TabCharactersCreateEdit4";
+import DialogDeleteConfirmation from "../organisms/DialogDeleteConfirmation";
 import type { MediaUploadItem } from "../organisms/ListCardMediaUpload";
 import type { StoryUploadItem } from "../organisms/TabCharactersCreateEdit3";
+import type { ReelUploadItem } from "../organisms/TabCharactersCreateEdit2";
 import type { PrivateContentFormData } from "../organisms/DialogCreateUpdatePrivateContent";
 
 // ============================================================================
@@ -37,11 +40,15 @@ import type { PrivateContentFormData } from "../organisms/DialogCreateUpdatePriv
 
 const characterFormSchema = z.object({
   // Profile fields
+  avatarImage: z.any().optional(),
   posterImage: z.any().optional(),
   posterVideo: z.any().optional(),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  age: z.coerce.number().min(1, "Age is required").max(999),
+  age: z.coerce
+    .number()
+    .min(18, "Minimum age is 18")
+    .max(80, "Maximum age is 80"),
   gender: z.string().optional(),
   description: z.string().optional(),
   style: z.string().optional(),
@@ -54,6 +61,7 @@ const characterFormSchema = z.object({
   breastSize: z.string().optional(),
   occupation: z.string().optional(),
   relationship: z.string().optional(),
+  voice: z.string().optional(),
   // Reels & Stories
   reels: z.array(z.any()).optional(),
   stories: z.array(z.any()).optional(),
@@ -73,6 +81,7 @@ export type DashboardCharactersCreateUpdatePageMockData = {
     firstName: string;
     lastName: string;
     avatarSrc?: string;
+    avatarImage?: string;
     bannerSrc?: string;
     posterImage?: string;
     posterVideo?: string;
@@ -137,6 +146,15 @@ function DashboardCharactersCreateUpdatePageContent({
     mock?.privateContents ?? [],
   );
 
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{
+    type: "reel" | "story" | "private content";
+    id: string;
+    name?: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // ============================================================================
   // tRPC Queries (only when not using mock data)
   // ============================================================================
@@ -148,15 +166,30 @@ function DashboardCharactersCreateUpdatePageContent({
       { enabled: !mock && Boolean(id) },
     );
 
-  // Fetch gender and style options
-  const { data: genderStyleData, isLoading: isLoadingGenderStyle } =
-    api.options.getGenderAndStyleOptions.useQuery(undefined, {
-      enabled: !mock,
-    });
+  // Fetch private content for character
+  const { data: privateContentData } =
+    api.privateContent.getByCharacter.useQuery(
+      { characterId: id! },
+      { enabled: !mock && Boolean(id) },
+    );
+
+  // Validation functions for query enabled conditions (defined early for use in query)
+  const isValidGender = useCallback(
+    (v: string | undefined): v is "girl" | "men" | "trans" =>
+      v === "girl" || v === "men" || v === "trans",
+    [],
+  );
+  const isValidStyle = useCallback(
+    (v: string | undefined): v is "realistic" | "anime" =>
+      v === "realistic" || v === "anime",
+    [],
+  );
 
   // ============================================================================
-  // tRPC Mutations
+  // tRPC Mutations & Media Upload
   // ============================================================================
+
+  const { uploadFile } = useMediaUpload();
 
   const updateMutation = api.character.update.useMutation({
     onSuccess: () => {
@@ -168,6 +201,85 @@ function DashboardCharactersCreateUpdatePageContent({
       toast.error(error.message ?? "Failed to update character");
     },
   });
+
+  const createMutation = api.character.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Character created successfully");
+      void utils.character.getForDashboard.invalidate();
+      router.push(`/dashboard/characters/create-update?id=${data.characterId}`);
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to create character");
+    },
+  });
+
+  // Reel mutations
+  const createReelMutation = api.reel.create.useMutation({
+    onSuccess: () => {
+      void utils.character.getByIdForEdit.invalidate({ id: id! });
+    },
+  });
+
+  const deleteReelMutation = api.reel.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Reel deleted successfully");
+      void utils.character.getByIdForEdit.invalidate({ id: id! });
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to delete reel");
+    },
+  });
+
+  // Story mutations
+  const createStoryMutation = api.story.create.useMutation({
+    onSuccess: () => {
+      void utils.character.getByIdForEdit.invalidate({ id: id! });
+    },
+  });
+
+  const deleteStoryMutation = api.story.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Story deleted successfully");
+      void utils.character.getByIdForEdit.invalidate({ id: id! });
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to delete story");
+    },
+  });
+
+  // Private content mutations
+  const createPrivateContentMutation = api.privateContent.create.useMutation({
+    onSuccess: () => {
+      toast.success("Private content created successfully");
+      void utils.privateContent.getByCharacter.invalidate({ characterId: id! });
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to create private content");
+    },
+  });
+
+  const updatePrivateContentMutation = api.privateContent.update.useMutation({
+    onSuccess: () => {
+      toast.success("Private content updated successfully");
+      void utils.privateContent.getByCharacter.invalidate({ characterId: id! });
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to update private content");
+    },
+  });
+
+  const deletePrivateContentMutation = api.privateContent.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Private content deleted successfully");
+      void utils.privateContent.getByCharacter.invalidate({ characterId: id! });
+    },
+    onError: (error) => {
+      toast.error(error.message ?? "Failed to delete private content");
+    },
+  });
+
+  // Media record mutation
+  const createMediaRecordMutation = api.media.createMediaRecord.useMutation();
 
   // ============================================================================
   // Transform API data to component format
@@ -202,7 +314,7 @@ function DashboardCharactersCreateUpdatePageContent({
         thumbnailUrl?: string | null;
         mediaType: "video" | "image";
         sortOrder: number;
-        expiresAt: Date;
+        expiresAt: Date | null;
       }) => ({
         id: s.id,
         url: s.url,
@@ -211,6 +323,33 @@ function DashboardCharactersCreateUpdatePageContent({
       }),
     );
   }, [characterData?.data?.stories]);
+
+  // Transform private content data for display
+  const displayPrivateContents = useMemo((): PrivateContentItem[] => {
+    // If using mock data, use local state
+    if (mock) {
+      return privateContents;
+    }
+
+    // If using API data, transform it
+    if (privateContentData) {
+      return privateContentData.map((pc) => ({
+        id: pc.id,
+        name: pc.name,
+        imageSrc: pc.posterUrl ?? "/images/placeholder.jpg",
+        description: pc.description ?? undefined,
+        tokenCost: pc.tokenPrice,
+        locked: false,
+        media: pc.media?.map((m) => ({
+          id: m.id,
+          src: m.url,
+          type: m.mediaType as "image" | "video",
+        })),
+      }));
+    }
+
+    return privateContents;
+  }, [mock, privateContents, privateContentData]);
 
   // Get default values from mock data or API data
   const defaultValues = useMemo((): Partial<CharacterFormData> => {
@@ -257,6 +396,7 @@ function DashboardCharactersCreateUpdatePageContent({
         breastSize: data.breastSizeId,
         occupation: data.occupationId,
         relationship: data.relationshipId,
+        voice: data.voice,
         reels: transformedReels,
         stories: transformedStories,
         isPublic: data.isPublic,
@@ -280,6 +420,7 @@ function DashboardCharactersCreateUpdatePageContent({
       breastSize: "",
       occupation: "",
       relationship: "",
+      voice: "",
       reels: [],
       stories: [],
       isPublic: false,
@@ -298,30 +439,58 @@ function DashboardCharactersCreateUpdatePageContent({
   });
 
   const { handleSubmit, watch, setValue, reset } = methods;
-  const isPublic = watch("isPublic");
 
-  // Watch gender and style for variant options query
-  const watchedGender = watch("gender") as "girl" | "men" | "trans" | undefined;
-  const watchedStyle = watch("style") as "realistic" | "anime" | undefined;
+  // Use useWatch for specific fields to avoid full re-renders
+  const isPublic = useWatch({ control: methods.control, name: "isPublic" });
+  const watchedGender = useWatch({
+    control: methods.control,
+    name: "gender",
+  }) as "girl" | "men" | "trans" | undefined;
+  const watchedStyle = useWatch({ control: methods.control, name: "style" }) as
+    | "realistic"
+    | "anime"
+    | undefined;
 
-  // Fetch variant-specific options based on watched gender/style
-  const { data: variantOptionsData, isLoading: isLoadingVariantOptions } =
-    api.options.getVariantOptions.useQuery(
-      { gender: watchedGender!, style: watchedStyle! },
-      { enabled: !mock && Boolean(watchedGender) && Boolean(watchedStyle) },
+  // Use characterData values as fallback when form values are empty (before reset runs)
+  const effectiveGender = (watchedGender || characterData?.data?.gender) as
+    | "girl"
+    | "men"
+    | "trans"
+    | undefined;
+  const effectiveStyle = (watchedStyle || characterData?.data?.style) as
+    | "realistic"
+    | "anime"
+    | undefined;
+
+  // Fetch ALL character options once on page load (no refetch on gender/style change)
+  const { data: allOptionsData, isLoading: isLoadingOptions } =
+    api.options.getAllCharacterOptions.useQuery(undefined, {
+      enabled: !mock,
+      staleTime: 10 * 60 * 1000, // 10 minutes - static data
+      refetchOnWindowFocus: false,
+    });
+
+  // Get genderId and styleId for filtering options
+  const selectedGenderId = useMemo(() => {
+    if (!allOptionsData?.data || !effectiveGender) return null;
+    return (
+      allOptionsData.data.genders.find((g) => g.name === effectiveGender)?.id ??
+      null
     );
+  }, [allOptionsData, effectiveGender]);
 
-  // Fetch universal options (personalities, relationships, occupations)
-  const { data: universalOptionsData, isLoading: isLoadingUniversalOptions } =
-    api.options.getUniversalOptions.useQuery(
-      { gender: watchedGender!, style: watchedStyle! },
-      { enabled: !mock && Boolean(watchedGender) && Boolean(watchedStyle) },
+  const selectedStyleId = useMemo(() => {
+    if (!allOptionsData?.data || !effectiveStyle) return null;
+    return (
+      allOptionsData.data.styles.find((s) => s.name === effectiveStyle)?.id ??
+      null
     );
+  }, [allOptionsData, effectiveStyle]);
 
   // Transform gender and style options to SelectOption format
   const transformedGenderStyleOptions = useMemo(() => {
-    if (!genderStyleData?.data) return null;
-    const data = genderStyleData.data;
+    if (!allOptionsData?.data) return null;
+    const data = allOptionsData.data;
     return {
       genderOptions: data.genders.map((g) => ({
         value: g.name,
@@ -332,59 +501,87 @@ function DashboardCharactersCreateUpdatePageContent({
         label: s.label,
       })),
     };
-  }, [genderStyleData]);
+  }, [allOptionsData]);
 
-  // Transform variant options to SelectOption format
+  // Filter and transform variant options based on selected gender/style
   const transformedVariantOptions = useMemo(() => {
-    if (!variantOptionsData?.data) return null;
-    const data = variantOptionsData.data;
+    if (!allOptionsData?.data || !selectedGenderId || !selectedStyleId)
+      return null;
+    const data = allOptionsData.data;
+
+    // Filter helper
+    const filterByGenderStyle = <
+      T extends { genderId: string; styleId: string },
+    >(
+      items: T[],
+    ) =>
+      items.filter(
+        (item) =>
+          item.genderId === selectedGenderId &&
+          item.styleId === selectedStyleId,
+      );
+
     return {
-      ethnicityOptions: data.ethnicities.map((e) => ({
+      ethnicityOptions: filterByGenderStyle(data.ethnicities).map((e) => ({
         value: e.id,
         label: e.label,
       })),
-      hairStyleOptions: data.hairStyles.map((h) => ({
+      hairStyleOptions: filterByGenderStyle(data.hairStyles).map((h) => ({
         value: h.id,
         label: h.label,
       })),
-      hairColorOptions: data.hairColors.map((h) => ({
+      hairColorOptions: filterByGenderStyle(data.hairColors).map((h) => ({
         value: h.id,
         label: h.label,
       })),
-      eyeColorOptions: data.eyeColors.map((e) => ({
+      eyeColorOptions: filterByGenderStyle(data.eyeColors).map((e) => ({
         value: e.id,
         label: e.label,
       })),
-      bodyTypeOptions: data.bodyTypes.map((b) => ({
+      bodyTypeOptions: filterByGenderStyle(data.bodyTypes).map((b) => ({
         value: b.id,
         label: b.label,
       })),
-      breastSizeOptions: data.breastSizes.map((b) => ({
+      breastSizeOptions: filterByGenderStyle(data.breastSizes).map((b) => ({
         value: b.id,
         label: b.label,
       })),
     };
-  }, [variantOptionsData]);
+  }, [allOptionsData, selectedGenderId, selectedStyleId]);
 
-  // Transform universal options to SelectOption format
+  // Filter and transform universal options based on selected gender/style
   const transformedUniversalOptions = useMemo(() => {
-    if (!universalOptionsData?.data) return null;
-    const data = universalOptionsData.data;
+    if (!allOptionsData?.data || !selectedGenderId || !selectedStyleId)
+      return null;
+    const data = allOptionsData.data;
+
+    // Filter helper
+    const filterByGenderStyle = <
+      T extends { genderId: string; styleId: string },
+    >(
+      items: T[],
+    ) =>
+      items.filter(
+        (item) =>
+          item.genderId === selectedGenderId &&
+          item.styleId === selectedStyleId,
+      );
+
     return {
-      personalityOptions: data.personalities.map((p) => ({
+      personalityOptions: filterByGenderStyle(data.personalities).map((p) => ({
         value: p.id,
         label: p.label,
       })),
-      relationshipOptions: data.relationships.map((r) => ({
+      relationshipOptions: filterByGenderStyle(data.relationships).map((r) => ({
         value: r.id,
         label: r.label,
       })),
-      occupationOptions: data.occupations.map((o) => ({
+      occupationOptions: filterByGenderStyle(data.occupations).map((o) => ({
         value: o.id,
         label: o.label,
       })),
     };
-  }, [universalOptionsData]);
+  }, [allOptionsData, selectedGenderId, selectedStyleId]);
 
   // Reset form when character data loads
   useEffect(() => {
@@ -406,6 +603,7 @@ function DashboardCharactersCreateUpdatePageContent({
         breastSize: data.breastSizeId,
         occupation: data.occupationId,
         relationship: data.relationshipId,
+        voice: data.voice,
         reels: transformedReels,
         stories: transformedStories,
         isPublic: data.isPublic,
@@ -413,13 +611,10 @@ function DashboardCharactersCreateUpdatePageContent({
     }
   }, [characterData?.data, mock, reset, transformedReels, transformedStories]);
 
-  // Check if data is still loading
+  // Check if initial data is still loading (only for page-level spinner)
+  // Note: isLoadingOptions covers all options (genders, styles, and dependent options)
   const isLoadingData =
-    !mock &&
-    ((isEditMode && isLoadingCharacter) ||
-      isLoadingGenderStyle ||
-      isLoadingUniversalOptions ||
-      (watchedGender && watchedStyle && isLoadingVariantOptions));
+    !mock && ((isEditMode && isLoadingCharacter) || isLoadingOptions);
 
   // Get header props from form values or mock
   const firstName = watch("firstName");
@@ -465,6 +660,82 @@ function DashboardCharactersCreateUpdatePageContent({
       if (isEditMode && id) {
         setIsSaving(true);
         try {
+          // Process NEW reels (upload files and create records)
+          const newReels = (data.reels as ReelUploadItem[])?.filter(
+            (r) => r.id && r.id.startsWith("reel-") && r.file,
+          );
+
+          if (newReels && newReels.length > 0) {
+            toast.loading(`Uploading ${newReels.length} reel(s)...`, {
+              id: "upload-reels",
+            });
+
+            for (const reel of newReels) {
+              if (reel.file) {
+                // Upload video to R2
+                const uploadResult = await uploadFile(reel.file, "characters");
+
+                // Create media record
+                const mediaResult = await createMediaRecordMutation.mutateAsync(
+                  {
+                    key: uploadResult.key,
+                    url: uploadResult.publicUrl,
+                    mimeType: reel.file.type,
+                    size: reel.file.size,
+                  },
+                );
+
+                // Create reel record
+                await createReelMutation.mutateAsync({
+                  characterId: id,
+                  videoId: mediaResult.data.id,
+                });
+              }
+            }
+
+            toast.dismiss("upload-reels");
+            toast.success(`${newReels.length} reel(s) uploaded successfully`);
+          }
+
+          // Process NEW stories (upload files and create records)
+          const newStories = (data.stories as StoryUploadItem[])?.filter(
+            (s) => s.id && s.id.startsWith("story-") && s.file,
+          );
+
+          if (newStories && newStories.length > 0) {
+            toast.loading(`Uploading ${newStories.length} story(ies)...`, {
+              id: "upload-stories",
+            });
+
+            for (const story of newStories) {
+              if (story.file) {
+                // Upload media to R2
+                const uploadResult = await uploadFile(story.file, "characters");
+
+                // Create media record
+                const mediaResult = await createMediaRecordMutation.mutateAsync(
+                  {
+                    key: uploadResult.key,
+                    url: uploadResult.publicUrl,
+                    mimeType: story.file.type,
+                    size: story.file.size,
+                  },
+                );
+
+                // Create story record (permanent - no expiration)
+                await createStoryMutation.mutateAsync({
+                  characterId: id,
+                  mediaId: mediaResult.data.id,
+                });
+              }
+            }
+
+            toast.dismiss("upload-stories");
+            toast.success(
+              `${newStories.length} story(ies) uploaded successfully`,
+            );
+          }
+
           // Build reorder arrays from current form data
           // Only include items that have a persisted ID (not temporary client-side IDs)
           const reelOrder = data.reels
@@ -503,16 +774,135 @@ function DashboardCharactersCreateUpdatePageContent({
             storyOrder:
               storyOrder && storyOrder.length > 0 ? storyOrder : undefined,
           });
+        } catch (error) {
+          console.error("Error saving character:", error);
+          toast.dismiss("upload-reels");
+          toast.dismiss("upload-stories");
         } finally {
           setIsSaving(false);
         }
       } else {
-        // Create mode - not yet implemented in this form
-        // The existing character creation uses a different multi-step flow
-        toast.error("Create mode is not yet supported in this form");
+        // Create mode - upload media and create character
+        setIsSaving(true);
+        try {
+          // Validate required fields for create mode
+          if (!data.gender || !isValidGender(data.gender)) {
+            toast.error("Please select a gender");
+            return;
+          }
+          if (!data.style || !isValidStyle(data.style)) {
+            toast.error("Please select a style");
+            return;
+          }
+          if (!data.voice) {
+            toast.error("Please select a voice");
+            return;
+          }
+          if (
+            !data.ethnicity ||
+            !data.personality ||
+            !data.hairStyle ||
+            !data.hairColor ||
+            !data.eyeColor ||
+            !data.bodyType ||
+            !data.breastSize ||
+            !data.occupation ||
+            !data.relationship
+          ) {
+            toast.error("Please fill in all attribute fields");
+            return;
+          }
+          if (!data.posterImage || !data.posterVideo) {
+            toast.error("Please upload both poster image and video");
+            return;
+          }
+
+          // Upload poster image to R2
+          let posterUrl: string;
+          if (data.posterImage instanceof File) {
+            toast.loading("Uploading poster image...", { id: "upload-poster" });
+            const posterResult = await uploadFile(
+              data.posterImage,
+              "characters",
+            );
+            posterUrl = posterResult.publicUrl;
+            toast.dismiss("upload-poster");
+          } else if (typeof data.posterImage === "string") {
+            posterUrl = data.posterImage;
+          } else {
+            toast.error("Invalid poster image");
+            return;
+          }
+
+          // Upload poster video to R2
+          let videoUrl: string;
+          if (data.posterVideo instanceof File) {
+            toast.loading("Uploading poster video...", { id: "upload-video" });
+            const videoResult = await uploadFile(
+              data.posterVideo,
+              "characters",
+            );
+            videoUrl = videoResult.publicUrl;
+            toast.dismiss("upload-video");
+          } else if (typeof data.posterVideo === "string") {
+            videoUrl = data.posterVideo;
+          } else {
+            toast.error("Invalid poster video");
+            return;
+          }
+
+          // Combine firstName and lastName into name
+          const name = `${data.firstName} ${data.lastName}`.trim();
+          if (name.length < 2 || name.length > 20) {
+            toast.error("Name must be between 2 and 20 characters");
+            return;
+          }
+
+          // Create the character
+          await createMutation.mutateAsync({
+            characterType: data.gender,
+            style: data.style,
+            name,
+            age: data.age,
+            voice: data.voice,
+            posterUrl,
+            videoUrl,
+            isPublic: data.isPublic,
+            // Option IDs
+            ethnicityId: data.ethnicity,
+            personalityId: data.personality,
+            hairStyleId: data.hairStyle,
+            hairColorId: data.hairColor,
+            eyeColorId: data.eyeColor,
+            bodyTypeId: data.bodyType,
+            breastSizeId: data.breastSize,
+            occupationId: data.occupation,
+            relationshipId: data.relationship,
+          });
+        } catch (error) {
+          console.error("Error creating character:", error);
+          toast.dismiss("upload-poster");
+          toast.dismiss("upload-video");
+          // Error toast is handled by mutation onError
+        } finally {
+          setIsSaving(false);
+        }
       }
     },
-    [id, mock, privateContents, isEditMode, updateMutation],
+    [
+      id,
+      mock,
+      privateContents,
+      isEditMode,
+      updateMutation,
+      createMutation,
+      uploadFile,
+      isValidGender,
+      isValidStyle,
+      createMediaRecordMutation,
+      createReelMutation,
+      createStoryMutation,
+    ],
   );
 
   const handlePublishToggle = useCallback(async () => {
@@ -557,52 +947,239 @@ function DashboardCharactersCreateUpdatePageContent({
 
   // Private content handlers
   const handleCreatePrivateContent = useCallback(
-    (data: PrivateContentFormData) => {
-      console.log("Creating private content:", data);
-      const newItem: PrivateContentItem = {
-        id: `pc-${Date.now()}`,
-        imageSrc: data.posterUrl ?? "/images/placeholder.jpg",
-        description: data.description,
-        name: data.name,
-        tokenCost: data.tokenPrice,
-        locked: false,
-        media: data.media?.map((m) => ({
-          id: m.id,
-          src: m.url ?? "",
-          type: m.mediaType ?? "image",
-        })),
-      };
-      setPrivateContents((prev) => [...prev, newItem]);
-      toast.success("Private content created");
+    async (data: PrivateContentFormData) => {
+      if (mock) {
+        // Mock mode - local state only
+        const newItem: PrivateContentItem = {
+          id: `pc-${Date.now()}`,
+          imageSrc: data.posterUrl ?? "/images/placeholder.jpg",
+          description: data.description,
+          name: data.name,
+          tokenCost: data.tokenPrice,
+          locked: false,
+          media: data.media?.map((m) => ({
+            id: m.id,
+            src: m.url ?? "",
+            type: m.mediaType ?? "image",
+          })),
+        };
+        setPrivateContents((prev) => [...prev, newItem]);
+        toast.success("Private content created");
+        return;
+      }
+
+      // Real API call
+      if (!id) {
+        toast.error("Character must be saved first");
+        return;
+      }
+
+      try {
+        toast.loading("Uploading private content...", { id: "upload-pc" });
+
+        // Upload poster if it's a File
+        let posterUrl = data.posterUrl;
+        if (data.posterFile) {
+          const posterResult = await uploadFile(data.posterFile, "characters");
+          posterUrl = posterResult.publicUrl;
+        }
+
+        // Upload media files
+        const uploadedMedia: { url: string; mediaType: "image" | "video" }[] =
+          [];
+        for (const item of data.media ?? []) {
+          if (item.file) {
+            const mediaResult = await uploadFile(item.file, "characters");
+            uploadedMedia.push({
+              url: mediaResult.publicUrl,
+              mediaType: item.mediaType ?? "image",
+            });
+          } else if (item.url && !item.url.startsWith("blob:")) {
+            // Keep existing URLs (for edit mode)
+            uploadedMedia.push({
+              url: item.url,
+              mediaType: item.mediaType ?? "image",
+            });
+          }
+        }
+
+        toast.dismiss("upload-pc");
+
+        await createPrivateContentMutation.mutateAsync({
+          characterId: id,
+          name: data.name,
+          description: data.description,
+          tokenPrice: data.tokenPrice,
+          posterUrl,
+          mediaUrls: uploadedMedia,
+        });
+      } catch (error) {
+        toast.dismiss("upload-pc");
+        console.error("Error creating private content:", error);
+      }
     },
-    [],
+    [mock, id, createPrivateContentMutation, uploadFile],
   );
 
   const handleUpdatePrivateContent = useCallback(
-    (contentId: string, data: PrivateContentFormData) => {
-      console.log("Updating private content:", { contentId, data });
-      setPrivateContents((prev) =>
-        prev.map((item) =>
-          item.id === contentId
-            ? {
-                ...item,
-                imageSrc: data.posterUrl ?? item.imageSrc,
-                description: data.description,
-                name: data.name,
-                tokenCost: data.tokenPrice,
-                media: data.media?.map((m) => ({
-                  id: m.id,
-                  src: m.url ?? "",
-                  type: m.mediaType ?? "image",
-                })),
-              }
-            : item,
-        ),
-      );
-      toast.success("Private content updated");
+    async (contentId: string, data: PrivateContentFormData) => {
+      if (mock) {
+        // Mock mode - local state only
+        setPrivateContents((prev) =>
+          prev.map((item) =>
+            item.id === contentId
+              ? {
+                  ...item,
+                  imageSrc: data.posterUrl ?? item.imageSrc,
+                  description: data.description,
+                  name: data.name,
+                  tokenCost: data.tokenPrice,
+                  media: data.media?.map((m) => ({
+                    id: m.id,
+                    src: m.url ?? "",
+                    type: m.mediaType ?? "image",
+                  })),
+                }
+              : item,
+          ),
+        );
+        toast.success("Private content updated");
+        return;
+      }
+
+      // Real API call
+      try {
+        toast.loading("Updating private content...", { id: "update-pc" });
+
+        // Upload poster if it's a new File
+        let posterUrl = data.posterUrl;
+        if (data.posterFile) {
+          const posterResult = await uploadFile(data.posterFile, "characters");
+          posterUrl = posterResult.publicUrl;
+        }
+
+        // Upload media files
+        const uploadedMedia: { url: string; mediaType: "image" | "video" }[] =
+          [];
+        for (const item of data.media ?? []) {
+          if (item.file) {
+            const mediaResult = await uploadFile(item.file, "characters");
+            uploadedMedia.push({
+              url: mediaResult.publicUrl,
+              mediaType: item.mediaType ?? "image",
+            });
+          } else if (item.url && !item.url.startsWith("blob:")) {
+            // Keep existing URLs
+            uploadedMedia.push({
+              url: item.url,
+              mediaType: item.mediaType ?? "image",
+            });
+          }
+        }
+
+        toast.dismiss("update-pc");
+
+        await updatePrivateContentMutation.mutateAsync({
+          id: contentId,
+          name: data.name,
+          description: data.description,
+          tokenPrice: data.tokenPrice,
+          posterUrl,
+          mediaUrls: uploadedMedia.length > 0 ? uploadedMedia : undefined,
+        });
+      } catch (error) {
+        toast.dismiss("update-pc");
+        console.error("Error updating private content:", error);
+      }
     },
-    [],
+    [mock, updatePrivateContentMutation, uploadFile],
   );
+
+  // Delete request handlers
+  const handleRequestDeleteReel = useCallback((reelId: string) => {
+    setItemToDelete({ type: "reel", id: reelId });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleRequestDeleteStory = useCallback((storyId: string) => {
+    setItemToDelete({ type: "story", id: storyId });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleRequestDeletePrivateContent = useCallback(
+    (contentId: string) => {
+      const content = displayPrivateContents.find((c) => c.id === contentId);
+      setItemToDelete({
+        type: "private content",
+        id: contentId,
+        name: content?.name,
+      });
+      setDeleteDialogOpen(true);
+    },
+    [displayPrivateContents],
+  );
+
+  // Delete confirmation handler
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!itemToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      switch (itemToDelete.type) {
+        case "reel":
+          await deleteReelMutation.mutateAsync({ id: itemToDelete.id });
+          // Also remove from form state
+          setValue(
+            "reels",
+            (watch("reels") as ReelUploadItem[])?.filter(
+              (r) => r.id !== itemToDelete.id,
+            ) ?? [],
+          );
+          break;
+        case "story":
+          await deleteStoryMutation.mutateAsync({ id: itemToDelete.id });
+          // Also remove from form state
+          setValue(
+            "stories",
+            (watch("stories") as StoryUploadItem[])?.filter(
+              (s) => s.id !== itemToDelete.id,
+            ) ?? [],
+          );
+          break;
+        case "private content":
+          if (mock) {
+            setPrivateContents((prev) =>
+              prev.filter((item) => item.id !== itemToDelete.id),
+            );
+            toast.success("Private content deleted");
+          } else {
+            await deletePrivateContentMutation.mutateAsync({
+              id: itemToDelete.id,
+            });
+          }
+          break;
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+    }
+  }, [
+    itemToDelete,
+    mock,
+    deleteReelMutation,
+    deleteStoryMutation,
+    deletePrivateContentMutation,
+    setValue,
+    watch,
+  ]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+  }, []);
 
   // ============================================================================
   // Render
@@ -628,7 +1205,9 @@ function DashboardCharactersCreateUpdatePageContent({
     mock?.character ??
     (characterData?.data
       ? {
-          avatarSrc: characterData.data.posterImage,
+          avatarSrc:
+            characterData.data.avatarImage ?? characterData.data.posterImage,
+          avatarImage: characterData.data.avatarImage,
           bannerSrc: undefined,
           posterImage: characterData.data.posterImage,
           posterVideo: characterData.data.posterVideo,
@@ -657,7 +1236,7 @@ function DashboardCharactersCreateUpdatePageContent({
           <div className="flex">
             {/* Left Sidebar - Sticky */}
             <aside className="bg-card border-border sticky top-0 hidden h-screen w-64 shrink-0 border-r p-4 md:block">
-              <SidebarCharactersCreateEdit />
+              <SidebarCharactersCreateEdit isEditMode={isEditMode} />
             </aside>
 
             {/* Right Content Area */}
@@ -672,6 +1251,7 @@ function DashboardCharactersCreateUpdatePageContent({
                     role={characterDisplayData?.style}
                     joinedDate={isEditMode ? "Member" : undefined}
                     bannerSrc={characterDisplayData?.bannerSrc}
+                    defaultAvatarImage={characterDisplayData?.avatarImage}
                     defaultPosterImage={characterDisplayData?.posterImage}
                     defaultPosterVideo={characterDisplayData?.posterVideo}
                     {...dropdownOptions}
@@ -680,18 +1260,23 @@ function DashboardCharactersCreateUpdatePageContent({
                   {/* Tab 2: Reels */}
                   <TabCharactersCreateEdit2
                     defaultReels={characterDisplayData?.reels}
+                    onRequestDelete={handleRequestDeleteReel}
                   />
 
                   {/* Tab 3: Stories */}
                   <TabCharactersCreateEdit3
                     defaultStories={characterDisplayData?.stories}
+                    onRequestDelete={handleRequestDeleteStory}
                   />
 
                   {/* Tab 4: Private Content */}
                   <TabCharactersCreateEdit4
-                    privateContents={privateContents}
+                    privateContents={displayPrivateContents}
                     onCreatePrivateContent={handleCreatePrivateContent}
                     onUpdatePrivateContent={handleUpdatePrivateContent}
+                    onRequestDelete={handleRequestDeletePrivateContent}
+                    isCreating={createPrivateContentMutation.isPending}
+                    isUpdating={updatePrivateContentMutation.isPending}
                   />
                 </TabPanels>
               </main>
@@ -703,21 +1288,33 @@ function DashboardCharactersCreateUpdatePageContent({
                     Discard
                   </Button>
                   <Button type="submit" color="primary" loading={isSaving}>
-                    Save Changes
+                    {isEditMode ? "Save Changes" : "Create Character"}
                   </Button>
-                  <Button
-                    type="button"
-                    color="primary"
-                    onClick={handlePublishToggle}
-                    loading={isPublishing}
-                  >
-                    {isPublic ? "Unpublish" : "Publish"}
-                  </Button>
+                  {isEditMode && (
+                    <Button
+                      type="button"
+                      color="primary"
+                      onClick={handlePublishToggle}
+                      loading={isPublishing}
+                    >
+                      {isPublic ? "Unpublish" : "Publish"}
+                    </Button>
+                  )}
                 </div>
               </footer>
             </div>
           </div>
         </TabGroup>
+
+        {/* Delete Confirmation Dialog */}
+        <DialogDeleteConfirmation
+          open={deleteDialogOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          loading={isDeleting}
+          itemType={itemToDelete?.type ?? "reel"}
+          itemName={itemToDelete?.name}
+        />
       </form>
     </FormProvider>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import clsx from "clsx";
 import { TabPanel } from "@headlessui/react";
 import { useFormContext, Controller } from "react-hook-form";
@@ -10,6 +10,7 @@ import { Input } from "../atoms/input";
 import { Textarea } from "../atoms/textarea";
 import { Field, Label, ErrorMessage } from "../atoms/fieldset";
 import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
+import { VOICE_OPTIONS } from "../pages/CreateCharacterPage";
 
 export type SelectOption = {
   value: string;
@@ -25,6 +26,7 @@ export type TabCharactersCreateEdit1Props = {
   joinedDate?: string;
   bannerSrc?: string;
   // Default media (for edit mode)
+  defaultAvatarImage?: string;
   defaultPosterImage?: string;
   defaultPosterVideo?: string;
   // Dropdown options (passed from parent)
@@ -50,6 +52,7 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
   joinedDate,
   bannerSrc,
   // Default media
+  defaultAvatarImage,
   defaultPosterImage,
   defaultPosterVideo,
   // Dropdown options
@@ -68,18 +71,75 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
   const {
     register,
     control,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext();
+
+  // Watch form values for reactive header updates
+  const watchedFirstName = watch("firstName");
+  const watchedLastName = watch("lastName");
+  const watchedAvatarImage = watch("avatarImage");
+  const watchedPosterImage = watch("posterImage");
+
+  // Compute display name from form values or fallback to prop
+  const displayName = useMemo(() => {
+    const formName =
+      watchedFirstName || watchedLastName
+        ? `${watchedFirstName || ""} ${watchedLastName || ""}`.trim()
+        : "";
+    return formName || name;
+  }, [watchedFirstName, watchedLastName, name]);
+
+  // Compute avatar source - prioritize: avatarImage file > posterImage file > avatarSrc prop > defaultAvatarImage > defaultPosterImage
+  const [displayAvatarSrc, setDisplayAvatarSrc] = useState<
+    string | null | undefined
+  >(avatarSrc ?? defaultAvatarImage ?? defaultPosterImage);
+
+  // Generate object URL from files and cleanup on change/unmount
+  useEffect(() => {
+    let objectUrl: string | null = null;
+
+    if (watchedAvatarImage instanceof File) {
+      objectUrl = URL.createObjectURL(watchedAvatarImage);
+      setDisplayAvatarSrc(objectUrl);
+    } else if (watchedPosterImage instanceof File) {
+      objectUrl = URL.createObjectURL(watchedPosterImage);
+      setDisplayAvatarSrc(objectUrl);
+    } else {
+      setDisplayAvatarSrc(
+        avatarSrc ?? defaultAvatarImage ?? defaultPosterImage,
+      );
+    }
+
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [
+    watchedAvatarImage,
+    watchedPosterImage,
+    avatarSrc,
+    defaultAvatarImage,
+    defaultPosterImage,
+  ]);
+
+  // Handle avatar upload from header
+  const handleUploadAvatar = (file: File) => {
+    setValue("avatarImage", file);
+  };
 
   return (
     <TabPanel className={clsx("space-y-6", className)}>
       {/* Header - reuse HeaderUserCharacter */}
       <HeaderUserCharacter
-        name={name}
-        avatarSrc={avatarSrc}
+        name={displayName}
+        avatarSrc={displayAvatarSrc}
         role={role}
         joinedDate={joinedDate}
         bannerSrc={bannerSrc}
+        onUploadAvatar={handleUploadAvatar}
       />
 
       {/* Media Upload Section */}
@@ -97,6 +157,7 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
                 }}
                 defaultMedia={defaultPosterImage}
                 defaultMediaType="image"
+                file={field.value instanceof File ? field.value : undefined}
                 onChange={(file) => field.onChange(file)}
                 error={fieldState.error?.message}
               />
@@ -114,6 +175,7 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
                 accept={{ "video/*": [".mp4", ".webm", ".mov"] }}
                 defaultMedia={defaultPosterVideo}
                 defaultMediaType="video"
+                file={field.value instanceof File ? field.value : undefined}
                 onChange={(file) => field.onChange(file)}
                 error={fieldState.error?.message}
               />
@@ -151,43 +213,6 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               <ErrorMessage>{errors.lastName.message as string}</ErrorMessage>
             )}
           </Field>
-
-          <Field>
-            <Label>Age</Label>
-            <Input
-              type="number"
-              placeholder="Enter age"
-              {...register("age")}
-              data-invalid={errors.age ? true : undefined}
-            />
-            {errors.age && (
-              <ErrorMessage>{errors.age.message as string}</ErrorMessage>
-            )}
-          </Field>
-
-          <Field>
-            <Label>Gender</Label>
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <Listbox
-                  value={field.value ?? ""}
-                  onChange={field.onChange}
-                  placeholder="Select gender"
-                >
-                  {genderOptions.map((option) => (
-                    <ListboxOption key={option.value} value={option.value}>
-                      <ListboxLabel>{option.label}</ListboxLabel>
-                    </ListboxOption>
-                  ))}
-                </Listbox>
-              )}
-            />
-            {errors.gender && (
-              <ErrorMessage>{errors.gender.message as string}</ErrorMessage>
-            )}
-          </Field>
         </div>
 
         <div className="mt-4">
@@ -214,6 +239,45 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
           Attributes
         </h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Age */}
+          <Field>
+            <Label>Age</Label>
+            <Input
+              type="number"
+              placeholder="Enter age"
+              {...register("age")}
+              data-invalid={errors.age ? true : undefined}
+            />
+            {errors.age && (
+              <ErrorMessage>{errors.age.message as string}</ErrorMessage>
+            )}
+          </Field>
+
+          {/* Gender */}
+          <Field>
+            <Label>Gender</Label>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <Listbox
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  placeholder="Select gender"
+                >
+                  {genderOptions.map((option) => (
+                    <ListboxOption key={option.value} value={option.value}>
+                      <ListboxLabel>{option.label}</ListboxLabel>
+                    </ListboxOption>
+                  ))}
+                </Listbox>
+              )}
+            />
+            {errors.gender && (
+              <ErrorMessage>{errors.gender.message as string}</ErrorMessage>
+            )}
+          </Field>
+
           {/* Style */}
           <Field>
             <Label>Style</Label>
@@ -465,6 +529,33 @@ const TabCharactersCreateEdit1: React.FC<TabCharactersCreateEdit1Props> = ({
               <ErrorMessage>
                 {errors.relationship.message as string}
               </ErrorMessage>
+            )}
+          </Field>
+
+          {/* Voice */}
+          <Field>
+            <Label>Voice</Label>
+            <Controller
+              name="voice"
+              control={control}
+              render={({ field }) => (
+                <Listbox
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  placeholder="Select voice"
+                >
+                  {VOICE_OPTIONS.map((option) => (
+                    <ListboxOption key={option.value} value={option.value}>
+                      <ListboxLabel>
+                        {option.label} - {option.description}
+                      </ListboxLabel>
+                    </ListboxOption>
+                  ))}
+                </Listbox>
+              )}
+            />
+            {errors.voice && (
+              <ErrorMessage>{errors.voice.message as string}</ErrorMessage>
             )}
           </Field>
         </div>

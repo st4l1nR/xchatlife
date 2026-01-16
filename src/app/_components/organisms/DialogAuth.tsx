@@ -53,6 +53,11 @@ export type DialogAuthProps = {
    * When true, shows loading skeleton while validating invitation token
    */
   isValidating?: boolean;
+  /**
+   * Called after successful authentication, before onClose.
+   * Use this to trigger actions that should happen after auth succeeds.
+   */
+  onAuthSuccess?: () => void;
 };
 
 // ============================================================================
@@ -477,6 +482,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
   onSuccessRedirect,
   inviteMode = false,
   isValidating = false,
+  onAuthSuccess,
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -484,6 +490,7 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
 
   const markInvitationUsed = api.invitation.markUsed.useMutation();
   const acceptInvitation = api.invitation.acceptInvitation.useMutation();
+  const utils = api.useUtils();
 
   const handleSuccessfulAuth = async (userId?: string) => {
     await refetchSession();
@@ -510,14 +517,40 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
       );
     }
 
+    onAuthSuccess?.();
     onClose();
 
-    // Redirect after successful auth
-    if (onSuccessRedirect) {
-      router.push(onSuccessRedirect);
-    } else if (invitation) {
-      // Invited users go to dashboard
-      router.push("/dashboard");
+    // If onAuthSuccess is provided, skip redirect - caller handles post-auth behavior
+    if (onAuthSuccess) {
+      return;
+    }
+
+    // Check user role and redirect accordingly
+    try {
+      const userData = await utils.auth.getCurrentUser.fetch();
+      const roleName = userData?.data?.customRole?.name?.toUpperCase();
+
+      // If user has a role that is NOT "CUSTOMER", redirect to dashboard
+      if (roleName && roleName !== "CUSTOMER") {
+        router.push("/dashboard");
+        return;
+      }
+
+      // For Customer role: only redirect if explicitly requested or invitation
+      if (onSuccessRedirect) {
+        router.push(onSuccessRedirect);
+      } else if (invitation) {
+        // Invited users go to dashboard
+        router.push("/dashboard");
+      }
+      // Otherwise, just close the dialog and stay on the current page
+    } catch {
+      // If we can't fetch user data, fallback to redirect logic
+      if (onSuccessRedirect) {
+        router.push(onSuccessRedirect);
+      } else if (invitation) {
+        router.push("/dashboard");
+      }
     }
   };
 

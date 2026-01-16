@@ -29,6 +29,7 @@ export type TabCharactersCreateEdit4Props = {
   // Dialog handlers
   onCreatePrivateContent?: (data: PrivateContentFormData) => void;
   onUpdatePrivateContent?: (id: string, data: PrivateContentFormData) => void;
+  onRequestDelete?: (id: string) => void;
   // Loading states for dialog submission
   isCreating?: boolean;
   isUpdating?: boolean;
@@ -44,6 +45,7 @@ const TabCharactersCreateEdit4: React.FC<TabCharactersCreateEdit4Props> = ({
   loading = false,
   onCreatePrivateContent,
   onUpdatePrivateContent,
+  onRequestDelete,
   isCreating = false,
   isUpdating = false,
 }) => {
@@ -102,12 +104,13 @@ const TabCharactersCreateEdit4: React.FC<TabCharactersCreateEdit4Props> = ({
     ],
   );
 
-  // Map items to include onUpdate callback and set locked=false
-  const itemsWithEditHandler: CardPrivateContentProps[] = privateContents.map(
+  // Map items to include onUpdate and onDelete callbacks and set locked=false
+  const itemsWithHandlers: CardPrivateContentProps[] = privateContents.map(
     (item) => ({
       ...item,
       locked: false,
       onUpdate: () => handleEditClick(item),
+      onDelete: onRequestDelete ? () => onRequestDelete(item.id) : undefined,
     }),
   );
 
@@ -130,7 +133,7 @@ const TabCharactersCreateEdit4: React.FC<TabCharactersCreateEdit4Props> = ({
       <ListCardPrivateContent
         layout="grid"
         loading={loading}
-        items={itemsWithEditHandler}
+        items={itemsWithHandlers}
         emptyStateTitle="No private content yet"
         emptyStateDescription="Add private content for your character by clicking the button above."
       />

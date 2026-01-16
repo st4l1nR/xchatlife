@@ -26,6 +26,8 @@ import {
   EllipsisVerticalIcon,
   SparklesIcon,
   UserIcon,
+  PencilIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 
 export type CharacterStyleType = "anime" | "realistic";
@@ -59,7 +61,8 @@ export type TableCharacterProps = {
   onPageChange?: (page: number) => void;
   onDelete?: (id: string) => void;
   onView?: (id: string) => void;
-  onMore?: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onPublish?: (id: string) => void;
 };
 
 const TableCharacter: React.FC<TableCharacterProps> = ({
@@ -74,7 +77,8 @@ const TableCharacter: React.FC<TableCharacterProps> = ({
   onPageChange,
   onDelete,
   onView,
-  onMore,
+  onEdit,
+  onPublish,
 }) => {
   const columnHelper = createColumnHelper<TableCharacterItem>();
 
@@ -151,40 +155,52 @@ const TableCharacter: React.FC<TableCharacterProps> = ({
       },
     }),
 
-    // ACTION Column - Delete, View, More buttons
+    // ACTION Column - Delete, View, Edit buttons + Dropdown with Publish/Unpublish
     columnHelper.display({
       id: "actions",
       header: "Action",
-      cell: (info) => (
-        <div className="flex items-center justify-end gap-1">
-          <button
-            type="button"
-            onClick={() => onDelete?.(info.row.original.id)}
-            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
-            aria-label="Delete character"
-          >
-            <TrashIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onView?.(info.row.original.id)}
-            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
-            aria-label="View character"
-          >
-            <EyeIcon className="size-4" />
-          </button>
-          <Dropdown>
-            <DropdownButton plain className="p-1.5">
-              <EllipsisVerticalIcon className="size-4" />
-            </DropdownButton>
-            <DropdownMenu anchor="bottom end">
-              <DropdownItem onClick={() => onMore?.(info.row.original.id)}>
-                More options
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-      ),
+      cell: (info) => {
+        const isPublished = info.row.original.status === "published";
+        return (
+          <div className="flex items-center justify-end gap-1">
+            <button
+              type="button"
+              onClick={() => onDelete?.(info.row.original.id)}
+              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
+              aria-label="Delete character"
+            >
+              <TrashIcon className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onView?.(info.row.original.id)}
+              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
+              aria-label="View character"
+            >
+              <EyeIcon className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onEdit?.(info.row.original.id)}
+              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
+              aria-label="Edit character"
+            >
+              <PencilIcon className="size-4" />
+            </button>
+            <Dropdown>
+              <DropdownButton plain className="p-1.5">
+                <EllipsisVerticalIcon className="size-4" />
+              </DropdownButton>
+              <DropdownMenu anchor="bottom end">
+                <DropdownItem onClick={() => onPublish?.(info.row.original.id)}>
+                  <GlobeAltIcon className="size-4" />
+                  {isPublished ? "Unpublish" : "Publish"}
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        );
+      },
     }),
   ];
 

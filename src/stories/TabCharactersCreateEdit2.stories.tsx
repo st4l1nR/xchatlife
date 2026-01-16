@@ -73,6 +73,11 @@ const meta = {
     defaultReels: {
       description: "Default reels for edit mode",
     },
+    onRequestDelete: {
+      action: "onRequestDelete",
+      description:
+        "Callback when user requests to delete an existing reel (triggers confirmation dialog)",
+    },
   },
   decorators: [
     (Story) => (
@@ -155,6 +160,38 @@ export const ManyReels: Story = {
       description: {
         story:
           "Shows the component with many reels displaying the grid layout.",
+      },
+    },
+  },
+};
+
+// Create mock reels with persisted IDs (without "reel-" prefix)
+const createPersistedReels = (count: number): MediaUploadItem[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `persisted-${i + 1}`,
+    url: sampleVideo,
+    mediaType: "video" as const,
+  }));
+};
+
+export const WithDeleteConfirmation: Story = {
+  render: (args) => (
+    <FormWrapper defaultValues={{ reels: createPersistedReels(3) }}>
+      <TabCharactersCreateEdit2
+        {...args}
+        defaultReels={createPersistedReels(3)}
+        onRequestDelete={(id) => alert(`Delete requested for reel: ${id}`)}
+      />
+    </FormWrapper>
+  ),
+  args: {
+    defaultReels: createPersistedReels(3),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates delete confirmation flow. Click X on a reel to trigger the onRequestDelete callback. Persisted reels (without 'reel-' prefix) trigger the confirmation dialog.",
       },
     },
   },

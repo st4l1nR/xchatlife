@@ -4,7 +4,9 @@ import React, { useState, useMemo, useCallback, Suspense } from "react";
 import clsx from "clsx";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 import TableCharacter from "../organisms/TableCharacter";
+import DialogDeleteConfirmation from "../organisms/DialogDeleteConfirmation";
 import { Button } from "../atoms/button";
 import { Input, InputGroup } from "../atoms/input";
 import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
@@ -76,6 +78,13 @@ function DashboardCharactersPageContent({
   // Suppress unused variable warning - will be used when dialog is implemented
   void isCreateDialogOpen;
 
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
   // Update URL params helper
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
@@ -135,6 +144,9 @@ function DashboardCharactersPageContent({
     [updateParams],
   );
 
+  // tRPC utils for refetching
+  const utils = api.useUtils();
+
   // Fetch characters (disabled when using mock data)
   const { data: charactersData, isLoading } =
     api.character.getForDashboard.useQuery(
@@ -150,6 +162,32 @@ function DashboardCharactersPageContent({
         enabled: !mock,
       },
     );
+
+  // Delete mutation
+  const deleteMutation = api.character.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Character deleted successfully");
+      setDeleteDialogOpen(false);
+      setCharacterToDelete(null);
+      void utils.character.getForDashboard.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete character");
+    },
+  });
+
+  // Publish/Unpublish mutation
+  const publishMutation = api.character.update.useMutation({
+    onSuccess: (_, variables) => {
+      const action = variables.isPublic ? "published" : "unpublished";
+      toast.success(`Character ${action} successfully`);
+      void utils.character.getForDashboard.invalidate();
+    },
+    onError: (error, variables) => {
+      const action = variables.isPublic ? "publish" : "unpublish";
+      toast.error(error.message || `Failed to ${action} character`);
+    },
+  });
 
   // Process data - either from API or mock
   const processedData = useMemo(() => {
@@ -240,17 +278,51 @@ function DashboardCharactersPageContent({
   ]);
 
   // Action handlers
-  const handleDelete = useCallback((id: string) => {
-    console.log("Delete character:", id);
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      const character = processedData.characters.find((c) => c.id === id);
+      if (character) {
+        setCharacterToDelete({ id, name: character.name });
+        setDeleteDialogOpen(true);
+      }
+    },
+    [processedData.characters],
+  );
 
-  const handleView = useCallback((id: string) => {
-    console.log("View character:", id);
-  }, []);
+  const handleConfirmDelete = useCallback(() => {
+    if (characterToDelete) {
+      deleteMutation.mutate({ id: characterToDelete.id });
+    }
+  }, [characterToDelete, deleteMutation]);
 
-  const handleMore = useCallback((id: string) => {
-    console.log("More options:", id);
-  }, []);
+  const handleView = useCallback(
+    (id: string) => {
+      router.push(`/dashboard/characters/${id}`);
+    },
+    [router],
+  );
+
+  const handleEdit = useCallback(
+    (id: string) => {
+      router.push(`/dashboard/characters/create-update?id=${id}`);
+    },
+    [router],
+  );
+
+  const handlePublish = useCallback(
+    (id: string) => {
+      const character = processedData.characters.find((c) => c.id === id);
+      if (!character) return;
+
+      const isCurrentlyPublished = character.status === "published";
+      publishMutation.mutate({
+        id,
+        isPublic: !isCurrentlyPublished,
+        isActive: !isCurrentlyPublished,
+      });
+    },
+    [publishMutation, processedData.characters],
+  );
 
   return (
     <div className={clsx("space-y-6 p-5", className)}>
@@ -340,7 +412,21 @@ function DashboardCharactersPageContent({
         onPageChange={handlePageChange}
         onDelete={handleDelete}
         onView={handleView}
-        onMore={handleMore}
+        onEdit={handleEdit}
+        onPublish={handlePublish}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DialogDeleteConfirmation
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setCharacterToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        loading={deleteMutation.isPending}
+        itemType="character"
+        itemName={characterToDelete?.name}
       />
     </div>
   );

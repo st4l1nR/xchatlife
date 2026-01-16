@@ -1,4 +1,4 @@
-import { PrismaClient, MediaType } from "../generated/prisma";
+import { PrismaClient, MediaType, FinancialType } from "../generated/prisma";
 import * as dotenv from "dotenv";
 import { hashPassword } from "better-auth/crypto";
 
@@ -46,14 +46,25 @@ const CUSTOMER_PERMISSIONS = {
   auth: { create: false, read: false, update: false, delete: false },
 };
 
+// Minimal permissions for affiliates
+const AFFILIATE_PERMISSIONS = {
+  user: { create: false, read: false, update: false, delete: false },
+  character: { create: false, read: false, update: false, delete: false },
+  chat: { create: false, read: false, update: false, delete: false },
+  media: { create: false, read: false, update: false, delete: false },
+  content: { create: false, read: false, update: false, delete: false },
+  visual_novel: { create: false, read: false, update: false, delete: false },
+  ticket: { create: true, read: true, update: false, delete: false },
+  subscription: { create: false, read: false, update: false, delete: false },
+  affiliate: { create: false, read: true, update: false, delete: false },
+  auth: { create: false, read: false, update: false, delete: false },
+};
+
 // ============================================================================
-// R2 Base URL - All assets are stored in R2
+// R2 Base URL - Hardcoded production URL (public assets for seed)
 // ============================================================================
 
-const R2_BASE_URL = process.env.R2_PUBLIC_URL;
-if (!R2_BASE_URL) {
-  throw new Error("R2_PUBLIC_URL environment variable is required for seeding");
-}
+const R2_BASE_URL = "https://pub-5085e00501634df38e5783f95d3fc3a8.r2.dev";
 
 // ============================================================================
 // Character Gender & Style Option Data
@@ -1300,6 +1311,158 @@ const BREAST_SIZE_DATA: OptionData[] = [
 ];
 
 // ============================================================================
+// FINANCIAL CATEGORIES
+// ============================================================================
+
+const FINANCIAL_CATEGORY_DATA: {
+  name: string;
+  label: string;
+  type: FinancialType;
+  group: string;
+  description: string;
+}[] = [
+  // ========== REVENUE ==========
+  {
+    name: "subscription",
+    label: "Subscription",
+    type: FinancialType.income,
+    group: "revenue",
+    description: "Pagos de suscripción de usuarios",
+  },
+  {
+    name: "token_purchase",
+    label: "Token Purchase",
+    type: FinancialType.income,
+    group: "revenue",
+    description: "Compra de tokens adicionales",
+  },
+
+  // ========== AFFILIATES ==========
+  {
+    name: "affiliate_payout",
+    label: "Affiliate Payout",
+    type: FinancialType.expense,
+    group: "affiliates",
+    description: "Pago realizado a afiliado",
+  },
+  {
+    name: "affiliate_commission",
+    label: "Affiliate Commission",
+    type: FinancialType.expense,
+    group: "affiliates",
+    description: "Comisión pendiente registrada",
+  },
+
+  // ========== INFRASTRUCTURE ==========
+  {
+    name: "hosting",
+    label: "Hosting",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Vercel, Railway, servidores",
+  },
+  {
+    name: "database",
+    label: "Database",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Prisma, Planetscale, Supabase",
+  },
+  {
+    name: "storage",
+    label: "Storage",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "S3, Cloudflare R2, almacenamiento",
+  },
+  {
+    name: "domain",
+    label: "Domain",
+    type: FinancialType.expense,
+    group: "infrastructure",
+    description: "Dominios y DNS",
+  },
+
+  // ========== AI / APIs ==========
+  {
+    name: "ai_chat",
+    label: "AI Chat",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "LLM para chat (OpenAI, Anthropic)",
+  },
+  {
+    name: "ai_image",
+    label: "AI Image",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "Generación de imágenes (Runpod, Replicate)",
+  },
+  {
+    name: "ai_video",
+    label: "AI Video",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "Generación de video",
+  },
+  {
+    name: "ai_voice",
+    label: "AI Voice",
+    type: FinancialType.expense,
+    group: "ai",
+    description: "TTS, voz (ElevenLabs)",
+  },
+
+  // ========== PAYMENTS ==========
+  {
+    name: "payment_fee",
+    label: "Payment Fee",
+    type: FinancialType.expense,
+    group: "payments",
+    description: "Fees de CoinGate, Stripe, procesadores",
+  },
+  {
+    name: "refund",
+    label: "Refund",
+    type: FinancialType.expense,
+    group: "payments",
+    description: "Reembolsos a usuarios",
+  },
+
+  // ========== MARKETING ==========
+  {
+    name: "marketing",
+    label: "Marketing",
+    type: FinancialType.expense,
+    group: "marketing",
+    description: "Ads, promociones, influencers",
+  },
+
+  // ========== OTHER ==========
+  {
+    name: "software",
+    label: "Software",
+    type: FinancialType.expense,
+    group: "other",
+    description: "Licencias, herramientas (Figma, etc.)",
+  },
+  {
+    name: "other_income",
+    label: "Other Income",
+    type: FinancialType.income,
+    group: "other",
+    description: "Otros ingresos",
+  },
+  {
+    name: "other_expense",
+    label: "Other Expense",
+    type: FinancialType.expense,
+    group: "other",
+    description: "Otros gastos",
+  },
+];
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -1817,6 +1980,36 @@ async function seedOptionTables(
   };
 }
 
+async function seedFinancialCategories(): Promise<void> {
+  console.log("Seeding financial categories...");
+
+  for (let i = 0; i < FINANCIAL_CATEGORY_DATA.length; i++) {
+    const data = FINANCIAL_CATEGORY_DATA[i]!;
+    await prisma.financial_category.upsert({
+      where: { name: data.name },
+      update: {
+        label: data.label,
+        type: data.type,
+        group: data.group,
+        description: data.description,
+        sortOrder: i,
+      },
+      create: {
+        name: data.name,
+        label: data.label,
+        type: data.type,
+        group: data.group,
+        description: data.description,
+        sortOrder: i,
+      },
+    });
+  }
+
+  console.log(
+    `✓ Seeded ${FINANCIAL_CATEGORY_DATA.length} financial categories`,
+  );
+}
+
 // ============================================================================
 // Main Seed Function
 // ============================================================================
@@ -1849,6 +2042,29 @@ async function main() {
     console.log(`Found existing SUPERADMIN role (${superAdminRole.id})`);
   }
 
+  // Create ADMIN role (same permissions as SUPERADMIN for flexibility)
+  console.log("\n=== Creating ADMIN role ===");
+
+  let adminRole = await prisma.role_custom.findUnique({
+    where: { name: "ADMIN" },
+  });
+
+  if (!adminRole) {
+    adminRole = await prisma.role_custom.create({
+      data: {
+        name: "ADMIN",
+        permissions: ALL_PERMISSIONS,
+      },
+    });
+    console.log(`Created ADMIN role (${adminRole.id})`);
+  } else {
+    adminRole = await prisma.role_custom.update({
+      where: { id: adminRole.id },
+      data: { permissions: ALL_PERMISSIONS },
+    });
+    console.log(`Found existing ADMIN role (${adminRole.id})`);
+  }
+
   // Create CUSTOMER role for regular users
   console.log("\n=== Creating CUSTOMER role ===");
 
@@ -1870,6 +2086,29 @@ async function main() {
       data: { permissions: CUSTOMER_PERMISSIONS },
     });
     console.log(`Found existing CUSTOMER role (${customerRole.id})`);
+  }
+
+  // Create AFFILIATE role for affiliate users
+  console.log("\n=== Creating AFFILIATE role ===");
+
+  let affiliateRole = await prisma.role_custom.findUnique({
+    where: { name: "AFFILIATE" },
+  });
+
+  if (!affiliateRole) {
+    affiliateRole = await prisma.role_custom.create({
+      data: {
+        name: "AFFILIATE",
+        permissions: AFFILIATE_PERMISSIONS,
+      },
+    });
+    console.log(`Created AFFILIATE role (${affiliateRole.id})`);
+  } else {
+    affiliateRole = await prisma.role_custom.update({
+      where: { id: affiliateRole.id },
+      data: { permissions: AFFILIATE_PERMISSIONS },
+    });
+    console.log(`Found existing AFFILIATE role (${affiliateRole.id})`);
   }
 
   // Create Admin user with SUPERADMIN role
@@ -1911,6 +2150,9 @@ async function main() {
       `Found existing admin user: ${adminUser.email} (${adminUser.id})`,
     );
   }
+
+  // Step 0.5: Seed financial categories
+  await seedFinancialCategories();
 
   // Step 1: Seed genders and styles first
   const { genders, styles } = await seedGendersAndStyles();
@@ -2163,7 +2405,9 @@ async function main() {
   console.log("=== Seed Summary ===");
   console.log("========================================");
   console.log(`SUPERADMIN Role ID: ${superAdminRole.id}`);
+  console.log(`ADMIN Role ID: ${adminRole.id}`);
   console.log(`CUSTOMER Role ID: ${customerRole.id}`);
+  console.log(`AFFILIATE Role ID: ${affiliateRole.id}`);
   console.log(`Admin User: ${adminUser.email} (Password: ${ADMIN_PASSWORD})`);
   console.log(`Total characters created: ${characters.length}`);
   console.log(`Live characters: ${characters.filter((c) => c.isLive).length}`);

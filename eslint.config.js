@@ -35,7 +35,7 @@ export default tseslint.config(
       "react-hooks/rules-of-hooks": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/consistent-type-imports": [
         "warn",

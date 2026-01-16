@@ -1,17 +1,20 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/env";
 import * as fs from "fs";
 import * as path from "path";
 import { randomUUID } from "crypto";
 
-// Initialize S3 client for Cloudflare R2
+// Initialize S3 client for Cloudflare R2 or MinIO (local dev)
 export const r2Client = new S3Client({
   region: "auto",
-  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  endpoint:
+    env.R2_ENDPOINT ?? `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: env.R2_ACCESS_KEY_ID ?? "",
     secretAccessKey: env.R2_SECRET_ACCESS_KEY ?? "",
   },
+  forcePathStyle: !!env.R2_ENDPOINT, // Required for MinIO
 });
 
 // Get mime type from file extension
@@ -170,5 +173,33 @@ export async function fetchAndUploadToR2(
     key: r2Key,
     mimeType: contentType,
     size: buffer.length,
+  };
+}
+
+// Generate a presigned URL for direct upload to R2
+export async function getPresignedUploadUrl(
+  folder: string,
+  filename: string,
+  contentType: string,
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  // Generate unique key with UUID to prevent collisions
+  const uniqueId = randomUUID();
+  const key = `${folder}/${uniqueId}/${filename}`;
+
+  // Create presigned URL for PUT request
+  const command = new PutObjectCommand({
+    Bucket: env.R2_BUCKET_NAME,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  const uploadUrl = await getSignedUrl(r2Client as any, command as any, {
+    expiresIn: 900,
+  }); // 15 minutes
+
+  return {
+    uploadUrl,
+    publicUrl: `${env.R2_PUBLIC_URL}/${key}`,
+    key,
   };
 }

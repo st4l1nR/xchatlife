@@ -20,6 +20,8 @@ export type DashboardNavItem = {
   href?: string;
   icon: LucideIcon;
   children?: DashboardNavChild[];
+  /** When true, the item is displayed with inactive styling */
+  inactive?: boolean;
 };
 
 /**
@@ -76,6 +78,7 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
   {
     name: "Visual Novels",
     icon: BookImage,
+    inactive: true,
     children: [
       { name: "View/Create", href: "/dashboard/visual-novels" },
       { name: "Media", href: "/dashboard/visual-novels/media" },
@@ -99,12 +102,14 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
     ],
   },
   {
-    name: "Support tickets",
+    name: "Support Tickets",
     icon: LifeBuoy,
     children: [
-      { name: "View all", href: "/dashboard/support-tickets" },
-      { name: "Open", href: "/dashboard/support-tickets/open" },
-      { name: "Resolved", href: "/dashboard/support-tickets/resolved" },
+      { name: "View All", href: "/dashboard/tickets" },
+      { name: "Open", href: "/dashboard/tickets?status=open" },
+      { name: "In Progress", href: "/dashboard/tickets?status=in_progress" },
+      { name: "Resolved", href: "/dashboard/tickets?status=resolved" },
+      { name: "Closed", href: "/dashboard/tickets?status=closed" },
     ],
   },
 ];

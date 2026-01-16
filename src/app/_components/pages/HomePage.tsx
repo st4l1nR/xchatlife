@@ -455,6 +455,8 @@ const HomePage: React.FC<HomePageProps> = ({
     {
       enabled: !mock,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      staleTime: 2 * 60 * 1000, // 2 minutes
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -463,6 +465,8 @@ const HomePage: React.FC<HomePageProps> = ({
       { style, gender },
       {
         enabled: !mock,
+        staleTime: 2 * 60 * 1000, // 2 minutes
+        refetchOnWindowFocus: false,
       },
     );
 
@@ -471,6 +475,8 @@ const HomePage: React.FC<HomePageProps> = ({
       { style, gender },
       {
         enabled: !mock,
+        staleTime: 2 * 60 * 1000, // 2 minutes
+        refetchOnWindowFocus: false,
       },
     );
 

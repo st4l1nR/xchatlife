@@ -13,6 +13,7 @@ export type CardMediaUploadProps = {
   label?: string;
   defaultMedia?: string;
   defaultMediaType?: "image" | "video";
+  file?: File; // File object to regenerate preview from (for tab persistence)
   aspectRatio?: AspectRatio;
   accept?: Accept;
   maxSize?: number;
@@ -45,6 +46,7 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
   label,
   defaultMedia,
   defaultMediaType,
+  file: fileProp,
   aspectRatio = "1:1",
   accept = {
     "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
@@ -63,20 +65,42 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
   const [previewType, setPreviewType] = useState<"image" | "video" | null>(
     null,
   );
+  // Track if we created the current preview URL (so we know to revoke it)
+  const [isLocalUrl, setIsLocalUrl] = useState<boolean>(false);
+
+  // Generate preview from file prop when component mounts or file changes
+  useEffect(() => {
+    if (fileProp && enablePreview) {
+      const objectUrl = URL.createObjectURL(fileProp);
+      setPreview(objectUrl);
+      setPreviewType(isVideoFile(fileProp) ? "video" : "image");
+      setIsLocalUrl(true);
+
+      // Cleanup this specific URL when file changes or unmounts
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    }
+  }, [fileProp, enablePreview]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (file) {
         if (enablePreview) {
+          // Revoke previous local URL if exists
+          if (preview && isLocalUrl) {
+            URL.revokeObjectURL(preview);
+          }
           const objectUrl = URL.createObjectURL(file);
           setPreview(objectUrl);
           setPreviewType(isVideoFile(file) ? "video" : "image");
+          setIsLocalUrl(true);
         }
         onChange?.(file);
       }
     },
-    [onChange, enablePreview],
+    [onChange, enablePreview, preview, isLocalUrl],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -89,15 +113,6 @@ const CardMediaUpload: React.FC<CardMediaUploadProps> = ({
     noDrag: readOnly,
     noKeyboard: readOnly,
   });
-
-  // Cleanup preview URL on unmount
-  useEffect(() => {
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
 
   const mediaUrl = preview ?? defaultMedia;
   const hasMedia = !!mediaUrl;

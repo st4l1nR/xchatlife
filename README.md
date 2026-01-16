@@ -13,7 +13,7 @@ AI chatbot companion application built with the T3 Stack. Create and chat with A
 - **Forms**: React Hook Form with Zod validation
 - **UI Components**: Headless UI with Catalyst-style design system
 - **Testing**: Cypress for E2E tests
-- **Storage**: Cloudflare R2 (S3-compatible)
+- **Storage**: Cloudflare R2 (production) / MinIO (local dev)
 - **Payments**: CoinGate
 
 ## Getting Started
@@ -22,27 +22,94 @@ AI chatbot companion application built with the T3 Stack. Create and chat with A
 
 - Node.js 18+
 - pnpm
-- PostgreSQL database
-- Docker/Podman (optional, for local database)
+- Docker/Podman
 
 ### Installation
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 pnpm install
 
-# Set up environment variables
+# 2. Set up environment variables
 cp .env.example .env
 
-# Generate Prisma client
-pnpm db:generate
+# 3. Start local services (PostgreSQL + MinIO)
+docker-compose up -d
 
-# Push schema to database
+# 4. Create MinIO bucket (see below)
+
+# 5. Push schema to database
 pnpm db:push
 
-# Start development server
+# 6. Seed the database
+pnpm db:seed
+
+# 7. Start development server
 pnpm dev
 ```
+
+### Local Services
+
+Docker Compose provides two services for local development:
+
+#### PostgreSQL (with pgvector)
+
+- **Port:** 5432
+- **User:** postgres
+- **Password:** password
+- **Database:** xchatlife
+- **Connection URL:** `postgresql://postgres:password@localhost:5432/xchatlife`
+
+#### MinIO (S3-compatible storage)
+
+- **API Port:** 9000
+- **Console Port:** 9001
+- **User:** minioadmin
+- **Password:** minioadmin
+
+**Setup MinIO bucket:**
+
+1. Open http://localhost:9001
+2. Login with `minioadmin` / `minioadmin`
+3. Create bucket: `xchatlife-dev`
+4. Set bucket access policy to **Public**
+
+**Environment variables for MinIO:**
+
+```env
+R2_ENDPOINT="http://localhost:9000"
+R2_ACCESS_KEY_ID="minioadmin"
+R2_SECRET_ACCESS_KEY="minioadmin"
+R2_BUCKET_NAME="xchatlife-dev"
+R2_PUBLIC_URL="http://localhost:9000/xchatlife-dev"
+```
+
+### Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# Stop and remove all data (reset)
+docker-compose down -v
+
+# View logs
+docker-compose logs -f
+```
+
+### Seed Data
+
+The seed script creates:
+
+- **Admin user:** `admin@xchatlife.com` / `1234567890aA`
+- **Test user:** `stalinramosbw@gmail.com` / `12345690`
+- 21 sample characters with stories and reels
+- All character options (ethnicity, hair, eyes, body, personality, etc.)
+
+Seed assets are served from production R2 (public URLs), so they work in any environment.
 
 ## Scripts
 
@@ -200,21 +267,34 @@ New users are automatically assigned the `CUSTOMER` role via Better Auth's `data
 
 ## Environment Variables
 
-```env
-# Database
-DATABASE_URL="postgresql://..."
+### Development (MinIO)
 
-# Authentication
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/xchatlife"
+BETTER_AUTH_SECRET="your-secret-key"
+
+# MinIO (local S3)
+R2_ENDPOINT="http://localhost:9000"
+R2_ACCESS_KEY_ID="minioadmin"
+R2_SECRET_ACCESS_KEY="minioadmin"
+R2_BUCKET_NAME="xchatlife-dev"
+R2_PUBLIC_URL="http://localhost:9000/xchatlife-dev"
+```
+
+### Production (Cloudflare R2)
+
+```env
+DATABASE_URL="postgresql://..."
 BETTER_AUTH_SECRET="..."
 
-# Cloudflare R2 (S3-compatible storage)
+# Cloudflare R2
 R2_ACCOUNT_ID="..."
 R2_ACCESS_KEY_ID="..."
 R2_SECRET_ACCESS_KEY="..."
 R2_BUCKET_NAME="..."
 R2_PUBLIC_URL="..."
 
-# CoinGate Payments
+# Payments
 COINGATE_API_KEY="..."
 COINGATE_WEBHOOK_SECRET="..."
 ```

@@ -66,7 +66,10 @@ function DashboardUsersPageContent({
   const searchParams = useSearchParams();
 
   // Fetch roles for filter
-  const { data: rolesData } = api.role.getAll.useQuery();
+  const { data: rolesData } = api.role.getAll.useQuery(undefined, {
+    staleTime: 30 * 60 * 1000, // 30 minutes - roles rarely change
+    refetchOnWindowFocus: false,
+  });
 
   // Build role filter options from fetched data
   const roleFilterOptions = useMemo(() => {
@@ -258,20 +261,10 @@ function DashboardUsersPageContent({
     // Transform API data to match TableUserItem type
     const users: TableUserItem[] =
       usersData?.data?.users.map((user) => {
-        // Cast to access additional fields from API
-        const userWithRelations = user as typeof user & {
-          customRole?: { id: string; name: string } | null;
-          subscription?: {
-            id: string;
-            billingCycle: string;
-            status: string;
-          } | null;
-        };
-
         // Map billingCycle to subscription type
         let subscription: UserSubscriptionType = "none";
-        if (userWithRelations.subscription?.billingCycle) {
-          const cycle = userWithRelations.subscription.billingCycle;
+        if (user.subscription?.billingCycle) {
+          const cycle = user.subscription.billingCycle;
           if (cycle === "annually") {
             subscription = "yearly";
           } else if (cycle === "monthly") {
@@ -284,7 +277,7 @@ function DashboardUsersPageContent({
           name: user.name,
           username: user.email.split("@")[0] ?? user.email,
           avatarSrc: user.image ?? undefined,
-          customRoleName: userWithRelations.customRole?.name,
+          customRoleName: user.customRole?.name,
           subscription,
           status: "active" as UserStatusType,
         };
@@ -403,7 +396,7 @@ function DashboardUsersPageContent({
   }, [userToResendInvite, resendInvite]);
 
   return (
-    <div className={clsx("space-y-6", className)}>
+    <div className={clsx("space-y-6 p-5", className)}>
       {/* Filters Card */}
       <div className="bg-muted rounded-lg p-6">
         <h2 className="text-foreground mb-4 text-lg font-semibold">Filters</h2>

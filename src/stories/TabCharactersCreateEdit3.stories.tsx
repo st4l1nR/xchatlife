@@ -88,6 +88,11 @@ const meta = {
       control: "text",
       description: "Additional CSS classes",
     },
+    onRequestDelete: {
+      action: "onRequestDelete",
+      description:
+        "Callback when user requests to delete an existing story (triggers confirmation dialog)",
+    },
   },
   decorators: [
     (Story) => (
@@ -182,6 +187,42 @@ export const ManyStories: Story = {
     docs: {
       description: {
         story: "Stories tab with many items to test scrolling and layout.",
+      },
+    },
+  },
+};
+
+// Create stories with persisted IDs (without "story-" prefix)
+const createPersistedStories = (count: number): StoryUploadItem[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `persisted-${i + 1}`,
+    url: sampleStoryImages[i % sampleStoryImages.length],
+    mediaType: "image" as const,
+  }));
+};
+
+export const WithDeleteConfirmation: Story = {
+  render: (args) => (
+    <FormWrapper
+      defaultValues={{
+        stories: createPersistedStories(3),
+      }}
+    >
+      <TabCharactersCreateEdit3
+        {...args}
+        defaultStories={createPersistedStories(3)}
+        onRequestDelete={(id) => alert(`Delete requested for story: ${id}`)}
+      />
+    </FormWrapper>
+  ),
+  args: {
+    defaultStories: createPersistedStories(3),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates delete confirmation flow. Click X on a story to trigger the onRequestDelete callback. Persisted stories (without 'story-' prefix) trigger the confirmation dialog.",
       },
     },
   },

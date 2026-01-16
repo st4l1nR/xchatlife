@@ -1,4 +1,5 @@
 import { adminRouter } from "@/server/api/routers/admin";
+import { affiliateRouter } from "@/server/api/routers/affiliate";
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
 import { characterOptionsRouter } from "@/server/api/routers/characterOptions";
@@ -6,9 +7,13 @@ import { chatRouter } from "@/server/api/routers/chat";
 import { optionsRouter } from "@/server/api/routers/options";
 import { invitationRouter } from "@/server/api/routers/invitation";
 import { imageRouter } from "@/server/api/routers/image";
+import { mediaRouter } from "@/server/api/routers/media";
 import { postRouter } from "@/server/api/routers/post";
+import { privateContentRouter } from "@/server/api/routers/privateContent";
+import { referralRouter } from "@/server/api/routers/referral";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
+import { ticketRouter } from "@/server/api/routers/ticket";
 import { userRouter } from "@/server/api/routers/user";
 import { roleRouter } from "@/server/api/routers/role";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
@@ -20,6 +25,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   admin: adminRouter,
+  affiliate: affiliateRouter,
   auth: authRouter,
   character: characterRouter,
   characterOptions: characterOptionsRouter,
@@ -27,9 +33,13 @@ export const appRouter = createTRPCRouter({
   options: optionsRouter,
   invitation: invitationRouter,
   image: imageRouter,
+  media: mediaRouter,
   post: postRouter,
+  privateContent: privateContentRouter,
+  referral: referralRouter,
   story: storyRouter,
   reel: reelRouter,
+  ticket: ticketRouter,
   user: userRouter,
   role: roleRouter,
 });
