@@ -88,7 +88,8 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
     icon: ArrowLeftRight,
     children: [
       { name: "View All", href: "/dashboard/transactions" },
-      { name: "Create", href: "/dashboard/transactions/create" },
+      { name: "Create", href: "/dashboard/transactions?action=create" },
+      { name: "Categories", href: "/dashboard/transactions/categories" },
     ],
   },
   {

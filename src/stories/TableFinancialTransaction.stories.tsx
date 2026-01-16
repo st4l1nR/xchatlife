@@ -130,7 +130,8 @@ const meta = {
     },
   },
   args: {
-    onView: fn(),
+    onEdit: fn(),
+    onDelete: fn(),
     onPageChange: fn(),
     onSortingChange: fn(),
   },

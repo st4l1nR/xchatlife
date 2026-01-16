@@ -4,6 +4,8 @@ import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
 import { chatRouter } from "@/server/api/routers/chat";
 import { optionsRouter } from "@/server/api/routers/options";
+import { financialCategoryRouter } from "@/server/api/routers/financialCategory";
+import { financialTransactionRouter } from "@/server/api/routers/financialTransaction";
 import { invitationRouter } from "@/server/api/routers/invitation";
 import { imageRouter } from "@/server/api/routers/image";
 import { mediaRouter } from "@/server/api/routers/media";
@@ -29,6 +31,8 @@ export const appRouter = createTRPCRouter({
   character: characterRouter,
   chat: chatRouter,
   options: optionsRouter,
+  financialCategory: financialCategoryRouter,
+  financialTransaction: financialTransactionRouter,
   invitation: invitationRouter,
   image: imageRouter,
   media: mediaRouter,

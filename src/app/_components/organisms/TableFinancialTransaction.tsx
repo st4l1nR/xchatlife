@@ -14,7 +14,8 @@ import WrapperLoader from "../molecules/WrapperLoader";
 import CardEmptyState from "../molecules/CardEmptyState";
 import { Badge } from "../atoms/badge";
 import {
-  Eye,
+  Pencil,
+  Trash2,
   ArrowUpCircle,
   ArrowDownCircle,
   User,
@@ -54,11 +55,12 @@ export type TableFinancialTransactionProps = {
   columnFilters?: ColumnFilter[];
   onSortingChange?: OnChangeFn<SortingState>;
   onPageChange?: (page: number) => void;
-  onView?: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 };
 
-const getTypeColor = (type: FinancialTypeValue): "green" | "red" => {
-  return type === "income" ? "green" : "red";
+const getTypeColor = (type: FinancialTypeValue): "emerald" | "rose" => {
+  return type === "income" ? "emerald" : "rose";
 };
 
 const getTypeIcon = (type: FinancialTypeValue) => {
@@ -111,7 +113,8 @@ const TableFinancialTransaction: React.FC<TableFinancialTransactionProps> = ({
   columnFilters,
   onSortingChange,
   onPageChange,
-  onView,
+  onEdit,
+  onDelete,
 }) => {
   const columnHelper = createColumnHelper<TableFinancialTransactionItem>();
 
@@ -162,7 +165,7 @@ const TableFinancialTransaction: React.FC<TableFinancialTransactionProps> = ({
           <span
             className={clsx(
               "font-medium",
-              type === "income" ? "text-green-600" : "text-red-600",
+              type === "income" ? "text-emerald-500" : "text-rose-500",
             )}
           >
             {amount}
@@ -253,12 +256,21 @@ const TableFinancialTransaction: React.FC<TableFinancialTransactionProps> = ({
         <div className="flex items-center justify-end gap-1">
           <button
             type="button"
-            onClick={() => onView?.(info.row.original.id)}
+            onClick={() => onEdit?.(info.row.original.id)}
             className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
-            aria-label="View transaction details"
-            title="View details"
+            aria-label="Edit transaction"
+            title="Edit"
           >
-            <Eye className="size-4" />
+            <Pencil className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete?.(info.row.original.id)}
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded p-1.5 transition-colors"
+            aria-label="Delete transaction"
+            title="Delete"
+          >
+            <Trash2 className="size-4" />
           </button>
         </div>
       ),
