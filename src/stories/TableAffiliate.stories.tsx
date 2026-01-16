@@ -87,7 +87,6 @@ const meta = {
   args: {
     onApprove: fn(),
     onReject: fn(),
-    onView: fn(),
     onPageChange: fn(),
     onSortingChange: fn(),
   },

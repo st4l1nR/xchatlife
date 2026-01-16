@@ -313,12 +313,8 @@ function DashboardUsersPageContent({
     [router],
   );
 
-  const handleMore = useCallback((id: string) => {
-    console.log("More options:", id);
-  }, []);
-
   return (
-    <div className={clsx("space-y-6", className)}>
+    <div className={clsx("space-y-6 p-5", className)}>
       {/* Filters Card */}
       <div className="bg-muted rounded-lg p-6">
         <h2 className="text-foreground mb-4 text-lg font-semibold">Filters</h2>
@@ -407,7 +403,6 @@ function DashboardUsersPageContent({
         onPageChange={handlePageChange}
         onDelete={handleDelete}
         onView={handleView}
-        onMore={handleMore}
       />
 
       {/* Invite Dialog */}

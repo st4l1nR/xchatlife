@@ -20,6 +20,8 @@ export type DashboardNavItem = {
   href?: string;
   icon: LucideIcon;
   children?: DashboardNavChild[];
+  /** When true, the item is displayed with inactive styling */
+  inactive?: boolean;
 };
 
 /**
@@ -75,6 +77,7 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
   {
     name: "Visual Novels",
     icon: BookImage,
+    inactive: true,
     children: [
       { name: "View/Create", href: "/dashboard/visual-novels" },
       { name: "Media", href: "/dashboard/visual-novels/media" },

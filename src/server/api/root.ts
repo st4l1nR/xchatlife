@@ -9,6 +9,7 @@ import { imageRouter } from "@/server/api/routers/image";
 import { mediaRouter } from "@/server/api/routers/media";
 import { postRouter } from "@/server/api/routers/post";
 import { privateContentRouter } from "@/server/api/routers/privateContent";
+import { referralRouter } from "@/server/api/routers/referral";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
 import { userRouter } from "@/server/api/routers/user";
@@ -32,6 +33,7 @@ export const appRouter = createTRPCRouter({
   media: mediaRouter,
   post: postRouter,
   privateContent: privateContentRouter,
+  referral: referralRouter,
   story: storyRouter,
   reel: reelRouter,
   user: userRouter,

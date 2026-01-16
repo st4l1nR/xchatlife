@@ -2,6 +2,7 @@
 
 import React from "react";
 import clsx from "clsx";
+import Link from "next/link";
 import {
   createColumnHelper,
   type SortingState,
@@ -13,13 +14,7 @@ import WrapperLoader from "../molecules/WrapperLoader";
 import CardEmptyState from "../molecules/CardEmptyState";
 import { Avatar } from "../atoms/avatar";
 import { Badge } from "../atoms/badge";
-import {
-  Dropdown,
-  DropdownButton,
-  DropdownItem,
-  DropdownMenu,
-} from "../atoms/dropdown";
-import { Check, X, Eye, MoreVertical, ExternalLink } from "lucide-react";
+import { Check, X, Eye, ExternalLink } from "lucide-react";
 
 export type AffiliateStatusType = "pending" | "approved" | "rejected";
 export type AffiliateTypeValue =
@@ -59,7 +54,6 @@ export type TableAffiliateProps = {
   onPageChange?: (page: number) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
-  onView?: (id: string) => void;
 };
 
 const TYPE_LABELS: Record<AffiliateTypeValue, string> = {
@@ -124,7 +118,6 @@ const TableAffiliate: React.FC<TableAffiliateProps> = ({
   onPageChange,
   onApprove,
   onReject,
-  onView,
 }) => {
   const columnHelper = createColumnHelper<TableAffiliateItem>();
 
@@ -238,25 +231,14 @@ const TableAffiliate: React.FC<TableAffiliateProps> = ({
                 </button>
               </>
             )}
-            <button
-              type="button"
-              onClick={() => onView?.(info.row.original.id)}
+            <Link
+              href={`/dashboard/affiliates/${info.row.original.id}`}
               className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
               aria-label="View affiliate details"
               title="View details"
             >
               <Eye className="size-4" />
-            </button>
-            <Dropdown>
-              <DropdownButton plain className="p-1.5">
-                <MoreVertical className="size-4" />
-              </DropdownButton>
-              <DropdownMenu anchor="bottom end">
-                <DropdownItem onClick={() => onView?.(info.row.original.id)}>
-                  View details
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            </Link>
           </div>
         );
       },
