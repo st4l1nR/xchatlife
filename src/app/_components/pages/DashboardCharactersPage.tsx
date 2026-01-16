@@ -176,6 +176,19 @@ function DashboardCharactersPageContent({
     },
   });
 
+  // Publish/Unpublish mutation
+  const publishMutation = api.character.update.useMutation({
+    onSuccess: (_, variables) => {
+      const action = variables.isPublic ? "published" : "unpublished";
+      toast.success(`Character ${action} successfully`);
+      void utils.character.getForDashboard.invalidate();
+    },
+    onError: (error, variables) => {
+      const action = variables.isPublic ? "publish" : "unpublish";
+      toast.error(error.message || `Failed to ${action} character`);
+    },
+  });
+
   // Process data - either from API or mock
   const processedData = useMemo(() => {
     if (mock) {
@@ -296,9 +309,20 @@ function DashboardCharactersPageContent({
     [router],
   );
 
-  const handleMore = useCallback((id: string) => {
-    console.log("More options:", id);
-  }, []);
+  const handlePublish = useCallback(
+    (id: string) => {
+      const character = processedData.characters.find((c) => c.id === id);
+      if (!character) return;
+
+      const isCurrentlyPublished = character.status === "published";
+      publishMutation.mutate({
+        id,
+        isPublic: !isCurrentlyPublished,
+        isActive: !isCurrentlyPublished,
+      });
+    },
+    [publishMutation, processedData.characters],
+  );
 
   return (
     <div className={clsx("space-y-6 p-5", className)}>
@@ -389,7 +413,7 @@ function DashboardCharactersPageContent({
         onDelete={handleDelete}
         onView={handleView}
         onEdit={handleEdit}
-        onMore={handleMore}
+        onPublish={handlePublish}
       />
 
       {/* Delete Confirmation Dialog */}

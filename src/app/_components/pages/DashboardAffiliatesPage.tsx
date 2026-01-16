@@ -8,12 +8,6 @@ import toast from "react-hot-toast";
 import TableAffiliate from "../organisms/TableAffiliate";
 import { Input, InputGroup } from "../atoms/input";
 import { Listbox, ListboxOption, ListboxLabel } from "../atoms/listbox";
-import {
-  Alert,
-  AlertActions,
-  AlertDescription,
-  AlertTitle,
-} from "../atoms/alert";
 import { Button } from "../atoms/button";
 import { Field, Label } from "../atoms/fieldset";
 import { Textarea } from "../atoms/textarea";
@@ -25,6 +19,7 @@ import {
   DialogTitle,
 } from "../atoms/dialog";
 import { api } from "@/trpc/react";
+import { nanoid } from "nanoid";
 import type {
   TableAffiliateItem,
   AffiliateStatusType,
@@ -95,6 +90,10 @@ function DashboardAffiliatesPageContent({
     null,
   );
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // Approval form state
+  const [approvalCommissionRate, setApprovalCommissionRate] = useState(40);
+  const [approvalReferralCode, setApprovalReferralCode] = useState("");
 
   // Update URL params helper
   const updateParams = useCallback(
@@ -280,6 +279,8 @@ function DashboardAffiliatesPageContent({
   // Action handlers
   const handleApprove = useCallback((id: string) => {
     setSelectedAffiliateId(id);
+    setApprovalCommissionRate(40);
+    setApprovalReferralCode(nanoid(8).toUpperCase());
     setIsApproveDialogOpen(true);
   }, []);
 
@@ -288,16 +289,20 @@ function DashboardAffiliatesPageContent({
     setIsRejectDialogOpen(true);
   }, []);
 
-  const handleView = useCallback((id: string) => {
-    setSelectedAffiliateId(id);
-    setIsViewDialogOpen(true);
-  }, []);
-
   const handleConfirmApprove = useCallback(() => {
     if (selectedAffiliateId) {
-      approveAffiliate.mutate({ id: selectedAffiliateId });
+      approveAffiliate.mutate({
+        id: selectedAffiliateId,
+        commissionRate: approvalCommissionRate,
+        referralCode: approvalReferralCode || undefined,
+      });
     }
-  }, [selectedAffiliateId, approveAffiliate]);
+  }, [
+    selectedAffiliateId,
+    approveAffiliate,
+    approvalCommissionRate,
+    approvalReferralCode,
+  ]);
 
   const handleConfirmReject = useCallback(() => {
     if (selectedAffiliateId && rejectionReason.trim()) {
@@ -382,23 +387,55 @@ function DashboardAffiliatesPageContent({
         onPageChange={handlePageChange}
         onApprove={handleApprove}
         onReject={handleReject}
-        onView={handleView}
       />
 
-      {/* Approve Confirmation Alert */}
-      <Alert
+      {/* Approve Dialog with Form */}
+      <Dialog
         open={isApproveDialogOpen}
         onClose={() => {
-          setIsApproveDialogOpen(false);
-          setSelectedAffiliateId(null);
+          if (!approveAffiliate.isPending) {
+            setIsApproveDialogOpen(false);
+            setSelectedAffiliateId(null);
+          }
         }}
+        size="lg"
       >
-        <AlertTitle>Approve Affiliate</AlertTitle>
-        <AlertDescription>
-          Are you sure you want to approve this affiliate application? They will
-          receive a referral code and can start earning commissions.
-        </AlertDescription>
-        <AlertActions>
+        <DialogTitle>Approve Affiliate</DialogTitle>
+        <DialogDescription>
+          Configure the commission rate and referral code for this affiliate.
+          They will receive an email with their referral code.
+        </DialogDescription>
+        <DialogBody className="space-y-4">
+          <Field>
+            <Label>Commission Rate (%)</Label>
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={approvalCommissionRate}
+              onChange={(e) =>
+                setApprovalCommissionRate(Number(e.target.value))
+              }
+              disabled={approveAffiliate.isPending}
+            />
+          </Field>
+          <Field>
+            <Label>Referral Code</Label>
+            <Input
+              type="text"
+              value={approvalReferralCode}
+              onChange={(e) =>
+                setApprovalReferralCode(e.target.value.toUpperCase())
+              }
+              placeholder="Auto-generated code"
+              disabled={approveAffiliate.isPending}
+            />
+            <p className="text-muted-foreground mt-1 text-sm">
+              Leave as is for auto-generated code or customize it.
+            </p>
+          </Field>
+        </DialogBody>
+        <DialogActions>
           <Button
             plain
             onClick={() => {
@@ -413,11 +450,14 @@ function DashboardAffiliatesPageContent({
             color="primary"
             onClick={handleConfirmApprove}
             loading={approveAffiliate.isPending}
+            disabled={
+              approvalCommissionRate < 0 || approvalCommissionRate > 100
+            }
           >
             Approve
           </Button>
-        </AlertActions>
-      </Alert>
+        </DialogActions>
+      </Dialog>
 
       {/* Reject Dialog with Reason */}
       <Dialog

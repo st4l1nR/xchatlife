@@ -90,15 +90,21 @@ const meta = {
       action: "view",
       description: "Callback when view button is clicked",
     },
-    onMore: {
-      action: "more",
-      description: "Callback when more options is clicked",
+    onEdit: {
+      action: "edit",
+      description: "Callback when edit button is clicked",
+    },
+    onPublish: {
+      action: "publish",
+      description:
+        "Callback when publish option is clicked (only for draft characters)",
     },
   },
   args: {
     onDelete: fn(),
     onView: fn(),
-    onMore: fn(),
+    onEdit: fn(),
+    onPublish: fn(),
   },
   decorators: [
     (Story) => (

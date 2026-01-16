@@ -528,23 +528,29 @@ const DialogAuth: React.FC<DialogAuthProps> = ({
     // Check user role and redirect accordingly
     try {
       const userData = await utils.auth.getCurrentUser.fetch();
-      const roleName = userData?.data?.customRole?.name;
+      const roleName = userData?.data?.customRole?.name?.toUpperCase();
 
-      // If user has a role that is NOT "Customer", redirect to dashboard
-      if (roleName && roleName !== "Customer") {
+      // If user has a role that is NOT "CUSTOMER", redirect to dashboard
+      if (roleName && roleName !== "CUSTOMER") {
         router.push("/dashboard");
         return;
       }
-    } catch {
-      // If we can't fetch user data, continue with normal redirect logic
-    }
 
-    // Redirect after successful auth (for Customer role or no role)
-    if (onSuccessRedirect) {
-      router.push(onSuccessRedirect);
-    } else if (invitation) {
-      // Invited users go to dashboard
-      router.push("/dashboard");
+      // For Customer role: only redirect if explicitly requested or invitation
+      if (onSuccessRedirect) {
+        router.push(onSuccessRedirect);
+      } else if (invitation) {
+        // Invited users go to dashboard
+        router.push("/dashboard");
+      }
+      // Otherwise, just close the dialog and stay on the current page
+    } catch {
+      // If we can't fetch user data, fallback to redirect logic
+      if (onSuccessRedirect) {
+        router.push(onSuccessRedirect);
+      } else if (invitation) {
+        router.push("/dashboard");
+      }
     }
   };
 

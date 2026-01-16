@@ -1,6 +1,11 @@
 "use client";
 
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import {
+  forwardRef,
+  useState,
+  useEffect,
+  type ComponentPropsWithoutRef,
+} from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { Search, Moon, Sun, Settings, LogOut } from "lucide-react";
@@ -17,6 +22,7 @@ import {
 } from "../atoms/dropdown";
 import { authClient } from "@/server/better-auth/client";
 import { useApp } from "@/app/_contexts/AppContext";
+import DialogCommandPalette from "./DialogCommandPalette";
 
 export type NavbarDashboardProps = {
   className?: string;
@@ -46,6 +52,20 @@ export const NavbarDashboard = forwardRef<
   const { theme, setTheme } = useTheme();
   const { data: session } = authClient.useSession();
   const { user } = useApp();
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Keyboard shortcut for command palette (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Use props if provided, otherwise fall back to session/context data
   const displayName = userName ?? session?.user?.name ?? user?.name ?? "User";
@@ -76,21 +96,21 @@ export const NavbarDashboard = forwardRef<
       )}
       {...props}
     >
-      {/* Search Section */}
-      <div className="relative flex items-center">
-        <Search className="text-muted-foreground pointer-events-none absolute left-3 size-4" />
-        <input
-          type="search"
-          placeholder="Search ⌘K"
-          aria-label="Search"
-          className={clsx(
-            "border-border bg-background h-9 w-64 rounded-lg border pr-3 pl-9",
-            "text-foreground placeholder:text-muted-foreground text-sm",
-            "focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-none",
-            "transition-colors",
-          )}
-        />
-      </div>
+      {/* Search Section - Opens Command Palette */}
+      <button
+        onClick={() => setCommandPaletteOpen(true)}
+        className={clsx(
+          "border-border bg-background flex h-9 w-64 items-center gap-2 rounded-lg border px-3",
+          "text-muted-foreground text-sm",
+          "hover:bg-muted/50 transition-colors",
+        )}
+      >
+        <Search className="size-4" />
+        <span className="flex-1 text-left">Search...</span>
+        <kbd className="bg-muted text-muted-foreground hidden rounded px-1.5 py-0.5 font-mono text-xs sm:inline-block">
+          ⌘K
+        </kbd>
+      </button>
 
       {/* Spacer */}
       <div className="flex-1" />
@@ -160,6 +180,12 @@ export const NavbarDashboard = forwardRef<
           </DropdownMenu>
         </Dropdown>
       </div>
+
+      {/* Command Palette */}
+      <DialogCommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
     </nav>
   );
 });

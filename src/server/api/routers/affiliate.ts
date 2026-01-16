@@ -6,6 +6,8 @@ import {
   protectedProcedure,
 } from "@/server/api/trpc";
 import { nanoid } from "nanoid";
+import { resend, EMAIL_FROM } from "@/server/email";
+import AffiliateApprovalEmail from "@/app/_components/email/AffiliateApprovalEmail";
 
 // Schema for submitting an affiliate application
 const submitApplicationSchema = z.object({
@@ -202,11 +204,12 @@ export const affiliateRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        commissionRate: z.number().min(0).max(1).default(0.4),
+        commissionRate: z.number().min(0).max(100).default(40),
+        referralCode: z.string().min(3).max(20).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, commissionRate } = input;
+      const { id, commissionRate, referralCode: customReferralCode } = input;
 
       // Find the affiliate
       const affiliate = await ctx.db.affiliate.findUnique({
@@ -227,20 +230,74 @@ export const affiliateRouter = createTRPCRouter({
         });
       }
 
-      // Generate unique referral code
-      const referralCode = nanoid(8).toUpperCase();
+      // Use custom referral code if provided, otherwise generate one
+      const referralCode =
+        customReferralCode?.toUpperCase() ?? nanoid(8).toUpperCase();
 
-      // Update the affiliate
-      const updatedAffiliate = await ctx.db.affiliate.update({
-        where: { id },
-        data: {
-          status: "approved",
-          referralCode,
-          commissionRate,
-          isActive: true,
-          approvedAt: new Date(),
-        },
+      // Check if referral code already exists
+      if (customReferralCode) {
+        const existingCode = await ctx.db.affiliate.findFirst({
+          where: { referralCode: referralCode },
+        });
+        if (existingCode) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "This referral code is already in use",
+          });
+        }
+      }
+
+      // Convert percentage to decimal (e.g., 40 -> 0.4)
+      const commissionRateDecimal = commissionRate / 100;
+
+      // Find the AFFILIATE role
+      const affiliateRole = await ctx.db.role_custom.findFirst({
+        where: { name: "AFFILIATE" },
       });
+
+      // Update affiliate and assign role to user in a transaction
+      const updatedAffiliate = await ctx.db.$transaction(async (tx) => {
+        // Update the affiliate
+        const updated = await tx.affiliate.update({
+          where: { id },
+          data: {
+            status: "approved",
+            referralCode,
+            commissionRate: commissionRateDecimal,
+            isActive: true,
+            approvedAt: new Date(),
+          },
+        });
+
+        // Assign AFFILIATE role to the user if role exists
+        if (affiliateRole) {
+          await tx.user.update({
+            where: { id: affiliate.userId },
+            data: { customRoleId: affiliateRole.id },
+          });
+        }
+
+        return updated;
+      });
+
+      // Send approval email with referral code
+      if (resend) {
+        try {
+          await resend.emails.send({
+            from: EMAIL_FROM,
+            to: affiliate.email,
+            subject: "Your Affiliate Application Has Been Approved!",
+            react: AffiliateApprovalEmail({
+              referralCode,
+              firstName: affiliate.firstName ?? undefined,
+              commissionRate: commissionRateDecimal,
+            }),
+          });
+        } catch (emailError) {
+          // Log error but don't fail the approval
+          console.error("Failed to send affiliate approval email:", emailError);
+        }
+      }
 
       return {
         success: true,
@@ -292,6 +349,99 @@ export const affiliateRouter = createTRPCRouter({
       return {
         success: true,
         data: updatedAffiliate,
+      };
+    }),
+
+  /**
+   * Get referrals for a specific affiliate
+   */
+  getReferralsByAffiliateId: adminProcedure
+    .input(
+      z.object({
+        affiliateId: z.string(),
+        page: z.number().min(1).default(1),
+        limit: z.number().min(1).max(100).default(10),
+        status: z.enum(["pending", "converted", "paid"]).optional(),
+        sortBy: z
+          .enum(["createdAt", "convertedAt", "commission"])
+          .default("createdAt"),
+        sortOrder: z.enum(["asc", "desc"]).default("desc"),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { affiliateId, page, limit, status, sortBy, sortOrder } = input;
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where: {
+        affiliateId: string;
+        status?: "pending" | "converted" | "paid";
+      } = { affiliateId };
+
+      if (status) {
+        where.status = status;
+      }
+
+      // Get total count and referrals
+      const [total, referrals] = await Promise.all([
+        ctx.db.referral.count({ where }),
+        ctx.db.referral.findMany({
+          where,
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+            affiliate: {
+              select: {
+                id: true,
+                firstName: true,
+                email: true,
+                user: {
+                  select: {
+                    image: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { [sortBy]: sortOrder },
+          skip,
+          take: limit,
+        }),
+      ]);
+
+      const totalPage = Math.ceil(total / limit);
+
+      return {
+        success: true,
+        data: {
+          referrals: referrals.map((referral) => ({
+            id: referral.id,
+            referredUserName: referral.user.name ?? "Unknown",
+            referredUserEmail: referral.user.email,
+            referredUserAvatarSrc: referral.user.image,
+            affiliateName: referral.affiliate.firstName ?? "Unknown",
+            affiliateEmail: referral.affiliate.email,
+            affiliateAvatarSrc: referral.affiliate.user.image,
+            affiliateId: referral.affiliateId,
+            status: referral.status,
+            commission: Number(referral.commission),
+            convertedAt: referral.convertedAt?.toISOString() ?? null,
+            paidAt: referral.paidAt?.toISOString() ?? null,
+            createdAt: referral.createdAt.toISOString(),
+          })),
+          pagination: {
+            page,
+            total,
+            totalPage,
+            size: limit,
+          },
+        },
       };
     }),
 

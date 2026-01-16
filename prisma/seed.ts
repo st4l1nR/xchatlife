@@ -46,6 +46,20 @@ const CUSTOMER_PERMISSIONS = {
   auth: { create: false, read: false, update: false, delete: false },
 };
 
+// Minimal permissions for affiliates
+const AFFILIATE_PERMISSIONS = {
+  user: { create: false, read: false, update: false, delete: false },
+  character: { create: false, read: false, update: false, delete: false },
+  chat: { create: false, read: false, update: false, delete: false },
+  media: { create: false, read: false, update: false, delete: false },
+  content: { create: false, read: false, update: false, delete: false },
+  visual_novel: { create: false, read: false, update: false, delete: false },
+  ticket: { create: true, read: true, update: false, delete: false },
+  subscription: { create: false, read: false, update: false, delete: false },
+  affiliate: { create: false, read: true, update: false, delete: false },
+  auth: { create: false, read: false, update: false, delete: false },
+};
+
 // ============================================================================
 // R2 Base URL - Hardcoded production URL (public assets for seed)
 // ============================================================================
@@ -1846,6 +1860,29 @@ async function main() {
     console.log(`Found existing SUPERADMIN role (${superAdminRole.id})`);
   }
 
+  // Create ADMIN role (same permissions as SUPERADMIN for flexibility)
+  console.log("\n=== Creating ADMIN role ===");
+
+  let adminRole = await prisma.role_custom.findUnique({
+    where: { name: "ADMIN" },
+  });
+
+  if (!adminRole) {
+    adminRole = await prisma.role_custom.create({
+      data: {
+        name: "ADMIN",
+        permissions: ALL_PERMISSIONS,
+      },
+    });
+    console.log(`Created ADMIN role (${adminRole.id})`);
+  } else {
+    adminRole = await prisma.role_custom.update({
+      where: { id: adminRole.id },
+      data: { permissions: ALL_PERMISSIONS },
+    });
+    console.log(`Found existing ADMIN role (${adminRole.id})`);
+  }
+
   // Create CUSTOMER role for regular users
   console.log("\n=== Creating CUSTOMER role ===");
 
@@ -1867,6 +1904,29 @@ async function main() {
       data: { permissions: CUSTOMER_PERMISSIONS },
     });
     console.log(`Found existing CUSTOMER role (${customerRole.id})`);
+  }
+
+  // Create AFFILIATE role for affiliate users
+  console.log("\n=== Creating AFFILIATE role ===");
+
+  let affiliateRole = await prisma.role_custom.findUnique({
+    where: { name: "AFFILIATE" },
+  });
+
+  if (!affiliateRole) {
+    affiliateRole = await prisma.role_custom.create({
+      data: {
+        name: "AFFILIATE",
+        permissions: AFFILIATE_PERMISSIONS,
+      },
+    });
+    console.log(`Created AFFILIATE role (${affiliateRole.id})`);
+  } else {
+    affiliateRole = await prisma.role_custom.update({
+      where: { id: affiliateRole.id },
+      data: { permissions: AFFILIATE_PERMISSIONS },
+    });
+    console.log(`Found existing AFFILIATE role (${affiliateRole.id})`);
   }
 
   // Create Admin user with SUPERADMIN role
@@ -2160,7 +2220,9 @@ async function main() {
   console.log("=== Seed Summary ===");
   console.log("========================================");
   console.log(`SUPERADMIN Role ID: ${superAdminRole.id}`);
+  console.log(`ADMIN Role ID: ${adminRole.id}`);
   console.log(`CUSTOMER Role ID: ${customerRole.id}`);
+  console.log(`AFFILIATE Role ID: ${affiliateRole.id}`);
   console.log(`Admin User: ${adminUser.email} (Password: ${ADMIN_PASSWORD})`);
   console.log(`Total characters created: ${characters.length}`);
   console.log(`Live characters: ${characters.filter((c) => c.isLive).length}`);

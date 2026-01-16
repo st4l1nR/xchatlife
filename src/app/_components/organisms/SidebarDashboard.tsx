@@ -23,6 +23,7 @@ import {
   type DashboardNavItem,
   type DashboardNavChild,
 } from "@/lib/dashboard-navigation";
+import { api } from "@/trpc/react";
 
 export type SidebarDashboardProps = {
   /** Default expanded sections by name */
@@ -50,6 +51,11 @@ export const SidebarDashboard: React.FC<SidebarDashboardProps> = ({
     new Set(defaultExpandedSections),
   );
   const pathname = usePathname();
+
+  // Get current user role
+  const { data: userData } = api.auth.getCurrentUser.useQuery();
+  const userRole = userData?.data?.customRole?.name?.toUpperCase();
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPERADMIN";
 
   const handleCollapseToggle = () => {
     setIsCollapsed(!isCollapsed);
@@ -164,114 +170,127 @@ export const SidebarDashboard: React.FC<SidebarDashboardProps> = ({
             })}
           </SidebarSection>
 
-          {/* Tools Section */}
-          <SidebarSection>
-            <AnimatePresence initial={false}>
-              {!isCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <SidebarHeading>Tools</SidebarHeading>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {dashboardToolsNavigation.map((item) => {
-              const isExpanded = expandedSections.has(item.name);
-              const sectionActive = isSectionActive(item);
-
-              return (
-                <div key={item.name}>
-                  {/* Collapsible Section Header */}
-                  <Headless.Button
-                    onClick={() => toggleSection(item.name)}
-                    className={clsx(
-                      "flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5",
-                      "text-sidebar-foreground",
-                      "hover:bg-sidebar-accent",
-                      sectionActive && "bg-sidebar-accent",
-                    )}
+          {/* Tools Section - Only visible to Admin/SuperAdmin */}
+          {isAdmin && (
+            <SidebarSection>
+              <AnimatePresence initial={false}>
+                {!isCollapsed && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <item.icon
+                    <SidebarHeading>Tools</SidebarHeading>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {dashboardToolsNavigation.map((item) => {
+                const isExpanded = expandedSections.has(item.name);
+                const sectionActive = isSectionActive(item);
+                const isInactive = item.inactive === true;
+
+                return (
+                  <div key={item.name}>
+                    {/* Collapsible Section Header */}
+                    <Headless.Button
+                      onClick={() => !isInactive && toggleSection(item.name)}
+                      disabled={isInactive}
                       className={clsx(
-                        "h-5 w-5 shrink-0",
-                        sectionActive
-                          ? "text-sidebar-primary"
-                          : "text-sidebar-foreground/60",
+                        "flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5",
+                        "text-sidebar-foreground",
+                        isInactive
+                          ? "cursor-not-allowed opacity-40"
+                          : "hover:bg-sidebar-accent",
+                        sectionActive && !isInactive && "bg-sidebar-accent",
                       )}
-                    />
-                    <AnimatePresence initial={false}>
-                      {!isCollapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: "auto" }}
-                          exit={{ opacity: 0, width: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="flex flex-1 items-center justify-between"
-                        >
-                          <SidebarLabel>{item.name}</SidebarLabel>
-                          <ChevronDown
-                            className={clsx(
-                              "h-4 w-4 shrink-0 transition-transform duration-200",
-                              isExpanded && "rotate-180",
-                            )}
-                          />
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </Headless.Button>
-
-                  {/* Collapsible Children */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded && !isCollapsed && item.children && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="border-sidebar-border ml-4 border-l pt-1 pl-3">
-                          {item.children.map((child) => {
-                            const isChildCurrent =
-                              pathname === child.href ||
-                              pathname.startsWith(child.href + "/");
-
-                            return (
-                              <Link
-                                key={child.href}
-                                href={child.href}
+                    >
+                      <item.icon
+                        className={clsx(
+                          "h-5 w-5 shrink-0",
+                          isInactive
+                            ? "text-sidebar-foreground/40"
+                            : sectionActive
+                              ? "text-sidebar-primary"
+                              : "text-sidebar-foreground/60",
+                        )}
+                      />
+                      <AnimatePresence initial={false}>
+                        {!isCollapsed && (
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: "auto" }}
+                            exit={{ opacity: 0, width: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex flex-1 items-center justify-between"
+                          >
+                            <SidebarLabel>{item.name}</SidebarLabel>
+                            {!isInactive && (
+                              <ChevronDown
                                 className={clsx(
-                                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
-                                  "transition-colors",
-                                  isChildCurrent
-                                    ? "text-sidebar-primary font-medium"
-                                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                                  "h-4 w-4 shrink-0 transition-transform duration-200",
+                                  isExpanded && "rotate-180",
                                 )}
-                              >
-                                <span
-                                  className={clsx(
-                                    "h-1.5 w-1.5 rounded-full",
-                                    isChildCurrent
-                                      ? "bg-sidebar-primary"
-                                      : "border-sidebar-foreground/40 border",
-                                  )}
-                                />
-                                {child.name}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </SidebarSection>
+                              />
+                            )}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </Headless.Button>
+
+                    {/* Collapsible Children */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded &&
+                        !isCollapsed &&
+                        !isInactive &&
+                        item.children && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="border-sidebar-border ml-4 border-l pt-1 pl-3">
+                              {item.children.map((child) => {
+                                const isChildCurrent =
+                                  pathname === child.href ||
+                                  pathname.startsWith(child.href + "/");
+
+                                return (
+                                  <Link
+                                    key={child.href}
+                                    href={child.href}
+                                    className={clsx(
+                                      "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
+                                      "transition-colors",
+                                      isChildCurrent
+                                        ? "text-sidebar-primary font-medium"
+                                        : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                                    )}
+                                  >
+                                    <span
+                                      className={clsx(
+                                        "h-1.5 w-1.5 rounded-full",
+                                        isChildCurrent
+                                          ? "bg-sidebar-primary"
+                                          : "border-sidebar-foreground/40 border",
+                                      )}
+                                    />
+                                    {child.name}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </SidebarSection>
+          )}
         </SidebarBody>
       </Sidebar>
     </motion.div>
