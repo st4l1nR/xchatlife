@@ -1,6 +1,7 @@
 import { adminRouter } from "@/server/api/routers/admin";
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
+import { characterOptionsRouter } from "@/server/api/routers/characterOptions";
 import { chatRouter } from "@/server/api/routers/chat";
 import { optionsRouter } from "@/server/api/routers/options";
 import { invitationRouter } from "@/server/api/routers/invitation";
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   auth: authRouter,
   character: characterRouter,
+  characterOptions: characterOptionsRouter,
   chat: chatRouter,
   options: optionsRouter,
   invitation: invitationRouter,

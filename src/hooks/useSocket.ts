@@ -37,6 +37,9 @@ export function useSocket(): UseSocketReturn {
   const connectionAttemptRef = useRef(false);
 
   const generateTokenMutation = api.chat.generateSocketToken.useMutation();
+  // Use ref to avoid infinite loop - mutation object changes on every render
+  const generateTokenMutationRef = useRef(generateTokenMutation);
+  generateTokenMutationRef.current = generateTokenMutation;
 
   /**
    * Connect to socket server
@@ -53,7 +56,7 @@ export function useSocket(): UseSocketReturn {
 
     try {
       // Generate authentication token
-      const result = await generateTokenMutation.mutateAsync();
+      const result = await generateTokenMutationRef.current.mutateAsync();
 
       if (!result.success || !result.data.token) {
         throw new Error("Failed to generate socket token");
@@ -105,7 +108,7 @@ export function useSocket(): UseSocketReturn {
     } finally {
       connectionAttemptRef.current = false;
     }
-  }, [generateTokenMutation]);
+  }, []);
 
   /**
    * Disconnect from socket server
