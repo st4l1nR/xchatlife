@@ -27,6 +27,9 @@ if (!RESEND_API_KEY) {
 
 const resend = new Resend(RESEND_API_KEY);
 
+// Sleep helper to avoid rate limits
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function main() {
   // Dynamic imports after env is set
   const { default: TicketConfirmationEmail } =
@@ -202,13 +205,18 @@ async function main() {
   let successCount = 0;
   let failCount = 0;
 
-  for (const template of templatesToSend) {
+  for (let i = 0; i < templatesToSend.length; i++) {
+    const template = templatesToSend[i]!;
     console.log(`📨 ${template.name}...`);
     const success = await sendEmail(recipientEmail, template);
     if (success) {
       successCount++;
     } else {
       failCount++;
+    }
+    // Wait 600ms between emails to avoid rate limit (2 req/sec)
+    if (i < templatesToSend.length - 1) {
+      await sleep(600);
     }
   }
 
