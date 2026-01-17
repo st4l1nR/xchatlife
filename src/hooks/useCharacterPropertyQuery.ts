@@ -1,5 +1,17 @@
 import { api } from "@/trpc/react";
-import type { CharacterPropertyType } from "@/server/api/routers/characterOptions";
+
+export type CharacterPropertyType =
+  | "gender"
+  | "style"
+  | "ethnicity"
+  | "personality"
+  | "relationship"
+  | "occupation"
+  | "hairStyle"
+  | "hairColor"
+  | "eyeColor"
+  | "bodyType"
+  | "breastSize";
 
 /**
  * Generic hook to fetch character properties based on type
@@ -8,43 +20,37 @@ export function useCharacterPropertyQuery(
   propertyType: CharacterPropertyType,
   enabled = true,
 ) {
-  const genders = api.characterOptions.getGenders.useQuery(undefined, {
+  const genders = api.characterGender.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "gender",
   });
-  const styles = api.characterOptions.getStyles.useQuery(undefined, {
+  const styles = api.characterStyle.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "style",
   });
-  const ethnicities = api.characterOptions.getEthnicities.useQuery(undefined, {
+  const ethnicities = api.characterEthnicity.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "ethnicity",
   });
-  const personalities = api.characterOptions.getPersonalities.useQuery(
-    undefined,
-    {
-      enabled: enabled && propertyType === "personality",
-    },
-  );
-  const relationships = api.characterOptions.getRelationships.useQuery(
-    undefined,
-    {
-      enabled: enabled && propertyType === "relationship",
-    },
-  );
-  const occupations = api.characterOptions.getOccupations.useQuery(undefined, {
+  const personalities = api.characterPersonality.getAll.useQuery(undefined, {
+    enabled: enabled && propertyType === "personality",
+  });
+  const relationships = api.characterRelationship.getAll.useQuery(undefined, {
+    enabled: enabled && propertyType === "relationship",
+  });
+  const occupations = api.characterOccupation.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "occupation",
   });
-  const hairStyles = api.characterOptions.getHairStyles.useQuery(undefined, {
+  const hairStyles = api.characterHairStyle.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "hairStyle",
   });
-  const hairColors = api.characterOptions.getHairColors.useQuery(undefined, {
+  const hairColors = api.characterHairColor.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "hairColor",
   });
-  const eyeColors = api.characterOptions.getEyeColors.useQuery(undefined, {
+  const eyeColors = api.characterEyeColor.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "eyeColor",
   });
-  const bodyTypes = api.characterOptions.getBodyTypes.useQuery(undefined, {
+  const bodyTypes = api.characterBodyType.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "bodyType",
   });
-  const breastSizes = api.characterOptions.getBreastSizes.useQuery(undefined, {
+  const breastSizes = api.characterBreastSize.getAll.useQuery(undefined, {
     enabled: enabled && propertyType === "breastSize",
   });
 
@@ -73,44 +79,39 @@ export function useCharacterPropertyReorder(
 ) {
   const utils = api.useUtils();
 
-  const reorderGenders = api.characterOptions.reorderGenders.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderGenders = api.characterGender.reorder.useMutation({
+    onSuccess: () => void utils.characterGender.invalidate(),
   });
-  const reorderStyles = api.characterOptions.reorderStyles.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderStyles = api.characterStyle.reorder.useMutation({
+    onSuccess: () => void utils.characterStyle.invalidate(),
   });
-  const reorderEthnicities =
-    api.characterOptions.reorderEthnicities.useMutation({
-      onSuccess: () => void utils.characterOptions.invalidate(),
-    });
-  const reorderPersonalities =
-    api.characterOptions.reorderPersonalities.useMutation({
-      onSuccess: () => void utils.characterOptions.invalidate(),
-    });
-  const reorderRelationships =
-    api.characterOptions.reorderRelationships.useMutation({
-      onSuccess: () => void utils.characterOptions.invalidate(),
-    });
-  const reorderOccupations =
-    api.characterOptions.reorderOccupations.useMutation({
-      onSuccess: () => void utils.characterOptions.invalidate(),
-    });
-  const reorderHairStyles = api.characterOptions.reorderHairStyles.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderEthnicities = api.characterEthnicity.reorder.useMutation({
+    onSuccess: () => void utils.characterEthnicity.invalidate(),
   });
-  const reorderHairColors = api.characterOptions.reorderHairColors.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderPersonalities = api.characterPersonality.reorder.useMutation({
+    onSuccess: () => void utils.characterPersonality.invalidate(),
   });
-  const reorderEyeColors = api.characterOptions.reorderEyeColors.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderRelationships = api.characterRelationship.reorder.useMutation({
+    onSuccess: () => void utils.characterRelationship.invalidate(),
   });
-  const reorderBodyTypes = api.characterOptions.reorderBodyTypes.useMutation({
-    onSuccess: () => void utils.characterOptions.invalidate(),
+  const reorderOccupations = api.characterOccupation.reorder.useMutation({
+    onSuccess: () => void utils.characterOccupation.invalidate(),
   });
-  const reorderBreastSizes =
-    api.characterOptions.reorderBreastSizes.useMutation({
-      onSuccess: () => void utils.characterOptions.invalidate(),
-    });
+  const reorderHairStyles = api.characterHairStyle.reorder.useMutation({
+    onSuccess: () => void utils.characterHairStyle.invalidate(),
+  });
+  const reorderHairColors = api.characterHairColor.reorder.useMutation({
+    onSuccess: () => void utils.characterHairColor.invalidate(),
+  });
+  const reorderEyeColors = api.characterEyeColor.reorder.useMutation({
+    onSuccess: () => void utils.characterEyeColor.invalidate(),
+  });
+  const reorderBodyTypes = api.characterBodyType.reorder.useMutation({
+    onSuccess: () => void utils.characterBodyType.invalidate(),
+  });
+  const reorderBreastSizes = api.characterBreastSize.reorder.useMutation({
+    onSuccess: () => void utils.characterBreastSize.invalidate(),
+  });
 
   const mutationMap = {
     gender: reorderGenders,

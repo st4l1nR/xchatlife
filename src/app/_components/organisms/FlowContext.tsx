@@ -75,7 +75,7 @@ export type FlowContextValue = {
   clearCanvas: () => void;
 
   // React Flow handlers
-  onNodesChange: OnNodesChange;
+  onNodesChange: OnNodesChange<FlowNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
 
@@ -145,8 +145,8 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({
   // React Flow handlers
   // ============================================================================
 
-  const onNodesChange: OnNodesChange = useCallback((changes) => {
-    setNodes((nds) => applyNodeChanges(changes, nds) as FlowNode[]);
+  const onNodesChange: OnNodesChange<FlowNode> = useCallback((changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);
 
   const onEdgesChange: OnEdgesChange = useCallback((changes) => {

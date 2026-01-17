@@ -15,11 +15,11 @@ export type DashboardHairColorsPageProps = {
 };
 
 export const defaultMockData = createDefaultMockData([
-  "Black",
-  "Brown",
-  "Blonde",
-  "Red",
-  "Pink",
+  { label: "Black", emoji: "🖤" },
+  { label: "Brown", emoji: "🤎" },
+  { label: "Blonde", emoji: "💛" },
+  { label: "Red", emoji: "❤️" },
+  { label: "Pink", emoji: "💗" },
 ]);
 
 const DashboardHairColorsPage: React.FC<DashboardHairColorsPageProps> = (

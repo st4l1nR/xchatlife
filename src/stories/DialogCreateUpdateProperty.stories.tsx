@@ -2,16 +2,14 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useState } from "react";
 import { fn } from "storybook/test";
 
-import DialogCreateUpdateCharacterProperty from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
-import type {
-  CharacterPropertyType,
-  ExistingPropertyData,
-} from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
+import DialogCreateUpdateProperty from "@/app/_components/organisms/DialogCreateUpdateProperty";
+import type { ExistingPropertyData } from "@/app/_components/organisms/DialogCreateUpdateProperty";
+import type { CharacterPropertyType } from "@/hooks/useCharacterPropertyQuery";
 import { Button } from "@/app/_components/atoms/button";
 
 const meta = {
-  title: "Organisms/DialogCreateUpdateCharacterProperty",
-  component: DialogCreateUpdateCharacterProperty,
+  title: "Organisms/DialogCreateUpdateProperty",
+  component: DialogCreateUpdateProperty,
   parameters: {
     layout: "centered",
   },
@@ -46,7 +44,7 @@ const meta = {
     onSuccess: fn(),
     onClose: fn(),
   },
-} satisfies Meta<typeof DialogCreateUpdateCharacterProperty>;
+} satisfies Meta<typeof DialogCreateUpdateProperty>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -77,7 +75,7 @@ export const CreatePersonality: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Add New Personality</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -116,7 +114,7 @@ export const EditPersonality: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Edit Personality</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -157,7 +155,7 @@ export const CreateGender: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Add New Gender</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -196,7 +194,7 @@ export const CreateStyle: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Add New Style</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -289,7 +287,7 @@ export const InteractiveAllTypes: Story = {
           </Button>
         </div>
 
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           open={isOpen}
           onClose={() => setIsOpen(false)}
           mode={mode}
@@ -327,7 +325,7 @@ export const MobileView: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Open Mobile Dialog</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -364,7 +362,7 @@ export const CreateHairStyle: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Add New Hair Style</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -403,7 +401,7 @@ export const CreateEthnicity: Story = {
     return (
       <>
         <Button onClick={() => setIsOpen(true)}>Add New Ethnicity</Button>
-        <DialogCreateUpdateCharacterProperty
+        <DialogCreateUpdateProperty
           {...args}
           open={isOpen}
           onClose={() => setIsOpen(false)}

@@ -8,7 +8,6 @@ import {
   MiniMap,
   ReactFlowProvider,
   type Node,
-  type Edge,
   type NodeMouseHandler,
   type EdgeMouseHandler,
   BackgroundVariant,
@@ -21,6 +20,7 @@ import NodeEnd from "./NodeEnd";
 import NodeScene from "./NodeScene";
 import NodeChoice from "./NodeChoice";
 import FlowContextMenu from "./FlowContextMenu";
+import FlowErrorBoundary from "../molecules/FlowErrorBoundary";
 import {
   FlowProvider,
   useFlow,
@@ -178,6 +178,8 @@ const FlowCanvasInner: React.FC<{
 
   // Keyboard shortcuts
   useEffect(() => {
+    const controller = new AbortController();
+
     const handleKeyDown = (event: KeyboardEvent) => {
       // Don't trigger if user is typing in an input
       if (
@@ -209,8 +211,10 @@ const FlowCanvasInner: React.FC<{
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, {
+      signal: controller.signal,
+    });
+    return () => controller.abort();
   }, [
     selectedNodeId,
     selectedEdgeId,
@@ -314,11 +318,13 @@ const FlowCanvas: React.FC<FlowCanvasProps> = ({
   onNodeClick,
 }) => {
   return (
-    <FlowProvider initialNodes={initialNodes} initialEdges={initialEdges}>
-      <ReactFlowProvider>
-        <FlowCanvasInner className={className} onNodeClick={onNodeClick} />
-      </ReactFlowProvider>
-    </FlowProvider>
+    <FlowErrorBoundary>
+      <FlowProvider initialNodes={initialNodes} initialEdges={initialEdges}>
+        <ReactFlowProvider>
+          <FlowCanvasInner className={className} onNodeClick={onNodeClick} />
+        </ReactFlowProvider>
+      </FlowProvider>
+    </FlowErrorBoundary>
   );
 };
 

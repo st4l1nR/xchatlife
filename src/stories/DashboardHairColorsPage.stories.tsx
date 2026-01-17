@@ -28,12 +28,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Helper to generate many items
+// Helper to generate many items with emojis
+const colorEmojis = [
+  "🖤",
+  "🤎",
+  "💛",
+  "❤️",
+  "💗",
+  "🧡",
+  "💜",
+  "💙",
+  "💚",
+  "🤍",
+];
 const generateManyItems = (count: number): PropertyItem[] =>
   Array.from({ length: count }, (_, i) => ({
     id: `item-${i + 1}`,
-    src: "/images/girl-poster.webp",
     alt: `Hair Color ${i + 1}`,
+    emoji: colorEmojis[i % colorEmojis.length],
     mediaType: "image" as const,
     sortOrder: i,
   }));

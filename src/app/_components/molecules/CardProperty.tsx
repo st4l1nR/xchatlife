@@ -1,17 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
-import { PencilIcon, PlayIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 export type AspectRatio = "16:9" | "4:3" | "1:1" | "3:4" | "9:16";
 
 export type CardPropertyProps = {
   className?: string;
   id: string;
-  src: string;
+  src?: string;
+  poster?: string;
   alt?: string;
+  emoji?: string;
   mediaType: "image" | "video";
   aspectRatio?: AspectRatio;
   onEdit?: (id: string) => void;
@@ -33,7 +35,9 @@ const CardProperty: React.FC<CardPropertyProps> = ({
   className,
   id,
   src,
+  poster,
   alt = "Property image",
+  emoji,
   mediaType,
   aspectRatio = "3:4",
   onEdit,
@@ -42,6 +46,28 @@ const CardProperty: React.FC<CardPropertyProps> = ({
   isLoading = false,
   isDragging = false,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hasMedia = src && src.length > 0;
+  const isVideo = mediaType === "video";
+  const hasPoster = poster && poster.length > 0;
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (isVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay might be blocked, ignore error
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (isVideo && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
   if (isLoading) {
     return (
       <div
@@ -54,8 +80,6 @@ const CardProperty: React.FC<CardPropertyProps> = ({
     );
   }
 
-  const isVideo = mediaType === "video";
-
   return (
     <div
       className={clsx(
@@ -66,31 +90,66 @@ const CardProperty: React.FC<CardPropertyProps> = ({
         className,
       )}
       onClick={() => onClick?.(id)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {isVideo ? (
-        <video
-          src={src}
-          className="absolute inset-0 h-full w-full object-cover object-top"
-          muted
-          loop
-          playsInline
-        />
+      {hasMedia ? (
+        isVideo ? (
+          <>
+            {/* Video element - hidden when not hovered, visible on hover */}
+            <video
+              ref={videoRef}
+              src={src}
+              className={clsx(
+                "absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-300",
+                isHovered ? "opacity-100" : "opacity-0",
+              )}
+              muted
+              loop
+              playsInline
+            />
+            {/* Poster image - visible when not hovered */}
+            {hasPoster && (
+              <Image
+                src={poster}
+                alt={alt}
+                fill
+                unoptimized
+                className={clsx(
+                  "object-cover object-top transition-opacity duration-300",
+                  isHovered ? "opacity-0" : "opacity-100",
+                )}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+              />
+            )}
+            {/* Fallback when no poster - show first frame indicator */}
+            {!hasPoster && !isHovered && (
+              <div className="bg-muted absolute inset-0 flex items-center justify-center">
+                {emoji ? (
+                  <span className="text-6xl">{emoji}</span>
+                ) : (
+                  <span className="text-muted-foreground text-sm">{alt}</span>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            unoptimized
+            className="object-cover object-top"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+          />
+        )
       ) : (
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          unoptimized
-          className="object-cover object-top"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-        />
-      )}
-
-      {isVideo && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm">
-            <PlayIcon className="size-6 text-white" />
-          </div>
+        <div className="bg-muted absolute inset-0 flex items-center justify-center">
+          {emoji ? (
+            <span className="text-6xl">{emoji}</span>
+          ) : (
+            <span className="text-muted-foreground text-sm">{alt}</span>
+          )}
         </div>
       )}
 

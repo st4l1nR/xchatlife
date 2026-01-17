@@ -52,8 +52,10 @@ const MenuItem: React.FC<MenuItemProps> = ({
   return (
     <button
       type="button"
+      role="menuitem"
       onClick={onClick}
       disabled={disabled}
+      aria-disabled={disabled}
       className={clsx(
         "group flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors",
         "focus:outline-none",
@@ -166,7 +168,6 @@ const FlowContextMenu: React.FC<FlowContextMenuProps> = ({
   }, [position]);
 
   const isStartNode = type === "node" && nodeType === "start";
-  const isEndNode = type === "node" && nodeType === "end";
   const isEdge = type === "edge";
 
   const handleAddSceneAfter = () => {
@@ -194,9 +195,13 @@ const FlowContextMenu: React.FC<FlowContextMenuProps> = ({
     onClose();
   };
 
+  const menuLabel = isEdge ? "Edge actions" : `${nodeType ?? "Node"} actions`;
+
   return (
     <div
       ref={menuRef}
+      role="menu"
+      aria-label={menuLabel}
       className={clsx(
         "fixed z-50 min-w-[180px] rounded-xl p-1",
         "bg-popover ring-border shadow-lg ring-1",

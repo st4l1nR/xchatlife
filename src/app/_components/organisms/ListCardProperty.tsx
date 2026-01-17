@@ -25,8 +25,10 @@ import CardEmptyState from "../molecules/CardEmptyState";
 
 export type PropertyItem = {
   id: string;
-  src: string;
+  src?: string;
+  poster?: string;
   alt?: string;
+  emoji?: string;
   mediaType: "image" | "video";
   sortOrder: number;
 };
@@ -95,7 +97,9 @@ const SortableCardProperty: React.FC<SortableCardPropertyProps> = ({
       <CardProperty
         id={item.id}
         src={item.src}
+        poster={item.poster}
         alt={item.alt}
+        emoji={item.emoji}
         mediaType={item.mediaType}
         aspectRatio={aspectRatio}
         onEdit={onEdit}

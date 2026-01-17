@@ -25,8 +25,14 @@ export type NodeChoiceProps = NodeProps & {
 const NodeChoice: React.FC<NodeChoiceProps> = ({ data, selected }) => {
   const { text, index } = data;
 
+  const ariaLabel =
+    index !== undefined ? `Choice ${index}: ${text}` : `Choice: ${text}`;
+
   return (
     <div
+      role="button"
+      aria-pressed={selected}
+      aria-label={ariaLabel}
       className={clsx(
         "border-border bg-muted flex max-w-56 min-w-40 items-center gap-2 rounded-lg border px-4 py-3 shadow-md transition-all",
         selected && "ring-primary ring-2",
@@ -37,6 +43,7 @@ const NodeChoice: React.FC<NodeChoiceProps> = ({ data, selected }) => {
         type="target"
         position={Position.Left}
         className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
+        aria-label="Connect from previous node"
       />
 
       {/* Index badge */}
@@ -54,6 +61,7 @@ const NodeChoice: React.FC<NodeChoiceProps> = ({ data, selected }) => {
         type="source"
         position={Position.Right}
         className="!border-background !bg-primary !h-3 !w-3 !border-2"
+        aria-label="Connect to next node"
       />
     </div>
   );

@@ -44,8 +44,17 @@ const truncateText = (text: string, maxLength: number): string => {
 const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
   const { characterName, characterAvatarSrc, dialogue, sceneryImageSrc } = data;
 
+  const ariaLabel = characterName
+    ? `Scene: ${characterName}${dialogue ? ` says "${dialogue.slice(0, 30)}${dialogue.length > 30 ? "..." : ""}"` : ""}`
+    : dialogue
+      ? `Scene: ${dialogue.slice(0, 50)}${dialogue.length > 50 ? "..." : ""}`
+      : "Empty scene";
+
   return (
     <div
+      role="button"
+      aria-pressed={selected}
+      aria-label={ariaLabel}
       className={clsx(
         "border-border bg-muted relative w-56 overflow-hidden rounded-lg border shadow-md transition-all",
         selected && "ring-primary ring-2",
@@ -55,6 +64,7 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
         type="target"
         position={Position.Top}
         className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
+        aria-label="Connect from previous node"
       />
 
       {/* Scenery thumbnail */}
@@ -62,9 +72,10 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
         <div className="relative h-24 w-full">
           <Image
             src={sceneryImageSrc}
-            alt="Scene background"
+            alt=""
             fill
             className="object-cover"
+            aria-hidden="true"
           />
           <div className="to-muted/80 absolute inset-0 bg-gradient-to-b from-transparent" />
         </div>
@@ -116,6 +127,7 @@ const NodeScene: React.FC<NodeSceneProps> = ({ data, selected }) => {
         type="source"
         position={Position.Bottom}
         className="!border-background !bg-muted-foreground !h-3 !w-3 !border-2"
+        aria-label="Connect to next node"
       />
     </div>
   );

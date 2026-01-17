@@ -2,7 +2,17 @@ import { adminRouter } from "@/server/api/routers/admin";
 import { affiliateRouter } from "@/server/api/routers/affiliate";
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
-import { characterOptionsRouter } from "@/server/api/routers/characterOptions";
+import { characterGenderRouter } from "@/server/api/routers/characterGender";
+import { characterStyleRouter } from "@/server/api/routers/characterStyle";
+import { characterEthnicityRouter } from "@/server/api/routers/characterEthnicity";
+import { characterHairStyleRouter } from "@/server/api/routers/characterHairStyle";
+import { characterHairColorRouter } from "@/server/api/routers/characterHairColor";
+import { characterEyeColorRouter } from "@/server/api/routers/characterEyeColor";
+import { characterBodyTypeRouter } from "@/server/api/routers/characterBodyType";
+import { characterBreastSizeRouter } from "@/server/api/routers/characterBreastSize";
+import { characterPersonalityRouter } from "@/server/api/routers/characterPersonality";
+import { characterRelationshipRouter } from "@/server/api/routers/characterRelationship";
+import { characterOccupationRouter } from "@/server/api/routers/characterOccupation";
 import { chatRouter } from "@/server/api/routers/chat";
 import { optionsRouter } from "@/server/api/routers/options";
 import { financialCategoryRouter } from "@/server/api/routers/financialCategory";
@@ -30,7 +40,17 @@ export const appRouter = createTRPCRouter({
   affiliate: affiliateRouter,
   auth: authRouter,
   character: characterRouter,
-  characterOptions: characterOptionsRouter,
+  characterGender: characterGenderRouter,
+  characterStyle: characterStyleRouter,
+  characterEthnicity: characterEthnicityRouter,
+  characterHairStyle: characterHairStyleRouter,
+  characterHairColor: characterHairColorRouter,
+  characterEyeColor: characterEyeColorRouter,
+  characterBodyType: characterBodyTypeRouter,
+  characterBreastSize: characterBreastSizeRouter,
+  characterPersonality: characterPersonalityRouter,
+  characterRelationship: characterRelationshipRouter,
+  characterOccupation: characterOccupationRouter,
   chat: chatRouter,
   options: optionsRouter,
   financialCategory: financialCategoryRouter,
