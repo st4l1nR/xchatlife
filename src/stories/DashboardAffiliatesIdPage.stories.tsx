@@ -51,7 +51,6 @@ export const Default: Story = {
 };
 
 export const PendingAffiliate: Story = {
-  name: "Pending Affiliate",
   args: {
     mock: {
       name: "Jane Smith",
@@ -74,7 +73,6 @@ export const PendingAffiliate: Story = {
 };
 
 export const RejectedAffiliate: Story = {
-  name: "Rejected Affiliate",
   args: {
     mock: {
       name: "Mike Wilson",
@@ -94,7 +92,6 @@ export const RejectedAffiliate: Story = {
 };
 
 export const HighEarningAffiliate: Story = {
-  name: "High Earning Affiliate",
   args: {
     mock: {
       name: "Top Performer",
@@ -122,7 +119,6 @@ export const HighEarningAffiliate: Story = {
 };
 
 export const InactiveAffiliate: Story = {
-  name: "Inactive Affiliate",
   args: {
     mock: {
       name: "Inactive User",
@@ -145,7 +141,6 @@ export const InactiveAffiliate: Story = {
 };
 
 export const NoApplicationDetails: Story = {
-  name: "No Application Details",
   args: {
     mock: {
       name: "Minimal Affiliate",
@@ -161,7 +156,6 @@ export const NoApplicationDetails: Story = {
 };
 
 export const WithoutAvatar: Story = {
-  name: "Without Avatar",
   args: {
     mock: {
       name: "No Avatar User",

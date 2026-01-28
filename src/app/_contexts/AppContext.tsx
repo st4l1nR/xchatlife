@@ -33,6 +33,7 @@ type AppContextValue = {
 
   // Actions
   refetchSession: () => Promise<void>;
+  refetchTokens: () => Promise<void>;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -86,6 +87,11 @@ export function AppContextProvider({
     await Promise.all([refetchSubscription(), refetchTokens()]);
   }, [refetchAuth, refetchSubscription, refetchTokens]);
 
+  // Refetch only token balance (use after token-consuming operations)
+  const refetchTokenBalance = useCallback(async () => {
+    await refetchTokens();
+  }, [refetchTokens]);
+
   const value = useMemo<AppContextValue>(() => {
     const user = session?.user ?? null;
     const subscription = subscriptionData?.data ?? null;
@@ -126,6 +132,7 @@ export function AppContextProvider({
 
       // Actions
       refetchSession,
+      refetchTokens: refetchTokenBalance,
     };
   }, [
     session,
@@ -135,6 +142,7 @@ export function AppContextProvider({
     tokenData,
     isTokenLoading,
     refetchSession,
+    refetchTokenBalance,
   ]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

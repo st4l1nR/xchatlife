@@ -295,7 +295,12 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   character,
   onBack,
 }) => {
-  const { isAuthenticated, hasActiveSubscription } = useApp();
+  const {
+    isAuthenticated,
+    isAuthLoading,
+    hasActiveSubscription,
+    refetchTokens,
+  } = useApp();
 
   const [activeCategory, setActiveCategory] =
     useState<SuggestionCategoryId>("outfit");
@@ -304,7 +309,7 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
     "Sitting on a leather sofa, wearing a fur jacket, wearing lace underwear, gazing seductively at the viewer.",
   );
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
-  const [showHighlightVideo, setShowHighlightVideo] = useState(true);
+  const [showHighlightVideo, setShowHighlightVideo] = useState(false);
 
   // Auth dialog state
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -361,6 +366,9 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
       }));
       setGeneratedImages((prev) => [...newImages, ...prev]);
       toast.success(`Generated ${newImages.length} image(s) successfully!`);
+
+      // Refresh token balance in the navbar
+      void refetchTokens();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -368,13 +376,18 @@ const GenerateImageStep2: React.FC<GenerateImageStep2Props> = ({
   });
 
   const handleGenerate = async () => {
-    // Check auth
+    // Wait for auth to load before checking
+    if (isAuthLoading) {
+      return;
+    }
+
+    // Check auth first - show sign in dialog if not authenticated
     if (!isAuthenticated) {
       setAuthDialogOpen(true);
       return;
     }
 
-    // Check subscription for multiple images (4+)
+    // User is authenticated - check subscription for multiple images (4+)
     if (numberOfImages > 1 && !hasActiveSubscription) {
       setUpgradeDialogOpen(true);
       return;

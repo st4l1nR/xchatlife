@@ -25,9 +25,11 @@ import { privateContentRouter } from "@/server/api/routers/privateContent";
 import { referralRouter } from "@/server/api/routers/referral";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
+import { subscriptionRouter } from "@/server/api/routers/subscription";
 import { ticketRouter } from "@/server/api/routers/ticket";
 import { userRouter } from "@/server/api/routers/user";
 import { roleRouter } from "@/server/api/routers/role";
+import { visualNovelRouter } from "@/server/api/routers/visualNovel";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -63,9 +65,11 @@ export const appRouter = createTRPCRouter({
   referral: referralRouter,
   story: storyRouter,
   reel: reelRouter,
+  subscription: subscriptionRouter,
   ticket: ticketRouter,
   user: userRouter,
   role: roleRouter,
+  visualNovel: visualNovelRouter,
 });
 
 // export type definition of API

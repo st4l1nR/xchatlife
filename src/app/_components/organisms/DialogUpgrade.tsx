@@ -3,9 +3,11 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import { X, Check } from "lucide-react";
 import * as Headless from "@headlessui/react";
 import { Button } from "../atoms/button";
+import { api } from "@/trpc/react";
 
 const PRICING_PLANS = [
   {
@@ -53,14 +55,29 @@ export type DialogUpgradeProps = {
 const DialogUpgrade: React.FC<DialogUpgradeProps> = ({ open, onClose }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>("annual");
 
+  // tRPC mutation for NOWPayments crypto checkout (email subscription)
+  const createCryptoCheckout =
+    api.subscription.createCryptoCheckout.useMutation({
+      onSuccess: (data) => {
+        // NOWPayments sends payment link to user's email
+        toast.success(data.message ?? "Payment link sent to your email!");
+        onClose();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to create checkout session");
+      },
+    });
+
   const handlePayWithCard = () => {
-    // TODO: Implement payment flow
-    console.log("Pay with card:", selectedPlan);
+    // TODO: Implement Stripe or other card payment
+    toast.error("Card payments coming soon!");
   };
 
   const handlePayWithCrypto = () => {
-    // TODO: Implement crypto payment flow
-    console.log("Pay with crypto:", selectedPlan);
+    const billingCycle = selectedPlan === "annual" ? "annually" : selectedPlan;
+    createCryptoCheckout.mutate({
+      billingCycle: billingCycle as "monthly" | "quarterly" | "annually",
+    });
   };
 
   return (
@@ -226,6 +243,7 @@ const DialogUpgrade: React.FC<DialogUpgradeProps> = ({ open, onClose }) => {
                   <Button
                     outline
                     onClick={handlePayWithCrypto}
+                    loading={createCryptoCheckout.isPending}
                     className="w-full items-center! py-3 text-sm font-semibold sm:text-base"
                   >
                     <span className="flex items-center justify-center gap-2">

@@ -298,14 +298,22 @@ const DialogCreateUpdateProperty: React.FC<DialogCreateUpdatePropertyProps> = ({
 
     try {
       if (mode === "create") {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (currentCreateMutation as any).mutateAsync(
-          payloadWithGenderStyle,
-        );
+        await (
+          currentCreateMutation as unknown as {
+            mutateAsync: (
+              data: typeof payloadWithGenderStyle,
+            ) => Promise<unknown>;
+          }
+        ).mutateAsync(payloadWithGenderStyle);
         toast.success(`${PROPERTY_TYPES[propertyType].singular} created!`);
       } else if (existingProperty) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (currentUpdateMutation as any).mutateAsync({
+        await (
+          currentUpdateMutation as unknown as {
+            mutateAsync: (
+              data: typeof payloadWithGenderStyle & { id: string },
+            ) => Promise<unknown>;
+          }
+        ).mutateAsync({
           id: existingProperty.id,
           ...payloadWithGenderStyle,
         });

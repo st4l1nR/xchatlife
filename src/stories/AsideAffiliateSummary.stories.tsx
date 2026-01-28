@@ -118,7 +118,6 @@ export const Default: Story = {
 };
 
 export const PendingApplication: Story = {
-  name: "Pending Application",
   args: {
     name: "Jane Smith",
     email: "jane.smith@example.com",
@@ -133,7 +132,6 @@ export const PendingApplication: Story = {
 };
 
 export const RejectedApplication: Story = {
-  name: "Rejected Application",
   args: {
     name: "Mike Wilson",
     email: "mike@example.com",
@@ -233,7 +231,6 @@ export const StatsOnly: Story = {
 };
 
 export const MinimalData: Story = {
-  name: "Minimal Data",
   args: {
     name: "Minimal User",
     status: "pending",

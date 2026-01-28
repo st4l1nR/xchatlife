@@ -18,14 +18,6 @@ const TicketCategory = z.enum([
   "content",
   "other",
 ]);
-// Activity type enum (defined for reference, Prisma enum used directly)
-const _TicketActivityType = z.enum([
-  "note",
-  "status_change",
-  "priority_change",
-  "assigned",
-  "created",
-]);
 
 // Input schemas
 const createTicketSchema = z.object({

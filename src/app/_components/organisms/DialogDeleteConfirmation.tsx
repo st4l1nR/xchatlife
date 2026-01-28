@@ -16,7 +16,7 @@ export type DialogDeleteConfirmationProps = {
   onClose: () => void;
   onConfirm: () => void;
   loading?: boolean;
-  itemType: "reel" | "story" | "private content" | "character";
+  itemType: "reel" | "story" | "private content" | "character" | "visual novel";
   itemName?: string;
 };
 
