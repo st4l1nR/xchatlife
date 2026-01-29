@@ -68,7 +68,7 @@ export const imageRouter = createTRPCRouter({
         // Run all batches in parallel for better performance
         const batchPromises = batches.map((batchSize) =>
           xai.images.generate({
-            model: "grok-2-image",
+            model: "grok-2-image-1212",
             prompt,
             n: batchSize,
           }),

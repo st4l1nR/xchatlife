@@ -8,6 +8,7 @@ import {
   ArrowLeftRight,
   Handshake,
   LifeBuoy,
+  CreditCard,
 } from "lucide-react";
 
 export type DashboardNavChild = {
@@ -78,10 +79,9 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
   {
     name: "Visual Novels",
     icon: BookImage,
-    inactive: true,
     children: [
-      { name: "View/Create", href: "/dashboard/visual-novels" },
-      { name: "Media", href: "/dashboard/visual-novels/media" },
+      { name: "View All", href: "/dashboard/visual-novels" },
+      { name: "Create", href: "/dashboard/visual-novels?action=create" },
     ],
   },
   {
@@ -91,6 +91,14 @@ export const dashboardToolsNavigation: DashboardNavItem[] = [
       { name: "View All", href: "/dashboard/transactions" },
       { name: "Create", href: "/dashboard/transactions?action=create" },
       { name: "Categories", href: "/dashboard/transactions/categories" },
+    ],
+  },
+  {
+    name: "Subscription Plans",
+    icon: CreditCard,
+    children: [
+      { name: "View All", href: "/dashboard/plans" },
+      { name: "Create", href: "/dashboard/plans?create=true" },
     ],
   },
   {

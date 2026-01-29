@@ -2,7 +2,17 @@ import { adminRouter } from "@/server/api/routers/admin";
 import { affiliateRouter } from "@/server/api/routers/affiliate";
 import { authRouter } from "@/server/api/routers/auth";
 import { characterRouter } from "@/server/api/routers/character";
-import { characterOptionsRouter } from "@/server/api/routers/characterOptions";
+import { characterGenderRouter } from "@/server/api/routers/characterGender";
+import { characterStyleRouter } from "@/server/api/routers/characterStyle";
+import { characterEthnicityRouter } from "@/server/api/routers/characterEthnicity";
+import { characterHairStyleRouter } from "@/server/api/routers/characterHairStyle";
+import { characterHairColorRouter } from "@/server/api/routers/characterHairColor";
+import { characterEyeColorRouter } from "@/server/api/routers/characterEyeColor";
+import { characterBodyTypeRouter } from "@/server/api/routers/characterBodyType";
+import { characterBreastSizeRouter } from "@/server/api/routers/characterBreastSize";
+import { characterPersonalityRouter } from "@/server/api/routers/characterPersonality";
+import { characterRelationshipRouter } from "@/server/api/routers/characterRelationship";
+import { characterOccupationRouter } from "@/server/api/routers/characterOccupation";
 import { chatRouter } from "@/server/api/routers/chat";
 import { optionsRouter } from "@/server/api/routers/options";
 import { financialCategoryRouter } from "@/server/api/routers/financialCategory";
@@ -15,9 +25,11 @@ import { privateContentRouter } from "@/server/api/routers/privateContent";
 import { referralRouter } from "@/server/api/routers/referral";
 import { storyRouter } from "@/server/api/routers/story";
 import { reelRouter } from "@/server/api/routers/reel";
+import { subscriptionRouter } from "@/server/api/routers/subscription";
 import { ticketRouter } from "@/server/api/routers/ticket";
 import { userRouter } from "@/server/api/routers/user";
 import { roleRouter } from "@/server/api/routers/role";
+import { visualNovelRouter } from "@/server/api/routers/visualNovel";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -30,7 +42,17 @@ export const appRouter = createTRPCRouter({
   affiliate: affiliateRouter,
   auth: authRouter,
   character: characterRouter,
-  characterOptions: characterOptionsRouter,
+  characterGender: characterGenderRouter,
+  characterStyle: characterStyleRouter,
+  characterEthnicity: characterEthnicityRouter,
+  characterHairStyle: characterHairStyleRouter,
+  characterHairColor: characterHairColorRouter,
+  characterEyeColor: characterEyeColorRouter,
+  characterBodyType: characterBodyTypeRouter,
+  characterBreastSize: characterBreastSizeRouter,
+  characterPersonality: characterPersonalityRouter,
+  characterRelationship: characterRelationshipRouter,
+  characterOccupation: characterOccupationRouter,
   chat: chatRouter,
   options: optionsRouter,
   financialCategory: financialCategoryRouter,
@@ -43,9 +65,11 @@ export const appRouter = createTRPCRouter({
   referral: referralRouter,
   story: storyRouter,
   reel: reelRouter,
+  subscription: subscriptionRouter,
   ticket: ticketRouter,
   user: userRouter,
   role: roleRouter,
+  visualNovel: visualNovelRouter,
 });
 
 // export type definition of API

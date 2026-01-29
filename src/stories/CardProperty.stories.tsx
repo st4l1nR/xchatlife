@@ -194,7 +194,6 @@ export const Clickable: Story = {
 };
 
 export const FullyInteractive: Story = {
-  name: "Fully Interactive",
   args: {
     id: "12",
     src: mockImage,
@@ -238,7 +237,6 @@ export const Dragging: Story = {
 };
 
 export const AllAspectRatios: Story = {
-  name: "All Aspect Ratios",
   args: {
     id: "grid",
     src: mockImage,
@@ -312,7 +310,6 @@ export const AllAspectRatios: Story = {
 };
 
 export const AllStates: Story = {
-  name: "All States",
   args: {
     id: "states",
     src: mockImage,

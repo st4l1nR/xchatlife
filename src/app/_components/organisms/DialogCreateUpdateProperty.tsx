@@ -23,6 +23,7 @@ import {
 } from "@/app/_components/atoms/listbox";
 import CardMediaUpload from "@/app/_components/molecules/CardMediaUpload";
 import { api } from "@/trpc/react";
+import type { CharacterPropertyType } from "@/hooks/useCharacterPropertyQuery";
 
 // Property types configuration
 const PROPERTY_TYPES = {
@@ -38,8 +39,6 @@ const PROPERTY_TYPES = {
   gender: { singular: "Gender", plural: "Genders" },
   style: { singular: "Style", plural: "Styles" },
 } as const;
-
-export type CharacterPropertyType = keyof typeof PROPERTY_TYPES;
 
 // Zod validation schema
 const propertyFormSchema = z.object({
@@ -65,7 +64,7 @@ export type ExistingPropertyData = {
   video?: { id: string; url: string } | null;
 };
 
-export type DialogCreateUpdateCharacterPropertyProps = {
+export type DialogCreateUpdatePropertyProps = {
   className?: string;
   open: boolean;
   onClose: () => void;
@@ -75,9 +74,7 @@ export type DialogCreateUpdateCharacterPropertyProps = {
   onSuccess?: () => void;
 };
 
-const DialogCreateUpdateCharacterProperty: React.FC<
-  DialogCreateUpdateCharacterPropertyProps
-> = ({
+const DialogCreateUpdateProperty: React.FC<DialogCreateUpdatePropertyProps> = ({
   className,
   open,
   onClose,
@@ -104,32 +101,104 @@ const DialogCreateUpdateCharacterProperty: React.FC<
     { enabled: requiresGenderStyle },
   );
 
-  // Mutations
-  const createMutation = api.characterOptions.createProperty.useMutation({
-    onSuccess: () => {
-      toast.success(`${PROPERTY_TYPES[propertyType].singular} created!`);
-      void utils.characterOptions.invalidate();
-      onSuccess?.();
-      onClose();
-    },
-    onError: (error) => {
-      toast.error(error.message ?? "Failed to create");
-    },
-  });
+  // Create mutations for each property type
+  const createGender = api.characterGender.create.useMutation();
+  const createStyle = api.characterStyle.create.useMutation();
+  const createEthnicity = api.characterEthnicity.create.useMutation();
+  const createHairStyle = api.characterHairStyle.create.useMutation();
+  const createHairColor = api.characterHairColor.create.useMutation();
+  const createEyeColor = api.characterEyeColor.create.useMutation();
+  const createBodyType = api.characterBodyType.create.useMutation();
+  const createBreastSize = api.characterBreastSize.create.useMutation();
+  const createPersonality = api.characterPersonality.create.useMutation();
+  const createRelationship = api.characterRelationship.create.useMutation();
+  const createOccupation = api.characterOccupation.create.useMutation();
 
-  const updateMutation = api.characterOptions.updateProperty.useMutation({
-    onSuccess: () => {
-      toast.success(`${PROPERTY_TYPES[propertyType].singular} updated!`);
-      void utils.characterOptions.invalidate();
-      onSuccess?.();
-      onClose();
-    },
-    onError: (error) => {
-      toast.error(error.message ?? "Failed to update");
-    },
-  });
+  // Update mutations for each property type
+  const updateGender = api.characterGender.update.useMutation();
+  const updateStyle = api.characterStyle.update.useMutation();
+  const updateEthnicity = api.characterEthnicity.update.useMutation();
+  const updateHairStyle = api.characterHairStyle.update.useMutation();
+  const updateHairColor = api.characterHairColor.update.useMutation();
+  const updateEyeColor = api.characterEyeColor.update.useMutation();
+  const updateBodyType = api.characterBodyType.update.useMutation();
+  const updateBreastSize = api.characterBreastSize.update.useMutation();
+  const updatePersonality = api.characterPersonality.update.useMutation();
+  const updateRelationship = api.characterRelationship.update.useMutation();
+  const updateOccupation = api.characterOccupation.update.useMutation();
 
-  const loading = createMutation.isPending || updateMutation.isPending;
+  const createMutations = {
+    gender: createGender,
+    style: createStyle,
+    ethnicity: createEthnicity,
+    hairStyle: createHairStyle,
+    hairColor: createHairColor,
+    eyeColor: createEyeColor,
+    bodyType: createBodyType,
+    breastSize: createBreastSize,
+    personality: createPersonality,
+    relationship: createRelationship,
+    occupation: createOccupation,
+  };
+
+  const updateMutations = {
+    gender: updateGender,
+    style: updateStyle,
+    ethnicity: updateEthnicity,
+    hairStyle: updateHairStyle,
+    hairColor: updateHairColor,
+    eyeColor: updateEyeColor,
+    bodyType: updateBodyType,
+    breastSize: updateBreastSize,
+    personality: updatePersonality,
+    relationship: updateRelationship,
+    occupation: updateOccupation,
+  };
+
+  const currentCreateMutation = createMutations[propertyType];
+  const currentUpdateMutation = updateMutations[propertyType];
+
+  const loading =
+    currentCreateMutation.isPending || currentUpdateMutation.isPending;
+
+  // Invalidate queries helper
+  const invalidatePropertyQueries = () => {
+    switch (propertyType) {
+      case "gender":
+        void utils.characterGender.invalidate();
+        break;
+      case "style":
+        void utils.characterStyle.invalidate();
+        break;
+      case "ethnicity":
+        void utils.characterEthnicity.invalidate();
+        break;
+      case "hairStyle":
+        void utils.characterHairStyle.invalidate();
+        break;
+      case "hairColor":
+        void utils.characterHairColor.invalidate();
+        break;
+      case "eyeColor":
+        void utils.characterEyeColor.invalidate();
+        break;
+      case "bodyType":
+        void utils.characterBodyType.invalidate();
+        break;
+      case "breastSize":
+        void utils.characterBreastSize.invalidate();
+        break;
+      case "personality":
+        void utils.characterPersonality.invalidate();
+        break;
+      case "relationship":
+        void utils.characterRelationship.invalidate();
+        break;
+      case "occupation":
+        void utils.characterOccupation.invalidate();
+        break;
+    }
+  };
 
   // Form setup
   const defaultValues = useMemo(
@@ -214,31 +283,49 @@ const DialogCreateUpdateCharacterProperty: React.FC<
       videoUrl = await fileToDataUrl(posterVideo);
     }
 
-    if (mode === "create") {
-      createMutation.mutate({
-        propertyType,
-        name: data.name,
-        label: data.label,
-        description: data.description,
-        emoji: data.emoji,
-        genderId: data.genderId,
-        styleId: data.styleId,
-        imageUrl,
-        videoUrl,
-      });
-    } else if (existingProperty) {
-      updateMutation.mutate({
-        id: existingProperty.id,
-        propertyType,
-        name: data.name,
-        label: data.label,
-        description: data.description,
-        emoji: data.emoji,
-        genderId: data.genderId,
-        styleId: data.styleId,
-        imageUrl,
-        videoUrl,
-      });
+    const basePayload = {
+      name: data.name,
+      label: data.label,
+      description: data.description,
+      emoji: data.emoji,
+      imageUrl,
+      videoUrl,
+    };
+
+    const payloadWithGenderStyle = requiresGenderStyle
+      ? { ...basePayload, genderId: data.genderId!, styleId: data.styleId! }
+      : basePayload;
+
+    try {
+      if (mode === "create") {
+        await (
+          currentCreateMutation as unknown as {
+            mutateAsync: (
+              data: typeof payloadWithGenderStyle,
+            ) => Promise<unknown>;
+          }
+        ).mutateAsync(payloadWithGenderStyle);
+        toast.success(`${PROPERTY_TYPES[propertyType].singular} created!`);
+      } else if (existingProperty) {
+        await (
+          currentUpdateMutation as unknown as {
+            mutateAsync: (
+              data: typeof payloadWithGenderStyle & { id: string },
+            ) => Promise<unknown>;
+          }
+        ).mutateAsync({
+          id: existingProperty.id,
+          ...payloadWithGenderStyle,
+        });
+        toast.success(`${PROPERTY_TYPES[propertyType].singular} updated!`);
+      }
+      invalidatePropertyQueries();
+      onSuccess?.();
+      onClose();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save property",
+      );
     }
   };
 
@@ -449,4 +536,4 @@ const fileToDataUrl = (file: File): Promise<string> => {
   });
 };
 
-export default DialogCreateUpdateCharacterProperty;
+export default DialogCreateUpdateProperty;

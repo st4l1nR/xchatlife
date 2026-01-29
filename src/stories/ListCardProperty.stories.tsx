@@ -4,11 +4,9 @@ import React, { useState } from "react";
 import ListCardProperty, {
   type PropertyItem,
 } from "@/app/_components/organisms/ListCardProperty";
-import DialogCreateUpdateCharacterProperty from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
-import type {
-  CharacterPropertyType,
-  ExistingPropertyData,
-} from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
+import DialogCreateUpdateProperty from "@/app/_components/organisms/DialogCreateUpdateProperty";
+import type { ExistingPropertyData } from "@/app/_components/organisms/DialogCreateUpdateProperty";
+import type { CharacterPropertyType } from "@/hooks/useCharacterPropertyQuery";
 
 const meta = {
   title: "Organisms/ListCardProperty",
@@ -210,9 +208,11 @@ const InteractiveWrapper = ({
         label: item.label ?? item.alt ?? "Property",
         description: item.description,
         emoji: item.emoji,
-        image: { id: item.id, url: item.src },
+        image: item.src ? { id: item.id, url: item.src } : null,
         video:
-          item.mediaType === "video" ? { id: item.id, url: item.src } : null,
+          item.mediaType === "video" && item.src
+            ? { id: item.id, url: item.src }
+            : null,
       });
       setDialogOpen(true);
     }
@@ -241,7 +241,7 @@ const InteractiveWrapper = ({
           onDelete={handleDelete}
         />
       </div>
-      <DialogCreateUpdateCharacterProperty
+      <DialogCreateUpdateProperty
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         mode="update"

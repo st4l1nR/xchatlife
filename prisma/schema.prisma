@@ -825,20 +825,24 @@ model private_content_media {
 // ==========================================
 
 model visual_novel {
-  id          String                   @id @default(cuid())
-  title       String
-  description String?
-  thumbnailId String?
-  isPublished Boolean                  @default(false)
-  createdById String
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
-  thumbnail   media?                   @relation("visual_novel_thumbnail", fields: [thumbnailId], references: [id])
-  createdBy   user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  characters  visual_novel_character[]
-  nodes       visual_novel_node[]
-  edges       visual_novel_edge[]
-  media_links visual_novel_media[]
+  id           String                   @id @default(cuid())
+  title        String
+  description  String?                  @db.Text
+  thumbnailId  String?
+  isPublished  Boolean                  @default(false)
+  // Editor viewport state
+  viewportX    Float                    @default(0)
+  viewportY    Float                    @default(0)
+  viewportZoom Float                    @default(1)
+  createdById  String
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  thumbnail    media?                   @relation("visual_novel_thumbnail", fields: [thumbnailId], references: [id])
+  createdBy    user                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  characters   visual_novel_character[]
+  nodes        visual_novel_node[]
+  edges        visual_novel_edge[]
+  media_links  visual_novel_media[]
 
   @@index([createdById])
   @@index([isPublished])
@@ -861,29 +865,48 @@ model visual_novel_node {
   id                String                       @id @default(cuid())
   visualNovelId     String
   type              VisualNovelNodeType
+  label             String                       @default("New Node")
   positionX         Float
   positionY         Float
+
   // Scene node fields
   characterId       String?
-  dialogue          String?
+  speakerName       String?
+  dialogue          String?                      @db.Text
+  dialogueRich      String?                      @db.Text
   sceneryImageId    String?
   characterImageId  String?
   backgroundMusicId String?
-  // Choice node fields
-  promptText        String?
+
+  // Choice/Branch node fields
+  promptText        String?                      @db.Text
+
+  // Jump node fields
+  targetNodeId      String?
+
+  // End node fields
+  endingType        VisualNovelEndingType?
+  finalMessage      String?                      @db.Text
+  finalMessageRich  String?                      @db.Text
+
   createdAt         DateTime                     @default(now())
   updatedAt         DateTime                     @updatedAt
+
+  // Relations
   visualNovel       visual_novel                 @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
   character         character?                   @relation(fields: [characterId], references: [id])
   sceneryImage      media?                       @relation("node_scenery", fields: [sceneryImageId], references: [id])
   characterImage    media?                       @relation("node_character_image", fields: [characterImageId], references: [id])
   backgroundMusic   media?                       @relation("node_music", fields: [backgroundMusicId], references: [id])
+  targetNode        visual_novel_node?           @relation("node_jump_target", fields: [targetNodeId], references: [id], onDelete: SetNull)
+  jumpingNodes      visual_novel_node[]          @relation("node_jump_target")
   choiceOptions     visual_novel_choice_option[]
   edgesFrom         visual_novel_edge[]          @relation("edge_source")
   edgesTo           visual_novel_edge[]          @relation("edge_target")
 
   @@index([visualNovelId])
   @@index([type])
+  @@index([targetNodeId])
 }
 
 model visual_novel_choice_option {
@@ -905,6 +928,8 @@ model visual_novel_edge {
   sourceNodeId   String
   targetNodeId   String
   choiceOptionId String?
+  label          String?
+  animated       Boolean                     @default(true)
   createdAt      DateTime                    @default(now())
   visualNovel    visual_novel                @relation(fields: [visualNovelId], references: [id], onDelete: Cascade)
   sourceNode     visual_novel_node           @relation("edge_source", fields: [sourceNodeId], references: [id], onDelete: Cascade)
@@ -1095,21 +1120,45 @@ model session {
 }
 
 model subscription {
-  id                 String             @id @default(cuid())
-  userId             String             @unique
-  billingCycle       BillingCycle
-  status             SubscriptionStatus
-  currentPeriodStart DateTime
-  currentPeriodEnd   DateTime
-  coinGateOrderId    String?
-  cancelledAt        DateTime?
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                        String             @id @default(cuid())
+  userId                    String             @unique
+  billingCycle              BillingCycle
+  status                    SubscriptionStatus
+  currentPeriodStart        DateTime
+  currentPeriodEnd          DateTime
+  coinGateOrderId           String?
+  nowpaymentsSubscriptionId String?            @map("nowpayments_subscription_id")
+  cancelledAt               DateTime?
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  planId                    String?
+  user                      user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                      subscription_plan? @relation(fields: [planId], references: [id])
 
   @@index([coinGateOrderId])
+  @@index([nowpaymentsSubscriptionId])
   @@index([currentPeriodEnd])
   @@index([status])
+  @@index([planId])
+}
+
+model subscription_plan {
+  id            String       @id @default(cuid())
+  nowpaymentsId Int          @map("nowpayments_id")
+  billingCycle  BillingCycle
+  label         String
+  months        Int
+  price         Decimal      @db.Decimal(10, 2)
+  pricePerMonth Decimal      @db.Decimal(10, 2) @map("price_per_month")
+  tokensGranted Int          @map("tokens_granted")
+  discount      Int?
+  isActive      Boolean      @default(true) @map("is_active")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  subscriptions subscription[]
+
+  @@map("subscription_plan")
 }
 
 model token_transaction {
@@ -1268,9 +1317,17 @@ enum SubscriptionStatus {
 enum VisualNovelNodeType {
   scene
   choice
+  jump
   condition
   start
   end
+}
+
+enum VisualNovelEndingType {
+  good
+  neutral
+  bad
+  secret
 }
 
 enum TicketStatus {

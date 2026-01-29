@@ -94,6 +94,9 @@ export const mobileNavigation: NavigationItem[] = [
   },
 ];
 
+// Subscription Types (matches Prisma enum)
+export type BillingCycle = "monthly" | "quarterly" | "annually";
+
 // Token Economics
 export const IMAGE_GENERATION_COST = 4; // tokens per image
 

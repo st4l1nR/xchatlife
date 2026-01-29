@@ -6,16 +6,6 @@ import type { TableFinancialCategoryItem } from "@/app/_components/organisms/Tab
 const generateMockCategories = (
   count: number,
 ): TableFinancialCategoryItem[] => {
-  const types = ["income", "expense"] as const;
-  const groups = [
-    "affiliates",
-    "infrastructure",
-    "ai",
-    "subscriptions",
-    "tokens",
-    "other",
-  ] as const;
-
   const categoryTemplates = [
     {
       name: "affiliate_commission",
@@ -148,7 +138,6 @@ const generateMockCategories = (
 };
 
 const mockCategories50 = generateMockCategories(50);
-const mockCategories10 = mockCategories50.slice(0, 10);
 const mockCategories6 = mockCategories50.slice(0, 6);
 
 const meta: Meta<typeof DashboardFinancialCategoriesPage> = {

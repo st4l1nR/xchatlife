@@ -40,7 +40,7 @@ const generateManyItems = (count: number): PropertyItem[] =>
 
 // Interactive wrapper for drag-and-drop and dialog testing
 const InteractiveWrapper = () => {
-  const [items, setItems] = useState(defaultMockData.items);
+  const [items] = useState(defaultMockData.items);
 
   return <DashboardPersonalitiesPage mock={{ items }} />;
 };

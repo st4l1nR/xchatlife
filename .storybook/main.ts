@@ -17,5 +17,15 @@ const config: StorybookConfig = {
     },
   },
   staticDirs: ["../public"],
+  viteFinal: async (config) => {
+    // Handle CommonJS dagre dependency
+    config.optimizeDeps = config.optimizeDeps || {};
+    config.optimizeDeps.include = [
+      ...(config.optimizeDeps.include || []),
+      "@dagrejs/dagre",
+      "@dagrejs/graphlib",
+    ];
+    return config;
+  },
 };
 export default config;

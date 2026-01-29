@@ -36,6 +36,15 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().optional(),
     // xAI
     XAI_API_KEY: z.string().min(1).optional(),
+    // NOWPayments
+    NOWPAYMENTS_API_KEY: z.string().min(1).optional(),
+    NOWPAYMENTS_EMAIL: z.string().email().optional(),
+    NOWPAYMENTS_PASSWORD: z.string().min(1).optional(),
+    NOWPAYMENTS_IPN_SECRET: z.string().min(1).optional(),
+    // Coinremitter
+    COINREMITTER_API_KEY: z.string().min(1).optional(),
+    COINREMITTER_API_PASSWORD: z.string().min(1).optional(),
+    COINREMITTER_TEST_MODE: z.string().optional(),
   },
 
   /**
@@ -84,6 +93,15 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     // xAI
     XAI_API_KEY: process.env.XAI_API_KEY,
+    // NOWPayments
+    NOWPAYMENTS_API_KEY: process.env.NOWPAYMENTS_API_KEY,
+    NOWPAYMENTS_EMAIL: process.env.NOWPAYMENTS_EMAIL,
+    NOWPAYMENTS_PASSWORD: process.env.NOWPAYMENTS_PASSWORD,
+    NOWPAYMENTS_IPN_SECRET: process.env.NOWPAYMENTS_IPN_SECRET,
+    // Coinremitter
+    COINREMITTER_API_KEY: process.env.COINREMITTER_API_KEY,
+    COINREMITTER_API_PASSWORD: process.env.COINREMITTER_API_PASSWORD,
+    COINREMITTER_TEST_MODE: process.env.COINREMITTER_TEST_MODE,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -11,8 +11,8 @@ import {
   DialogTitle,
 } from "@/app/_components/atoms/dialog";
 import ListCardProperty from "@/app/_components/organisms/ListCardProperty";
-import DialogCreateUpdateCharacterProperty from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
-import type { ExistingPropertyData } from "@/app/_components/organisms/DialogCreateUpdateCharacterProperty";
+import DialogCreateUpdateProperty from "@/app/_components/organisms/DialogCreateUpdateProperty";
+import type { ExistingPropertyData } from "@/app/_components/organisms/DialogCreateUpdateProperty";
 import type { PropertyItem } from "@/app/_components/organisms/ListCardProperty";
 import type { CharacterPropertyConfig } from "@/lib/character-property-config";
 import {
@@ -27,16 +27,25 @@ export type DashboardCharacterPropertyPageMockData = {
 };
 
 // Helper to create default mock data for any property type
+// Accepts either string[] for image-based properties or { label: string; emoji?: string }[] for emoji-based
 export const createDefaultMockData = (
-  labels: string[],
+  items: (string | { label: string; emoji?: string; src?: string })[],
 ): DashboardCharacterPropertyPageMockData => ({
-  items: labels.map((label, index) => ({
-    id: `${index + 1}`,
-    src: "/images/girl-poster.webp",
-    alt: label,
-    mediaType: "image" as const,
-    sortOrder: index,
-  })),
+  items: items.map((item, index) => {
+    const isObject = typeof item === "object";
+    const label = isObject ? item.label : item;
+    const emoji = isObject ? item.emoji : undefined;
+    const src = isObject ? item.src : "/images/girl-poster.webp";
+
+    return {
+      id: `${index + 1}`,
+      src,
+      alt: label,
+      emoji,
+      mediaType: "image" as const,
+      sortOrder: index,
+    };
+  }),
 });
 
 export type DashboardCharacterPropertyPageProps = {
@@ -69,19 +78,73 @@ const DashboardCharacterPropertyPage: React.FC<
   const utils = api.useUtils();
   const reorderMutation = useCharacterPropertyReorder(propertyType);
 
-  const deleteMutation = api.characterOptions.deleteProperty.useMutation({
-    onSuccess: () => {
-      toast.success(`${label.singular} deleted successfully!`);
-      void utils.characterOptions.invalidate();
-      setDeleteDialogOpen(false);
-      setItemToDelete(null);
-    },
-    onError: (error) => {
-      toast.error(
-        error.message ?? `Failed to delete ${label.singular.toLowerCase()}`,
-      );
-    },
-  });
+  // Delete mutations for each property type
+  const deleteGender = api.characterGender.delete.useMutation();
+  const deleteStyle = api.characterStyle.delete.useMutation();
+  const deleteEthnicity = api.characterEthnicity.delete.useMutation();
+  const deleteHairStyle = api.characterHairStyle.delete.useMutation();
+  const deleteHairColor = api.characterHairColor.delete.useMutation();
+  const deleteEyeColor = api.characterEyeColor.delete.useMutation();
+  const deleteBodyType = api.characterBodyType.delete.useMutation();
+  const deleteBreastSize = api.characterBreastSize.delete.useMutation();
+  const deletePersonality = api.characterPersonality.delete.useMutation();
+  const deleteRelationship = api.characterRelationship.delete.useMutation();
+  const deleteOccupation = api.characterOccupation.delete.useMutation();
+
+  const deleteMutations = {
+    gender: deleteGender,
+    style: deleteStyle,
+    ethnicity: deleteEthnicity,
+    hairStyle: deleteHairStyle,
+    hairColor: deleteHairColor,
+    eyeColor: deleteEyeColor,
+    bodyType: deleteBodyType,
+    breastSize: deleteBreastSize,
+    personality: deletePersonality,
+    relationship: deleteRelationship,
+    occupation: deleteOccupation,
+  };
+
+  const currentDeleteMutation = deleteMutations[propertyType];
+
+  // Invalidate queries helper
+  const invalidatePropertyQueries = () => {
+    switch (propertyType) {
+      case "gender":
+        void utils.characterGender.invalidate();
+        break;
+      case "style":
+        void utils.characterStyle.invalidate();
+        break;
+      case "ethnicity":
+        void utils.characterEthnicity.invalidate();
+        break;
+      case "hairStyle":
+        void utils.characterHairStyle.invalidate();
+        break;
+      case "hairColor":
+        void utils.characterHairColor.invalidate();
+        break;
+      case "eyeColor":
+        void utils.characterEyeColor.invalidate();
+        break;
+      case "bodyType":
+        void utils.characterBodyType.invalidate();
+        break;
+      case "breastSize":
+        void utils.characterBreastSize.invalidate();
+        break;
+      case "personality":
+        void utils.characterPersonality.invalidate();
+        break;
+      case "relationship":
+        void utils.characterRelationship.invalidate();
+        break;
+      case "occupation":
+        void utils.characterOccupation.invalidate();
+        break;
+    }
+  };
 
   // Handlers
   const handleAdd = () => {
@@ -126,12 +189,21 @@ const DashboardCharacterPropertyPage: React.FC<
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (itemToDelete) {
-      deleteMutation.mutate({
-        id: itemToDelete.id,
-        propertyType,
-      });
+      try {
+        await currentDeleteMutation.mutateAsync({ id: itemToDelete.id });
+        toast.success(`${label.singular} deleted successfully!`);
+        invalidatePropertyQueries();
+        setDeleteDialogOpen(false);
+        setItemToDelete(null);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : `Failed to delete ${label.singular.toLowerCase()}`,
+        );
+      }
     }
   };
 
@@ -149,8 +221,10 @@ const DashboardCharacterPropertyPage: React.FC<
     mock?.items ??
     (data?.data ?? []).map((item) => ({
       id: item.id,
-      src: item.video?.url ?? item.image?.url ?? "",
+      src: item.video?.url ?? item.image?.url,
+      poster: item.video ? item.image?.url : undefined,
       alt: item.label,
+      emoji: item.emoji ?? undefined,
       mediaType: item.video ? ("video" as const) : ("image" as const),
       sortOrder: item.sortOrder,
     }));
@@ -190,7 +264,7 @@ const DashboardCharacterPropertyPage: React.FC<
       </section>
 
       {/* Create/Update Dialog */}
-      <DialogCreateUpdateCharacterProperty
+      <DialogCreateUpdateProperty
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         mode={dialogMode}
@@ -203,7 +277,7 @@ const DashboardCharacterPropertyPage: React.FC<
       <Dialog
         open={deleteDialogOpen}
         onClose={() => {
-          if (!deleteMutation.isPending) {
+          if (!currentDeleteMutation.isPending) {
             setDeleteDialogOpen(false);
             setItemToDelete(null);
           }
@@ -221,14 +295,14 @@ const DashboardCharacterPropertyPage: React.FC<
               setDeleteDialogOpen(false);
               setItemToDelete(null);
             }}
-            disabled={deleteMutation.isPending}
+            disabled={currentDeleteMutation.isPending}
           >
             Cancel
           </Button>
           <Button
             color="red"
             onClick={confirmDelete}
-            loading={deleteMutation.isPending}
+            loading={currentDeleteMutation.isPending}
           >
             Delete
           </Button>

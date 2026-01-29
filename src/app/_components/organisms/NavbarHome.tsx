@@ -69,7 +69,7 @@ const NavbarHomeContent = forwardRef<
   const pathname = usePathname();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { data: session, isPending } = authClient.useSession();
-  const { hasActiveSubscription, tokensAvailable } = useApp();
+  const { tokensAvailable } = useApp();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authVariant, setAuthVariant] = useState<DialogAuthVariant>("sign-in");
 
@@ -216,8 +216,8 @@ const NavbarHomeContent = forwardRef<
       </div>
     );
 
-  // Only show tokens dropdown for users with active subscription
-  const showTokens = !isPending && session && hasActiveSubscription;
+  // Show tokens dropdown for all logged-in users
+  const showTokens = !isPending && session;
 
   return (
     <nav
